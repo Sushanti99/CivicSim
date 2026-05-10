@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "civicsim-agents"
+version = "0.1.0"
+description = "Probabilistic demographic agent generator for CivicSim."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "CivicSim" }]
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+]
+
+[project.scripts]
+civicsim-agents = "civicsim_agents.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["civicsim_agents*"]
+
+[tool.setuptools.package-data]
+civicsim_agents = ["data/*/*.csv"]

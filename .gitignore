@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node / Next
+node_modules/
+.next/
+out/
+.turbo/
+npm-debug.log*
+yarn-error.log*
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+*.pem
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Data (large / private)
+*.dat
+*.sav
+data/raw/
+data/private/
+*.parquet.bak
+
+# Allow the small bundled priors
+!data/atp_priors/policy_priors.parquet
+!data/locations/*.json
+!data/locations/*.csv

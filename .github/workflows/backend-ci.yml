@@ -1,0 +1,52 @@
+name: backend-ci
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "packages/civicsim_agents/**"
+      - "data/**"
+      - "scripts/**"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - "packages/civicsim_agents/**"
+      - "data/**"
+      - "scripts/**"
+      - ".github/workflows/backend-ci.yml"
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e packages/civicsim_agents
+          pip install -r backend/requirements.txt
+          pip install ruff
+
+      - name: Build synthetic ATP priors (demo asset)
+        run: |
+          python scripts/build_atp_priors.py --synthetic --out data/atp_priors/policy_priors.parquet
+
+      - name: Ruff
+        run: ruff check backend packages/civicsim_agents scripts
+
+      - name: Pytest (civicsim_agents)
+        run: pytest -q
+        working-directory: packages/civicsim_agents
+
+      - name: Pytest (backend)
+        run: pytest -q
+        working-directory: backend
