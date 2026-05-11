@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   Legend,
   ResponsiveContainer,
   Tooltip,
@@ -213,8 +212,9 @@ function formatTs(ts?: string) {
 export default function SimulationDetailPage({
   params,
 }: {
-  params: { sim_id: string };
+  params: Promise<{ sim_id: string }>;
 }) {
+  const { sim_id } = use(params);
   const [data, setData] = useState<SimulationDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -222,11 +222,11 @@ export default function SimulationDetailPage({
 
   useEffect(() => {
     api
-      .simulationDetail(params.sim_id)
+      .simulationDetail(sim_id)
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [params.sim_id]);
+  }, [sim_id]);
 
   if (loading) {
     return (
