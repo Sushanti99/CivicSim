@@ -9,8 +9,8 @@ Containing:
 - ``agent_NNN.json``     — one file per agent (demographics + prior + stance + rationale)
 - ``_summary.json``      — aggregate opinion distribution
 
-The sim_id format is ``{location}__{domain}__{YYYYMMDD_HHMMSS}`` (double
-underscore so it's unambiguous when split).
+The sim_id format is ``NNN__{location}__{domain}__{YYYYMMDD_HHMMSS}`` where NNN
+is a zero-padded auto-incrementing serial number across all runs.
 
 The folder lives under ``CIVICSIM_DATA_ROOT/simulations/`` (defaults to
 ``<repo root>/data/simulations/``).
@@ -21,10 +21,13 @@ from __future__ import annotations
 import json
 import logging
 import os
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+_serial_lock = threading.Lock()
 
 
 def _simulations_root() -> Path:
@@ -40,11 +43,27 @@ def _simulations_root() -> Path:
     return Path("data") / "simulations"
 
 
+def _next_serial() -> int:
+    """Scan existing folders for the highest serial prefix and return next."""
+    root = _simulations_root()
+    max_serial = 0
+    if root.exists():
+        for folder in root.iterdir():
+            if folder.is_dir():
+                try:
+                    max_serial = max(max_serial, int(folder.name.split("__")[0]))
+                except (ValueError, IndexError):
+                    pass
+    return max_serial + 1
+
+
 def make_sim_id(location: str, domain: str | None) -> str:
-    ts = datetime.now(tz=timezone.utc).strftime("%Y%m%d_%H%M%S")
-    domain_slug = (domain or "general").replace(" ", "_")
-    loc_slug = location.replace(" ", "_")
-    return f"{loc_slug}__{domain_slug}__{ts}"
+    with _serial_lock:
+        serial = _next_serial()
+        ts = datetime.now(tz=timezone.utc).strftime("%Y%m%d_%H%M%S")
+        domain_slug = (domain or "general").replace(" ", "_")
+        loc_slug = location.replace(" ", "_")
+        return f"{serial:03d}__{loc_slug}__{domain_slug}__{ts}"
 
 
 class SimulationStore:

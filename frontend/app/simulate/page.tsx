@@ -158,9 +158,15 @@ export default function SimulatePage() {
             <span className="text-[color:var(--color-cyan)]">◇</span>
             CivicSim
           </Link>
-          <div className="text-sm text-[color:var(--color-text-dim)]">
-            Public demo · U.S. regions + divisions
-          </div>
+          <nav className="flex items-center gap-6 text-sm">
+            <span className="text-white">Simulate</span>
+            <Link
+              href="/simulations"
+              className="text-[color:var(--color-text-dim)] hover:text-white"
+            >
+              Simulations
+            </Link>
+          </nav>
         </div>
       </header>
 
@@ -280,21 +286,24 @@ export default function SimulatePage() {
           {/* Simulation saved banner */}
           {simId && (
             <div className="rounded-2xl border border-[color:var(--color-cyan)]/30 bg-[color:var(--color-cyan)]/5 px-5 py-4">
-              <div className="text-xs uppercase tracking-wider text-[color:var(--color-cyan)]">
-                Simulation saved
+              <div className="flex items-center justify-between">
+                <div className="text-xs uppercase tracking-wider text-[color:var(--color-cyan)]">
+                  Simulation saved
+                </div>
+                {status === "done" && (
+                  <Link
+                    href="/simulations"
+                    className="rounded-full border border-[color:var(--color-cyan)]/40 px-3 py-1 text-xs text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)]/10"
+                  >
+                    View dashboard →
+                  </Link>
+                )}
               </div>
               <div className="mt-1 font-mono text-sm text-[color:var(--color-text-dim)]">
                 data/simulations/{simId}/
               </div>
               <p className="mt-1 text-xs text-[color:var(--color-text-dim)]">
-                Each agent has a JSON file with demographics, prior, stance, and rationale.
-                {status === "done" && (
-                  <> Inspect via{" "}
-                    <code className="font-mono text-[color:var(--color-cyan)]">
-                      GET /api/simulations/{simId}
-                    </code>
-                  </>
-                )}
+                Per-agent JSON files: demographics · prior · stance · rationale
               </p>
             </div>
           )}
