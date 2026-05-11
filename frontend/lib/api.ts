@@ -61,8 +61,36 @@ export type SimulationMeta = {
   question_id: string;
   question_label: string;
   n: number;
+  n_agents: number;
   selected_dims: string[] | null;
   complete: boolean;
+  summary?: { distribution: AnswerProb[]; n: number };
+};
+
+export type AgentRecord = {
+  agent_id: number;
+  demographics: Agent;
+  selected_dims: string[] | null;
+  used_filter: Record<string, string>;
+  backoff_steps: string[];
+  prior: AnswerProb[];
+  stance: string;
+  rationale: string;
+};
+
+export type SimulationDetail = {
+  sim_id: string;
+  timestamp: string;
+  location: string;
+  domain: string | null;
+  domain_label: string | null;
+  question_id: string;
+  question_label: string;
+  n: number;
+  selected_dims: string[] | null;
+  matched_from_free_text: boolean;
+  agents: AgentRecord[];
+  summary: { distribution: AnswerProb[]; n: number } | null;
 };
 
 export type SimulateRequest = {
@@ -111,6 +139,8 @@ export const api = {
   domain: (id: string) => http<Domain>(`/domains/${id}`),
   simulations: (limit?: number) =>
     http<SimulationMeta[]>(`/simulations${limit ? `?limit=${limit}` : ""}`),
+  simulationDetail: (sim_id: string) =>
+    http<SimulationDetail>(`/simulations/${encodeURIComponent(sim_id)}`),
   agents: (body: { location: string; n: number; seed?: number }) =>
     http<{ location: string; n: number; agents: Agent[] }>("/agents", {
       method: "POST",
