@@ -5,6 +5,9 @@
 export type Location = {
   id: string;
   label: string;
+  kind: "region" | "division" | "county" | null;
+  region: string | null;
+  division: string | null;
   state: string | null;
   population: number | null;
 };
@@ -32,22 +35,54 @@ export type AgentResponse = {
   prior: AnswerProb[];
 };
 
+export type DomainDimension = {
+  key: string;
+  label: string;
+  kl: number;
+  auto_selected: boolean;
+};
+
+export type Domain = {
+  id: string;
+  label: string;
+  description: string;
+  needs_geo: boolean;
+  geo_decision: string;
+  geo_note: string;
+  dimensions: DomainDimension[];
+  question_ids: string[];
+};
+
+export type SimulationMeta = {
+  sim_id: string;
+  timestamp: string;
+  location: string;
+  domain: string | null;
+  question_id: string;
+  question_label: string;
+  n: number;
+  selected_dims: string[] | null;
+  complete: boolean;
+};
+
 export type SimulateRequest = {
   location: string;
   n: number;
   question_id?: string;
   free_text?: string;
+  domain?: string;
+  selected_dims?: string[];
   seed?: number;
   model?: string;
 };
 
 export type SimulateEvent =
-  | { event: "meta"; data: { question_id: string; question_label: string; matched_from_free_text: boolean; answer_options: string[] } }
+  | { event: "meta"; data: { sim_id: string; question_id: string; question_label: string; matched_from_free_text: boolean; answer_options: string[]; domain: string | null; domain_label: string | null } }
   | { event: "agent_sampled"; data: Agent }
   | { event: "prior_attached"; data: { agent_id: number; prior: AnswerProb[]; used_filter: Record<string, string>; backoff_steps: string[] } }
   | { event: "agent_responded"; data: AgentResponse }
   | { event: "aggregate"; data: { distribution: AnswerProb[]; n: number } }
-  | { event: "done"; data: Record<string, never> }
+  | { event: "done"; data: { sim_id: string } }
   | { event: "error"; data: { message: string } };
 
 const API_BASE = "/api";
@@ -72,6 +107,10 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   locations: () => http<{ locations: Location[] }>("/locations"),
   questions: () => http<{ questions: QuestionMeta[] }>("/questions"),
+  domains: () => http<Domain[]>("/domains"),
+  domain: (id: string) => http<Domain>(`/domains/${id}`),
+  simulations: (limit?: number) =>
+    http<SimulationMeta[]>(`/simulations${limit ? `?limit=${limit}` : ""}`),
   agents: (body: { location: string; n: number; seed?: number }) =>
     http<{ location: string; n: number; agents: Agent[] }>("/agents", {
       method: "POST",

@@ -1,0 +1,106 @@
+[
+  {
+    "id": "region_northeast",
+    "label": "Northeast (region)",
+    "kind": "region",
+    "region": "Northeast",
+    "division": null,
+    "population": 55700000
+  },
+  {
+    "id": "region_midwest",
+    "label": "Midwest (region)",
+    "kind": "region",
+    "region": "Midwest",
+    "division": null,
+    "population": 68900000
+  },
+  {
+    "id": "region_south",
+    "label": "South (region)",
+    "kind": "region",
+    "region": "South",
+    "division": null,
+    "population": 128700000
+  },
+  {
+    "id": "region_west",
+    "label": "West (region)",
+    "kind": "region",
+    "region": "West",
+    "division": null,
+    "population": 78900000
+  },
+  {
+    "id": "division_new_england",
+    "label": "New England (Northeast)",
+    "kind": "division",
+    "region": "Northeast",
+    "division": "New England",
+    "population": 15100000
+  },
+  {
+    "id": "division_middle_atlantic",
+    "label": "Middle Atlantic (Northeast)",
+    "kind": "division",
+    "region": "Northeast",
+    "division": "Middle Atlantic",
+    "population": 40600000
+  },
+  {
+    "id": "division_east_north_central",
+    "label": "East North Central (Midwest)",
+    "kind": "division",
+    "region": "Midwest",
+    "division": "East North Central",
+    "population": 46900000
+  },
+  {
+    "id": "division_west_north_central",
+    "label": "West North Central (Midwest)",
+    "kind": "division",
+    "region": "Midwest",
+    "division": "West North Central",
+    "population": 22000000
+  },
+  {
+    "id": "division_south_atlantic",
+    "label": "South Atlantic (South)",
+    "kind": "division",
+    "region": "South",
+    "division": "South Atlantic",
+    "population": 67800000
+  },
+  {
+    "id": "division_east_south_central",
+    "label": "East South Central (South)",
+    "kind": "division",
+    "region": "South",
+    "division": "East South Central",
+    "population": 19300000
+  },
+  {
+    "id": "division_west_south_central",
+    "label": "West South Central (South)",
+    "kind": "division",
+    "region": "South",
+    "division": "West South Central",
+    "population": 41600000
+  },
+  {
+    "id": "division_mountain",
+    "label": "Mountain (West)",
+    "kind": "division",
+    "region": "West",
+    "division": "Mountain",
+    "population": 25000000
+  },
+  {
+    "id": "division_pacific",
+    "label": "Pacific (West)",
+    "kind": "division",
+    "region": "West",
+    "division": "Pacific",
+    "population": 53900000
+  }
+]

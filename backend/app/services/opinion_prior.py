@@ -33,6 +33,8 @@ from app.models.poll import AnswerProb, QuestionMeta
 logger = logging.getLogger(__name__)
 
 # Order matters: drop the least-informative dimension first.
+# Region/division are dropped LAST — when a user picks "West", we want the
+# response to actually reflect West, even if the demographic cell is sparse.
 _BACKOFF_ORDER = [
     "urbanicity",
     "income_group",
@@ -40,6 +42,8 @@ _BACKOFF_ORDER = [
     "race_eth",
     "gender",
     "age_group",
+    "F_CDIVISION",
+    "F_CREGION",
 ]
 _ALL_DIMS = list(reversed(_BACKOFF_ORDER))  # most-informative first
 _MARGINAL = "ALL"
@@ -197,21 +201,43 @@ def _tokenize(s: str) -> list[str]:
     return out
 
 
-def map_agent_to_filter(agent: dict) -> dict:
+def map_agent_to_filter(
+    agent: dict,
+    geo: dict | None = None,
+    selected_dims: list[str] | None = None,
+) -> dict:
     """Project a sampled agent's raw demographics onto the ATP cell vocabulary.
 
     The ACS-derived sampled agents use bracket strings (e.g. "30 to 34 years")
     while the ATP priors parquet uses harmonized buckets (e.g. "30-49"). This
-    function performs the projection. Unknown values fall back to ``ALL``.
+    function performs the projection.
+
+    ``geo`` (optional) lets the caller pass through the location's region /
+    division so the lookup is geographically conditioned. Counties pass
+    through their parent region without a division.
+
+    ``selected_dims`` (optional) restricts the filter to only the ATP columns
+    the user selected in the domain-dimension UI. Geographic dims (F_CREGION,
+    F_CDIVISION) are always included when ``geo`` is set, regardless of
+    ``selected_dims``.
     """
-    age = _bin_age(agent.get("age", ""))
-    race = _bin_race(agent.get("race", ""))
-    income = _bin_income(agent.get("income", ""))
-    return {
-        "age_group": age,
-        "race_eth": race,
-        "income_group": income,
+    full: dict[str, str] = {
+        "age_group": _bin_age(agent.get("age", "")),
+        "race_eth": _bin_race(agent.get("race", "")),
+        "income_group": _bin_income(agent.get("income", "")),
     }
+    if geo:
+        if geo.get("region"):
+            full["F_CREGION"] = geo["region"]
+        if geo.get("division"):
+            full["F_CDIVISION"] = geo["division"]
+
+    if selected_dims is None:
+        return full
+
+    # Keep only selected dims, but always keep geographic conditioning.
+    geo_keys = {"F_CREGION", "F_CDIVISION"}
+    return {k: v for k, v in full.items() if k in selected_dims or k in geo_keys}
 
 
 def _bin_age(label: str) -> str:

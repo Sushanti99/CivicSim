@@ -41,7 +41,11 @@ data/raw/
 data/private/
 *.parquet.bak
 
+# Simulation run outputs — excluded from git (user-generated at runtime)
+data/simulations/
+
 # Allow the small bundled priors
 !data/atp_priors/policy_priors.parquet
+!data/atp_priors/domain_demographics.json
 !data/locations/*.json
 !data/locations/*.csv

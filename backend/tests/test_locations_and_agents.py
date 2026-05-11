@@ -11,7 +11,19 @@ def test_locations(client):
     assert r.status_code == 200
     body = r.json()
     ids = [loc["id"] for loc in body["locations"]]
+    # 4 regions + 9 divisions + Alameda county = 14 minimum.
     assert "alameda_california" in ids
+    assert "region_west" in ids
+    assert "division_pacific" in ids
+    assert len(ids) >= 13
+
+    by_id = {loc["id"]: loc for loc in body["locations"]}
+    assert by_id["region_west"]["kind"] == "region"
+    assert by_id["region_west"]["region"] == "West"
+    assert by_id["division_pacific"]["kind"] == "division"
+    assert by_id["division_pacific"]["region"] == "West"
+    assert by_id["alameda_california"]["kind"] == "county"
+    assert by_id["alameda_california"]["region"] == "West"
 
 
 def test_agents_shape(client):

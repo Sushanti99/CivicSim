@@ -54,8 +54,25 @@ QUESTION_ALLOWLIST: list[tuple[str, str]] = [
 ]
 
 
-DIMS = ["age_group", "gender", "race_eth", "education_group", "income_group", "urbanicity"]
+DIMS = [
+    "F_CREGION",
+    "F_CDIVISION",
+    "age_group",
+    "gender",
+    "race_eth",
+    "education_group",
+    "income_group",
+    "urbanicity",
+]
 MARGINAL = "ALL"
+
+REGIONS = ["Northeast", "Midwest", "South", "West"]
+DIVISIONS_BY_REGION = {
+    "Northeast": ["New England", "Middle Atlantic"],
+    "Midwest": ["East North Central", "West North Central"],
+    "South": ["South Atlantic", "East South Central", "West South Central"],
+    "West": ["Mountain", "Pacific"],
+}
 
 
 SYNTHETIC_QUESTIONS: list[dict] = [
@@ -115,6 +132,18 @@ CELLS = {
 }
 
 
+# Modest per-region answer-share tilts applied on top of the national baseline.
+# These are intentionally hand-tuned, not derived from real ATP — they make the
+# synthetic priors regionally distinct so the UI shows real variation when the
+# user changes location. The real builder pulls these from ATP weighted shares.
+REGION_PRIOR_TILTS = {
+    "Northeast": 1.2,
+    "Midwest": 1.0,
+    "South": 0.85,
+    "West": 1.3,
+}
+
+
 def build_real(
     *,
     source_uri: str,
@@ -122,145 +151,165 @@ def build_real(
     a_labels_uri: str,
     out: Path,
 ) -> None:
-    """Compile a small lookup parquet from the private merged ATP data."""
+    """Compile a small lookup parquet from the private merged ATP data.
+
+    Emits three groups of rows per question:
+
+    1. Per-region (F_CREGION) + per-division (F_CDIVISION) marginals.
+    2. Per-demographic-cell rows (age x ... x urbanicity), national.
+    3. Fully-marginal national fallback row.
+    """
     qid_list = ", ".join(f"'{q}'" for q, _ in QUESTION_ALLOWLIST)
     con = duckdb.connect(":memory:")
     con.execute("INSTALL httpfs; LOAD httpfs;")
     con.execute("SET s3_region='us-east-1';")
-
     logger.info("Reading source: %s", source_uri)
 
-    # Per-cell distribution
-    cell_sql = f"""
-        WITH base AS (
-            SELECT
-                question_code AS question_id,
-                CAST(answer_code AS VARCHAR) AS answer_code,
-                COALESCE(F_AGECAT, age_group, 'ALL') AS age_group,
-                COALESCE(gender, 'ALL') AS gender,
-                COALESCE(race_eth, 'ALL') AS race_eth,
-                COALESCE(education_group, 'ALL') AS education_group,
-                COALESCE(income_group, 'ALL') AS income_group,
-                COALESCE(urbanicity, 'ALL') AS urbanicity,
-                WEIGHT
-            FROM read_parquet('{source_uri}')
-            WHERE question_code IN ({qid_list})
-                  AND answer_code IS NOT NULL
-        ), per_cell AS (
-            SELECT question_id, age_group, gender, race_eth, education_group,
-                   income_group, urbanicity, answer_code, SUM(WEIGHT) AS w
-            FROM base
-            GROUP BY ALL
-        ), totals AS (
-            SELECT question_id, age_group, gender, race_eth, education_group,
-                   income_group, urbanicity, SUM(w) AS total_w
-            FROM per_cell
-            GROUP BY ALL
-        )
-        SELECT pc.question_id,
-               pc.age_group, pc.gender, pc.race_eth, pc.education_group,
-               pc.income_group, pc.urbanicity,
-               pc.answer_code,
-               pc.w / t.total_w AS prob
-        FROM per_cell pc
-        JOIN totals t USING (question_id, age_group, gender, race_eth,
-                             education_group, income_group, urbanicity)
-        WHERE t.total_w >= 30   -- ignore very sparse cells
-    """
-    cell_df = con.execute(cell_sql).df()
-    logger.info("Per-cell rows: %s", len(cell_df))
-
-    # Fully-marginal distribution (per question, ALL on every dim)
-    marg_sql = f"""
+    base_sql = f"""
         SELECT
             question_code AS question_id,
-            'ALL' AS age_group, 'ALL' AS gender, 'ALL' AS race_eth,
-            'ALL' AS education_group, 'ALL' AS income_group, 'ALL' AS urbanicity,
             CAST(answer_code AS VARCHAR) AS answer_code,
-            SUM(WEIGHT) / (SELECT SUM(WEIGHT)
-                           FROM read_parquet('{source_uri}')
-                           WHERE question_code = base.question_code
-                                 AND answer_code IS NOT NULL) AS prob
-        FROM read_parquet('{source_uri}') AS base
-        WHERE question_code IN ({qid_list}) AND answer_code IS NOT NULL
-        GROUP BY question_code, answer_code
+            COALESCE(F_CREGION, 'ALL') AS F_CREGION,
+            COALESCE(F_CDIVISION, 'ALL') AS F_CDIVISION,
+            COALESCE(age_group, F_AGECAT, 'ALL') AS age_group,
+            COALESCE(gender, 'ALL') AS gender,
+            COALESCE(race_eth, 'ALL') AS race_eth,
+            COALESCE(education_group, 'ALL') AS education_group,
+            COALESCE(income_group, 'ALL') AS income_group,
+            COALESCE(urbanicity, 'ALL') AS urbanicity,
+            WEIGHT
+        FROM read_parquet('{source_uri}')
+        WHERE question_code IN ({qid_list})
+              AND answer_code IS NOT NULL
     """
-    marg_df = con.execute(marg_sql).df()
-    logger.info("Marginal rows: %s", len(marg_df))
+    con.execute(f"CREATE TEMP VIEW base AS {base_sql}")
 
-    full = pd.concat([cell_df, marg_df], ignore_index=True)
+    def _share(group_cols: list[str], where: str = "1=1") -> pd.DataFrame:
+        cols_sql = ", ".join(group_cols)
+        sql = f"""
+            WITH a AS (
+                SELECT {cols_sql}, answer_code, SUM(WEIGHT) AS w
+                FROM base WHERE {where} GROUP BY ALL
+            ), t AS (
+                SELECT {cols_sql}, SUM(w) AS total_w FROM a GROUP BY ALL
+            )
+            SELECT a.*, a.w / t.total_w AS prob
+            FROM a JOIN t USING ({cols_sql})
+            WHERE t.total_w >= 30
+        """
+        return con.execute(sql).df()
+
+    # Demographic cells, national.
+    cell_df = _share(
+        ["question_id", "age_group", "gender", "race_eth",
+         "education_group", "income_group", "urbanicity"],
+    )
+    cell_df["F_CREGION"] = MARGINAL
+    cell_df["F_CDIVISION"] = MARGINAL
+
+    # Per-region marginal.
+    region_df = _share(["question_id", "F_CREGION"], where="F_CREGION <> 'ALL'")
+    for d in ["F_CDIVISION", "age_group", "gender", "race_eth",
+              "education_group", "income_group", "urbanicity"]:
+        region_df[d] = MARGINAL
+
+    # Per-division marginal.
+    div_df = _share(["question_id", "F_CREGION", "F_CDIVISION"],
+                    where="F_CDIVISION <> 'ALL'")
+    for d in ["age_group", "gender", "race_eth",
+              "education_group", "income_group", "urbanicity"]:
+        div_df[d] = MARGINAL
+
+    # National marginal.
+    marg_df = _share(["question_id"])
+    for d in DIMS:
+        marg_df[d] = MARGINAL
+
+    full = pd.concat([region_df, div_df, cell_df, marg_df], ignore_index=True)
+    logger.info(
+        "Rows: region=%s, division=%s, demographic_cell=%s, national=%s",
+        len(region_df), len(div_df), len(cell_df), len(marg_df),
+    )
 
     # Attach human-readable labels.
     q_labels = pd.read_parquet(q_labels_uri).rename(columns={"question_code": "question_id"})
     a_labels = pd.read_parquet(a_labels_uri).rename(columns={"question_code": "question_id"})
     a_labels["answer_code"] = a_labels["answer_code"].astype(str)
-
     full = full.merge(q_labels, on="question_id", how="left")
     full = full.merge(a_labels, on=["question_id", "answer_code"], how="left")
     full["question_label"] = full["question_label"].fillna(full["question_id"])
     full["answer_label"] = full["answer_label"].fillna(full["answer_code"])
 
-    cols = [
-        "question_id", "question_label",
-        *DIMS,
-        "answer_label", "prob",
-    ]
-    full = full[cols]
+    full = full[["question_id", "question_label", *DIMS, "answer_label", "prob"]]
     out.parent.mkdir(parents=True, exist_ok=True)
     full.to_parquet(out, index=False)
     logger.info("Wrote %s rows to %s (%.1f KB)", len(full), out, out.stat().st_size / 1024)
 
 
 def build_synthetic(out: Path, *, seed: int = 0) -> None:
-    """Fabricate a small but plausibly-shaped priors parquet for offline demos."""
+    """Fabricate a small but plausibly-shaped priors parquet for offline demos.
+
+    Emits, per question, the following row groups (each row group sums to 1):
+
+    1. National marginal (every dim = 'ALL').
+    2. One row group per region (F_CREGION = R, everything else 'ALL').
+    3. One row group per division (F_CDIVISION = D, everything else 'ALL').
+    4. Single-demographic-dim cells under the national marginal (age x ALL, etc.).
+    5. (age x race) two-dim cells under the national marginal — keeps backoff
+       interesting without exploding the file size.
+    """
     import numpy as np
 
     rng = np.random.default_rng(seed)
     rows: list[dict] = []
 
+    def _emit(qid: str, qlabel: str, answers: list[str], probs, **cell_overrides):
+        cell = {d: MARGINAL for d in DIMS}
+        cell.update(cell_overrides)
+        # Normalize.
+        probs = np.asarray(probs, dtype=float)
+        probs = probs / probs.sum()
+        for ans, p in zip(answers, probs, strict=True):
+            rows.append({
+                "question_id": qid, "question_label": qlabel,
+                **cell,
+                "answer_label": ans, "prob": float(p),
+            })
+
+    def _tilt(baseline: np.ndarray, strength: float) -> np.ndarray:
+        return rng.dirichlet(baseline * strength + 0.5)
+
     for q in SYNTHETIC_QUESTIONS:
         qid = q["question_id"]
         qlabel = q["question_label"]
         answers = q["answers"]
-        # Choose a "national baseline" centered Dirichlet to keep things plausible.
+
         baseline = rng.dirichlet([2.0] * len(answers))
+        _emit(qid, qlabel, answers, baseline)  # national marginal
 
-        # Marginal row.
-        for ans, p in zip(answers, baseline, strict=False):
-            rows.append({
-                "question_id": qid, "question_label": qlabel,
-                "age_group": MARGINAL, "gender": MARGINAL, "race_eth": MARGINAL,
-                "education_group": MARGINAL, "income_group": MARGINAL, "urbanicity": MARGINAL,
-                "answer_label": ans, "prob": float(p),
-            })
+        # 1 row group per region with a region-specific tilt.
+        region_baselines: dict[str, np.ndarray] = {}
+        for region, scale in REGION_PRIOR_TILTS.items():
+            r = _tilt(baseline, 15.0 * scale)
+            region_baselines[region] = r
+            _emit(qid, qlabel, answers, r, F_CREGION=region)
 
-        # Per-cell perturbations: vary one dimension at a time (single-dim cells).
+        # 1 row group per division — tilt off the parent region.
+        for region, divisions in DIVISIONS_BY_REGION.items():
+            for division in divisions:
+                d = _tilt(region_baselines[region], 35.0)
+                _emit(qid, qlabel, answers, d, F_CREGION=region, F_CDIVISION=division)
+
+        # Per-demographic-dim cells under national marginal.
         for dim, values in CELLS.items():
             for v in values:
-                # Random tilt of the baseline by a small Dirichlet prior.
-                tilt = rng.dirichlet(baseline * 20 + 0.5)
-                for ans, p in zip(answers, tilt, strict=False):
-                    cell = {d: MARGINAL for d in DIMS}
-                    cell[dim] = v
-                    rows.append({
-                        "question_id": qid, "question_label": qlabel,
-                        **cell,
-                        "answer_label": ans, "prob": float(p),
-                    })
+                _emit(qid, qlabel, answers, _tilt(baseline, 20.0), **{dim: v})
 
-        # A handful of two-dim cells (age x race) so backoff has something to hit.
+        # (age x race) two-dim cells under national marginal.
         for ag in CELLS["age_group"][:4]:
             for rc in CELLS["race_eth"]:
-                tilt = rng.dirichlet(baseline * 25 + 0.5)
-                for ans, p in zip(answers, tilt, strict=False):
-                    cell = {d: MARGINAL for d in DIMS}
-                    cell["age_group"] = ag
-                    cell["race_eth"] = rc
-                    rows.append({
-                        "question_id": qid, "question_label": qlabel,
-                        **cell,
-                        "answer_label": ans, "prob": float(p),
-                    })
+                _emit(qid, qlabel, answers, _tilt(baseline, 25.0),
+                      age_group=ag, race_eth=rc)
 
     df = pd.DataFrame(rows)[["question_id", "question_label", *DIMS, "answer_label", "prob"]]
     out.parent.mkdir(parents=True, exist_ok=True)

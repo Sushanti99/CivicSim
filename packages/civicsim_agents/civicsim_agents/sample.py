@@ -13,13 +13,40 @@ import numpy as np
 import pandas as pd
 
 
-def _package_data_root() -> str:
+def _candidate_data_roots() -> list[str]:
+    """Where to look for per-location demographic CSVs, in priority order.
+
+    1. ``CIVICSIM_DATA_ROOT`` env var (lets the backend point at the
+       repo-level ``data/locations/`` so a single source of truth wins).
+    2. ``../../data/locations`` relative to this file, walking up to find
+       a checked-out repo layout.
+    3. The package-internal ``data/`` directory (ships with pip install).
+    """
+    roots: list[str] = []
+    env = os.environ.get("CIVICSIM_DATA_ROOT")
+    if env:
+        roots.append(env)
+    here = os.path.dirname(os.path.abspath(__file__))
+    for _ in range(6):
+        candidate = os.path.join(here, "data", "locations")
+        if os.path.isdir(candidate):
+            roots.append(candidate)
+            break
+        here = os.path.dirname(here)
+    roots.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "data"))
+    return roots
+
+
+def _data_root() -> str:
+    for r in _candidate_data_roots():
+        if os.path.isdir(r):
+            return r
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
 
 def list_locations() -> list[str]:
-    """List location IDs with bundled distributions."""
-    root = _package_data_root()
+    """List location IDs available for sampling."""
+    root = _data_root()
     if not os.path.isdir(root):
         return []
     return sorted(
@@ -30,7 +57,7 @@ def list_locations() -> list[str]:
 
 def _data_dir(location: str) -> str:
     location = location.replace(",", "_").strip().lower().replace(" ", "_")
-    path = os.path.join(_package_data_root(), location)
+    path = os.path.join(_data_root(), location)
     if not os.path.isdir(path):
         raise FileNotFoundError(
             f"Unknown location {location!r}. Available: {list_locations()}"

@@ -4,6 +4,8 @@ from pydantic import BaseModel, Field
 
 
 class DemographicFilter(BaseModel):
+    F_CREGION: str | None = None
+    F_CDIVISION: str | None = None
     age_group: str | None = None
     gender: str | None = None
     race_eth: str | None = None

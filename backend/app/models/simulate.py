@@ -17,6 +17,16 @@ class SimulateRequest(BaseModel):
         description="Free-text policy question. If set without question_id, "
         "the backend matches it to the nearest known question.",
     )
+    domain: str | None = Field(
+        None,
+        description="Domain ID (e.g. 'economy', 'health'). Used to resolve "
+        "domain-level metadata and to label simulation files.",
+    )
+    selected_dims: list[str] | None = Field(
+        None,
+        description="ATP column keys the user selected for demographic conditioning "
+        "(e.g. ['age_group', 'income_group']). If None, all mapped dims are used.",
+    )
     seed: int | None = None
     model: str | None = Field(
         None,

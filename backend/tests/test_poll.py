@@ -32,10 +32,57 @@ def test_poll_with_filter_and_no_backoff_when_present(client):
     assert body["backoff_steps"] == []
 
 
+def test_poll_region_marginal(client):
+    qid = client.get("/api/questions").json()["questions"][0]["question_id"]
+    r = client.post(
+        "/api/poll",
+        json={"question_id": qid, "demographic_filter": {"F_CREGION": "West"}},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["used_filter"]["F_CREGION"] == "West"
+    assert body["backoff_steps"] == []
+    total = sum(d["prob"] for d in body["distribution"])
+    assert abs(total - 1.0) < 1e-6
+
+
+def test_poll_region_priors_differ_per_region(client):
+    qid = client.get("/api/questions").json()["questions"][0]["question_id"]
+    west = client.post(
+        "/api/poll",
+        json={"question_id": qid, "demographic_filter": {"F_CREGION": "West"}},
+    ).json()["distribution"]
+    south = client.post(
+        "/api/poll",
+        json={"question_id": qid, "demographic_filter": {"F_CREGION": "South"}},
+    ).json()["distribution"]
+    diffs = [abs(w["prob"] - s["prob"]) for w, s in zip(west, south, strict=True)]
+    assert max(diffs) > 0.02, "Region priors should differ by more than 2pp"
+
+
+def test_poll_region_preserved_through_demographic_backoff(client):
+    qid = client.get("/api/questions").json()["questions"][0]["question_id"]
+    # Region + a sparse demographic combo: demographic dims should be dropped,
+    # but F_CREGION must stay (it's at the end of the backoff order).
+    r = client.post(
+        "/api/poll",
+        json={
+            "question_id": qid,
+            "demographic_filter": {
+                "F_CREGION": "West",
+                "urbanicity": "urban",
+                "income_group": "below_30000",
+            },
+        },
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["used_filter"]["F_CREGION"] == "West"
+    assert "urbanicity" in body["backoff_steps"]
+
+
 def test_poll_backoff_when_cell_missing(client):
     qid = client.get("/api/questions").json()["questions"][0]["question_id"]
-    # Synthetic priors only have single-dim and (age x race) two-dim cells.
-    # Setting urbanicity + income should force backoff.
     r = client.post(
         "/api/poll",
         json={

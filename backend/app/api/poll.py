@@ -17,9 +17,15 @@ def get_questions() -> QuestionsResponse:
 
 @router.post("/poll", response_model=PollResponse)
 def post_poll(req: PollRequest) -> PollResponse:
+    # Drop unset fields so they don't override the cell's MARGINAL default.
+    filt = (
+        {k: v for k, v in req.demographic_filter.model_dump().items() if v}
+        if req.demographic_filter
+        else None
+    )
     dist, used_filter, backoff_steps = lookup_distribution(
         question_id=req.question_id,
-        demographic_filter=req.demographic_filter.model_dump() if req.demographic_filter else None,
+        demographic_filter=filt,
     )
     return PollResponse(
         question_id=req.question_id,

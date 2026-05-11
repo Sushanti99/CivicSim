@@ -16,18 +16,29 @@ PRIORS_PATH = REPO_ROOT / "data" / "atp_priors" / "policy_priors.parquet"
 
 @pytest.fixture(scope="session", autouse=True)
 def _ensure_priors_exist():
-    if PRIORS_PATH.exists():
-        return
-    subprocess.check_call(
-        [
-            sys.executable,
-            str(REPO_ROOT / "scripts" / "build_atp_priors.py"),
-            "--synthetic",
-            "--out",
-            str(PRIORS_PATH),
-        ],
-        cwd=REPO_ROOT,
-    )
+    if not PRIORS_PATH.exists():
+        subprocess.check_call(
+            [
+                sys.executable,
+                str(REPO_ROOT / "scripts" / "build_atp_priors.py"),
+                "--synthetic",
+                "--out",
+                str(PRIORS_PATH),
+            ],
+            cwd=REPO_ROOT,
+        )
+    # The location catalog reads data/locations/_catalog.json — make sure it
+    # exists so the regions/divisions dropdown is populated in test runs.
+    catalog_path = REPO_ROOT / "data" / "locations" / "_catalog.json"
+    if not catalog_path.exists():
+        subprocess.check_call(
+            [
+                sys.executable,
+                str(REPO_ROOT / "scripts" / "build_locations.py"),
+                "--synthetic",
+            ],
+            cwd=REPO_ROOT,
+        )
 
 
 @pytest.fixture(scope="session", autouse=True)

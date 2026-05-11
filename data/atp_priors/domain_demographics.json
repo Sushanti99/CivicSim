@@ -1,0 +1,536 @@
+{
+  "economy": {
+    "label": "Economy",
+    "description": "Economy, jobs, income, inflation, taxes, personal finance.",
+    "needs_geo": false,
+    "geo_decision": "optional",
+    "geo_note": "Geography adds modest signal; included if user selects a region.",
+    "dimensions": [
+      {
+        "key": "income_group",
+        "label": "Income",
+        "kl": 0.024051,
+        "auto_selected": true
+      },
+      {
+        "key": "age_group",
+        "label": "Age",
+        "kl": 0.017283,
+        "auto_selected": true
+      },
+      {
+        "key": "race_eth",
+        "label": "Race / Ethnicity",
+        "kl": 0.015849,
+        "auto_selected": true
+      },
+      {
+        "key": "F_CREGION",
+        "label": "Region",
+        "kl": 0.01428,
+        "auto_selected": false
+      },
+      {
+        "key": "education_group",
+        "label": "Education",
+        "kl": 0.012109,
+        "auto_selected": false
+      },
+      {
+        "key": "gender",
+        "label": "Gender",
+        "kl": 0.005774,
+        "auto_selected": false
+      },
+      {
+        "key": "urbanicity",
+        "label": "Urbanicity",
+        "kl": 0.002755,
+        "auto_selected": false
+      }
+    ],
+    "question_ids": [
+      "Q_HOUSING",
+      "Q_TRANSIT",
+      "Q_MINWAGE"
+    ]
+  },
+  "environment_climate": {
+    "label": "Environment & Climate",
+    "description": "Climate change, environment, energy, pollution, extreme weather.",
+    "needs_geo": false,
+    "geo_decision": "not_needed",
+    "geo_note": "Geography adds minimal signal for this domain.",
+    "dimensions": [
+      {
+        "key": "race_eth",
+        "label": "Race / Ethnicity",
+        "kl": 0.013944,
+        "auto_selected": true
+      },
+      {
+        "key": "F_CREGION",
+        "label": "Region",
+        "kl": 0.012095,
+        "auto_selected": true
+      },
+      {
+        "key": "income_group",
+        "label": "Income",
+        "kl": 0.011657,
+        "auto_selected": true
+      },
+      {
+        "key": "age_group",
+        "label": "Age",
+        "kl": 0.010644,
+        "auto_selected": false
+      },
+      {
+        "key": "education_group",
+        "label": "Education",
+        "kl": 0.00804,
+        "auto_selected": false
+      },
+      {
+        "key": "gender",
+        "label": "Gender",
+        "kl": 0.006605,
+        "auto_selected": false
+      },
+      {
+        "key": "urbanicity",
+        "label": "Urbanicity",
+        "kl": 0.003552,
+        "auto_selected": false
+      }
+    ],
+    "question_ids": [
+      "Q_CLIMATE"
+    ]
+  },
+  "family_society": {
+    "label": "Family & Society",
+    "description": "Family, children, marriage, gender, LGBT, abortion, education.",
+    "needs_geo": false,
+    "geo_decision": "optional",
+    "geo_note": "Geography adds modest signal; included if user selects a region.",
+    "dimensions": [
+      {
+        "key": "income_group",
+        "label": "Income",
+        "kl": 0.020595,
+        "auto_selected": true
+      },
+      {
+        "key": "age_group",
+        "label": "Age",
+        "kl": 0.018428,
+        "auto_selected": true
+      },
+      {
+        "key": "F_CREGION",
+        "label": "Region",
+        "kl": 0.016289,
+        "auto_selected": true
+      },
+      {
+        "key": "education_group",
+        "label": "Education",
+        "kl": 0.015151,
+        "auto_selected": false
+      },
+      {
+        "key": "race_eth",
+        "label": "Race / Ethnicity",
+        "kl": 0.01372,
+        "auto_selected": false
+      },
+      {
+        "key": "gender",
+        "label": "Gender",
+        "kl": 0.00852,
+        "auto_selected": false
+      },
+      {
+        "key": "urbanicity",
+        "label": "Urbanicity",
+        "kl": 0.003201,
+        "auto_selected": false
+      }
+    ],
+    "question_ids": [
+      "Q_EDUCATION"
+    ]
+  },
+  "health": {
+    "label": "Health",
+    "description": "Health, healthcare, COVID, mental health, medical topics.",
+    "needs_geo": false,
+    "geo_decision": "optional",
+    "geo_note": "Geography adds modest signal; included if user selects a region.",
+    "dimensions": [
+      {
+        "key": "income_group",
+        "label": "Income",
+        "kl": 0.018217,
+        "auto_selected": true
+      },
+      {
+        "key": "race_eth",
+        "label": "Race / Ethnicity",
+        "kl": 0.014994,
+        "auto_selected": true
+      },
+      {
+        "key": "F_CREGION",
+        "label": "Region",
+        "kl": 0.012031,
+        "auto_selected": true
+      },
+      {
+        "key": "age_group",
+        "label": "Age",
+        "kl": 0.011858,
+        "auto_selected": false
+      },
+      {
+        "key": "education_group",
+        "label": "Education",
+        "kl": 0.010434,
+        "auto_selected": false
+      },
+      {
+        "key": "gender",
+        "label": "Gender",
+        "kl": 0.004371,
+        "auto_selected": false
+      },
+      {
+        "key": "urbanicity",
+        "label": "Urbanicity",
+        "kl": 0.002734,
+        "auto_selected": false
+      }
+    ],
+    "question_ids": [
+      "Q_HEALTHCARE"
+    ]
+  },
+  "immigration": {
+    "label": "Immigration",
+    "description": "Immigrants, border, asylum, citizenship policy.",
+    "needs_geo": false,
+    "geo_decision": "optional",
+    "geo_note": "Geography adds modest signal; included if user selects a region.",
+    "dimensions": [
+      {
+        "key": "age_group",
+        "label": "Age",
+        "kl": 0.022638,
+        "auto_selected": true
+      },
+      {
+        "key": "race_eth",
+        "label": "Race / Ethnicity",
+        "kl": 0.018899,
+        "auto_selected": true
+      },
+      {
+        "key": "income_group",
+        "label": "Income",
+        "kl": 0.013609,
+        "auto_selected": true
+      },
+      {
+        "key": "F_CREGION",
+        "label": "Region",
+        "kl": 0.011496,
+        "auto_selected": false
+      },
+      {
+        "key": "education_group",
+        "label": "Education",
+        "kl": 0.009906,
+        "auto_selected": false
+      },
+      {
+        "key": "gender",
+        "label": "Gender",
+        "kl": 0.005036,
+        "auto_selected": false
+      },
+      {
+        "key": "urbanicity",
+        "label": "Urbanicity",
+        "kl": 0.003323,
+        "auto_selected": false
+      }
+    ],
+    "question_ids": [
+      "Q_IMMIGRATION"
+    ]
+  },
+  "international": {
+    "label": "International Affairs",
+    "description": "Foreign countries, foreign policy, military, war, global affairs.",
+    "needs_geo": true,
+    "geo_decision": "required",
+    "geo_note": "Cross-geography differences are significant; region strongly recommended.",
+    "dimensions": [
+      {
+        "key": "age_group",
+        "label": "Age",
+        "kl": 0.022913,
+        "auto_selected": true
+      },
+      {
+        "key": "income_group",
+        "label": "Income",
+        "kl": 0.020492,
+        "auto_selected": true
+      },
+      {
+        "key": "race_eth",
+        "label": "Race / Ethnicity",
+        "kl": 0.015858,
+        "auto_selected": true
+      },
+      {
+        "key": "F_CREGION",
+        "label": "Region",
+        "kl": 0.012571,
+        "auto_selected": false
+      },
+      {
+        "key": "education_group",
+        "label": "Education",
+        "kl": 0.012251,
+        "auto_selected": false
+      },
+      {
+        "key": "gender",
+        "label": "Gender",
+        "kl": 0.01184,
+        "auto_selected": false
+      },
+      {
+        "key": "urbanicity",
+        "label": "Urbanicity",
+        "kl": 0.00258,
+        "auto_selected": false
+      }
+    ],
+    "question_ids": []
+  },
+  "politics_gov": {
+    "label": "Politics & Government",
+    "description": "Federal government, Congress, elections, parties, democracy.",
+    "needs_geo": false,
+    "geo_decision": "optional",
+    "geo_note": "Geography adds modest signal; included if user selects a region.",
+    "dimensions": [
+      {
+        "key": "race_eth",
+        "label": "Race / Ethnicity",
+        "kl": 0.019956,
+        "auto_selected": true
+      },
+      {
+        "key": "age_group",
+        "label": "Age",
+        "kl": 0.016703,
+        "auto_selected": true
+      },
+      {
+        "key": "income_group",
+        "label": "Income",
+        "kl": 0.015937,
+        "auto_selected": true
+      },
+      {
+        "key": "F_CREGION",
+        "label": "Region",
+        "kl": 0.012963,
+        "auto_selected": false
+      },
+      {
+        "key": "education_group",
+        "label": "Education",
+        "kl": 0.010875,
+        "auto_selected": false
+      },
+      {
+        "key": "gender",
+        "label": "Gender",
+        "kl": 0.005771,
+        "auto_selected": false
+      },
+      {
+        "key": "urbanicity",
+        "label": "Urbanicity",
+        "kl": 0.003358,
+        "auto_selected": false
+      }
+    ],
+    "question_ids": [
+      "Q_GUNS"
+    ]
+  },
+  "race_inequality": {
+    "label": "Race & Inequality",
+    "description": "Race, ethnicity, racial discrimination, and racial inequality.",
+    "needs_geo": false,
+    "geo_decision": "optional",
+    "geo_note": "Geography adds modest signal; included if user selects a region.",
+    "dimensions": [
+      {
+        "key": "race_eth",
+        "label": "Race / Ethnicity",
+        "kl": 0.017587,
+        "auto_selected": true
+      },
+      {
+        "key": "income_group",
+        "label": "Income",
+        "kl": 0.016521,
+        "auto_selected": true
+      },
+      {
+        "key": "F_CREGION",
+        "label": "Region",
+        "kl": 0.013405,
+        "auto_selected": true
+      },
+      {
+        "key": "age_group",
+        "label": "Age",
+        "kl": 0.011144,
+        "auto_selected": false
+      },
+      {
+        "key": "education_group",
+        "label": "Education",
+        "kl": 0.010407,
+        "auto_selected": false
+      },
+      {
+        "key": "gender",
+        "label": "Gender",
+        "kl": 0.005898,
+        "auto_selected": false
+      },
+      {
+        "key": "urbanicity",
+        "label": "Urbanicity",
+        "kl": 0.002952,
+        "auto_selected": false
+      }
+    ],
+    "question_ids": []
+  },
+  "religion": {
+    "label": "Religion",
+    "description": "Religion, faith, religious practice, religious identity.",
+    "needs_geo": false,
+    "geo_decision": "optional",
+    "geo_note": "Geography adds modest signal; included if user selects a region.",
+    "dimensions": [
+      {
+        "key": "income_group",
+        "label": "Income",
+        "kl": 0.013286,
+        "auto_selected": true
+      },
+      {
+        "key": "age_group",
+        "label": "Age",
+        "kl": 0.012703,
+        "auto_selected": true
+      },
+      {
+        "key": "F_CREGION",
+        "label": "Region",
+        "kl": 0.012377,
+        "auto_selected": true
+      },
+      {
+        "key": "race_eth",
+        "label": "Race / Ethnicity",
+        "kl": 0.011641,
+        "auto_selected": false
+      },
+      {
+        "key": "education_group",
+        "label": "Education",
+        "kl": 0.008742,
+        "auto_selected": false
+      },
+      {
+        "key": "gender",
+        "label": "Gender",
+        "kl": 0.004558,
+        "auto_selected": false
+      },
+      {
+        "key": "urbanicity",
+        "label": "Urbanicity",
+        "kl": 0.002592,
+        "auto_selected": false
+      }
+    ],
+    "question_ids": []
+  },
+  "technology": {
+    "label": "Technology & Media",
+    "description": "Technology, social media, news media, AI, internet, online platforms.",
+    "needs_geo": false,
+    "geo_decision": "not_needed",
+    "geo_note": "Geography adds minimal signal for this domain.",
+    "dimensions": [
+      {
+        "key": "age_group",
+        "label": "Age",
+        "kl": 0.018978,
+        "auto_selected": true
+      },
+      {
+        "key": "income_group",
+        "label": "Income",
+        "kl": 0.018202,
+        "auto_selected": true
+      },
+      {
+        "key": "race_eth",
+        "label": "Race / Ethnicity",
+        "kl": 0.013637,
+        "auto_selected": true
+      },
+      {
+        "key": "F_CREGION",
+        "label": "Region",
+        "kl": 0.013252,
+        "auto_selected": false
+      },
+      {
+        "key": "education_group",
+        "label": "Education",
+        "kl": 0.010815,
+        "auto_selected": false
+      },
+      {
+        "key": "gender",
+        "label": "Gender",
+        "kl": 0.006109,
+        "auto_selected": false
+      },
+      {
+        "key": "urbanicity",
+        "label": "Urbanicity",
+        "kl": 0.002307,
+        "auto_selected": false
+      }
+    ],
+    "question_ids": []
+  }
+}
