@@ -2,80 +2,188 @@
 
 > Ground it before you simulate it.
 
-CivicSim is a public demo of demographically-grounded LLM simulation of public opinion. Pick a U.S. location, ask a policy question, and watch a synthetic electorate (sampled from census-style distributions, conditioned on Pew ATP-derived opinion priors) respond.
+CivicSim is a public demo for demographically grounded LLM simulation of public
+opinion. Pick a U.S. location, choose or write a policy question, and run a
+synthetic electorate sampled from census-style demographic distributions and
+conditioned on Pew ATP-derived opinion priors.
 
-This repo is the **product / demo** half of the project. The research, raw data pipelines, and full experiment code live in the private companion repo `CivicSim_Main`.
+This repository is the product/demo half of the project. The research pipelines,
+raw survey files, and full experiment code live in the private companion project
+`CivicSim_Main`.
+
+## Current Branch
+
+The old website restoration and theme work lives on:
+
+```bash
+theme-old-website
+```
+
+This branch restores the original CivicSim public landing page style from the
+old static website while keeping the current simulator product UI connected to
+the same app.
+
+## What This Includes
+
+- A Next.js 15 frontend with:
+  - `/` public research landing page
+  - `/simulate` simulation runner
+  - `/simulations` saved simulation dashboard
+  - `/simulations/[sim_id]` simulation detail view
+- A FastAPI backend for locations, questions, domains, polling, agent sampling,
+  streaming simulations, and saved simulation metadata.
+- A light/dark theme system with a floating theme toggle.
+- Restored original landing-page visual language:
+  - dark grid/glow research-site background
+  - cyan/violet accent system
+  - original hero/stat cards
+  - original study cards, ablation comparison, domain grid, pipeline, and paper card
+- Restored landing-page figures:
+  - `frontend/public/assets/figures/architecture.png`
+  - `frontend/public/assets/figures/fig_pop.png`
+  - `frontend/public/assets/figures/fig_ablation.png`
+  - `frontend/public/assets/figures/fig_loo.png`
+
+## Architecture
 
 ```mermaid
 flowchart LR
-    UI[Next.js frontend] -->|/api/simulate| API[FastAPI backend]
+    UI[Next.js frontend] -->|HTTP / SSE| API[FastAPI backend]
     API --> AG[Agent generator<br/>civicsim_agents]
     API --> PR[ATP opinion priors]
-    API --> LLM[LLM<br/>OpenAI / Anthropic]
+    API --> SIM[Saved simulation files]
+    API --> LLM[LLM provider<br/>OpenAI / Anthropic]
 ```
 
 ## Quickstart
 
+Run the backend first:
+
 ```bash
-# 1. Backend
 cd backend
-cp ../.env.example .env          # fill in OPENAI_API_KEY or ANTHROPIC_API_KEY (optional)
+cp ../.env.example .env
 pip install -e ../packages/civicsim_agents
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
-
-# 2. Frontend (separate terminal)
-cd frontend
-npm install
-npm run dev                       # http://localhost:3000
 ```
 
-Or with Docker:
+Then run the frontend in a separate terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
+The backend docs are available at `http://localhost:8000/docs` once FastAPI is
+running.
+
+Docker is also supported:
 
 ```bash
 docker compose up --build
 ```
 
-## Repo layout
+## Frontend Notes
 
+The frontend lives in `frontend/` and uses Next.js, React, Tailwind CSS, and
+Recharts.
+
+Important files:
+
+- `frontend/app/page.tsx`: restored public landing page based on the old static
+  CivicSim website.
+- `frontend/app/globals.css`: global theme tokens, old landing-page styles, grid
+  background, glow background, and light/dark CSS variables.
+- `frontend/app/layout.tsx`: root layout, background layers, theme init script,
+  and theme toggle mount.
+- `frontend/components/ThemeToggle.tsx`: client-side light/dark toggle persisted
+  in `localStorage`.
+- `frontend/app/simulate/page.tsx`: simulation runner.
+- `frontend/app/simulations/page.tsx`: saved simulation dashboard.
+- `frontend/app/simulations/[sim_id]/page.tsx`: saved simulation detail page.
+
+Useful commands:
+
+```bash
+cd frontend
+npm run dev
+npm run build
+npm run typecheck
 ```
+
+## Backend API
+
+Core endpoints:
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/healthz` | Health check |
+| `GET` | `/locations` | Supported simulation locations |
+| `GET` | `/questions` | Available opinion questions |
+| `GET` | `/domains` | Policy/opinion domains |
+| `GET` | `/domains/{domain_id}` | Domain detail |
+| `POST` | `/agents` | Generate synthetic agents |
+| `POST` | `/poll` | Get ATP prior distribution |
+| `POST` | `/simulate` | Stream simulated agent responses |
+| `GET` | `/simulations` | List saved simulations |
+| `GET` | `/simulations/{sim_id}` | Load one saved simulation |
+
+Full request/response schemas are exposed through FastAPI docs at
+`http://localhost:8000/docs`.
+
+## Repo Layout
+
+```text
 CivicSim/
-  backend/                    FastAPI service (POST /api/simulate, /api/agents, /api/poll, GET /api/locations)
-  frontend/                   Next.js 15 demo UI
+  backend/                  FastAPI service
+  frontend/                 Next.js 15 frontend
   packages/
-    civicsim_agents/          Installable Python package (probabilistic agent sampler)
+    civicsim_agents/        Installable probabilistic agent sampler
   data/
-    locations/                Per-location demographic distributions (CSVs)
-    atp_priors/               Compact ATP-derived opinion lookup (parquet)
+    locations/              Per-location demographic CSVs
+    atp_priors/             Compact ATP-derived opinion priors
+    simulations/            Saved simulation runs
   scripts/
-    build_atp_priors.py       Builds atp_priors/policy_priors.parquet from private S3 source
-  civicsim-agent_probabilisitc_model/   Original CLI (kept for parity)
-  acs_pums_data/                        Original notebook (kept for parity)
+    build_atp_priors.py     Builds compact ATP prior data from private source
+  civicsim-agent_probabilisitc_model/
+                            Original CLI kept for parity
+  acs_pums_data/            Original notebook/data work kept for parity
 ```
 
-## API
+## Theme System
 
-| Method | Path | Body | Returns |
-|---|---|---|---|
-| `GET` | `/api/locations` | — | List of supported locations |
-| `POST` | `/api/agents` | `{location, n, seed?}` | List of synthetic agents |
-| `POST` | `/api/poll` | `{question_id, demographic_filter?}` | ATP opinion distribution |
-| `POST` | `/api/simulate` | `{location, n, question_id \| free_text, model?}` | SSE stream of agent responses + aggregate |
+The app uses CSS variables for both the restored landing page and simulator UI.
+Light mode is the default, and dark mode is enabled by toggling the `dark` class
+on the root HTML element.
 
-Full schemas at `http://localhost:8000/docs` once the backend is running.
+Key tokens live in `frontend/app/globals.css`, including:
 
-## What's *not* in this repo
+- `--color-bg`
+- `--color-surface`
+- `--color-border`
+- `--color-text`
+- `--color-cyan`
+- `--color-violet`
+- `--bg-grid-line`
+- `--bg-glow-a`
+- `--bg-glow-b`
 
-- Raw Pew ATP `.sav` files and ACS PUMS `.dat` extracts (private, S3-hosted).
-- The full Pew/ACS experiment code (`PEW_data_Experiment*`).
-- Survey collection app + Supabase schema.
-- Multi-county support beyond the bundled Alameda County demo.
+The theme preference is stored under `civicsim-theme` in `localStorage`.
 
-These live in the private research repo (`CivicSim_Main`).
+## What Is Not In This Repo
+
+- Raw Pew ATP `.sav` files.
+- Raw ACS PUMS `.dat` extracts.
+- Full private Pew/ACS experiment notebooks and scripts.
+- Private survey collection infrastructure.
+- Full research pipeline from `CivicSim_Main`.
 
 ## Citation
 
-If you use this demo in research, please cite the CivicSim paper (link in [ARCHITECTURE.md](ARCHITECTURE.md)).
+If you use this demo in research, please cite the CivicSim paper once published.
 
 ## License
 
