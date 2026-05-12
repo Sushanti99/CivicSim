@@ -40,17 +40,18 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(messag
 
 
 QUESTION_ALLOWLIST: list[tuple[str, str]] = [
-    # (question_id, human_readable_label_override_if_needed)
-    ("POL1", ""),
-    ("POL10", ""),
-    ("ECON1MOD", ""),
-    ("SATIS", ""),
-    ("CLIM1", ""),
-    ("GUN1", ""),
-    ("IMMVAL_a", ""),
-    ("ABORTION", ""),
-    ("HLTHCARE1", ""),
-    ("EDUC1", ""),
+    # (question_id, human_readable_label_override)
+    # All codes are from the 2021 ATP panel (wave-suffixed as they appear in atp_2021_final.parquet).
+    ("SATIS_W95",          "Are you satisfied with the direction of the country?"),
+    ("ECON1_W84",          "How do you rate current economic conditions in the U.S.?"),
+    ("GAP21Q3_W82",        "How satisfied are you with how democracy is working in the U.S.?"),
+    ("CLIM9_W89",          "How much is climate change currently affecting your local community?"),
+    ("MINWAGE_W87",        "Should the federal minimum wage be raised to $15/hour?"),
+    ("ABORTLGL_W87",       "Should abortion be legal?"),
+    ("GUNPRIORITY1_c_W87", "Should assault-style weapons be banned?"),
+    ("INFRASTRUC21A_W95",  "Do you support the bipartisan infrastructure investment bill?"),
+    ("AFG21_2_W95",        "Should the U.S. admit thousands of refugees from Afghanistan?"),
+    ("POL1JB_W92",         "Do you approve of the job President Biden is doing?"),
 ]
 
 
@@ -160,9 +161,11 @@ def build_real(
     3. Fully-marginal national fallback row.
     """
     qid_list = ", ".join(f"'{q}'" for q, _ in QUESTION_ALLOWLIST)
+    _label_overrides = {q: lbl for q, lbl in QUESTION_ALLOWLIST if lbl}
     con = duckdb.connect(":memory:")
-    con.execute("INSTALL httpfs; LOAD httpfs;")
-    con.execute("SET s3_region='us-east-1';")
+    if source_uri.startswith("s3://"):
+        con.execute("INSTALL httpfs; LOAD httpfs;")
+        con.execute("SET s3_region='us-east-1';")
     logger.info("Reading source: %s", source_uri)
 
     base_sql = f"""
@@ -171,7 +174,7 @@ def build_real(
             CAST(answer_code AS VARCHAR) AS answer_code,
             COALESCE(F_CREGION, 'ALL') AS F_CREGION,
             COALESCE(F_CDIVISION, 'ALL') AS F_CDIVISION,
-            COALESCE(age_group, F_AGECAT, 'ALL') AS age_group,
+            COALESCE(age_group, 'ALL') AS age_group,
             COALESCE(gender, 'ALL') AS gender,
             COALESCE(race_eth, 'ALL') AS race_eth,
             COALESCE(education_group, 'ALL') AS education_group,
@@ -181,6 +184,7 @@ def build_real(
         FROM read_parquet('{source_uri}')
         WHERE question_code IN ({qid_list})
               AND answer_code IS NOT NULL
+              AND CAST(answer_code AS VARCHAR) <> '99.0'
     """
     con.execute(f"CREATE TEMP VIEW base AS {base_sql}")
 
@@ -239,6 +243,9 @@ def build_real(
     full = full.merge(a_labels, on=["question_id", "answer_code"], how="left")
     full["question_label"] = full["question_label"].fillna(full["question_id"])
     full["answer_label"] = full["answer_label"].fillna(full["answer_code"])
+    # Apply curated label overrides from QUESTION_ALLOWLIST (cleaner than raw ATP wording).
+    if _label_overrides:
+        full["question_label"] = full["question_id"].map(_label_overrides).fillna(full["question_label"])
 
     full = full[["question_id", "question_label", *DIMS, "answer_label", "prob"]]
     out.parent.mkdir(parents=True, exist_ok=True)

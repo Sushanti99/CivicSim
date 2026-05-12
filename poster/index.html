@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CivicSim Poster 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    @page {
+      size: 24in 30in;
+      margin: 0;
+    }
+
+    :root {
+      --paper: #ffffff;
+      --ink: #0b1f4d;
+      --muted: #486381;
+      --soft: #7b8ea8;
+      --line: rgba(37, 99, 235, 0.14);
+      --line-hi: rgba(37, 99, 235, 0.26);
+      --panel: #eaf2ff;
+      --navy: #1e3a8a;
+      --blue: #1d4ed8;
+      --violet: #2563eb;
+      --teal: #10b981;
+      --gold: #f59e0b;
+      --coral: #ef4444;
+      --bg-page: #f6f9ff;
+      --bg-page-alt: #eef5ff;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+      --glow: 0 16px 52px rgba(37, 99, 235, 0.12);
+      --sans: 'Inter', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    html, body {
+      width: 24in;
+      height: 30in;
+      background: var(--bg-page);
+      color: var(--ink);
+      font-family: var(--sans);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      display: flex;
+    }
+
+    .poster {
+      width: 24in;
+      height: 30in;
+      padding: 0.25in;
+      background: var(--paper);
+    }
+
+    .sheet {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background:
+        radial-gradient(circle at 14% 12%, rgba(37, 99, 235, 0.12), transparent 30rem),
+        radial-gradient(circle at 86% 8%, rgba(14, 165, 233, 0.10), transparent 34rem),
+        linear-gradient(180deg, var(--bg-page) 0%, var(--bg-page-alt) 100%);
+      border: 1.5px solid var(--line);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 0.44in 0.5in 0.3in;
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: #ffffff;
+      position: relative;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 0.06in;
+      background: linear-gradient(90deg, #2ee0ff, #ffffff 30%, rgba(255, 255, 255, 0.15) 100%);
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.35in;
+      margin-bottom: 0.26in;
+    }
+
+    .school-lockup {
+      display: flex;
+      align-items: center;
+      gap: 0.14in;
+      min-width: 0;
+    }
+
+    .school-bar {
+      width: 0.07in;
+      height: 0.72in;
+      background: linear-gradient(180deg, #2ee0ff 0%, #ffffff 100%);
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .school-label {
+      font-family: var(--mono);
+      font-size: 10pt;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.82;
+      margin-bottom: 0.05in;
+      display: block;
+    }
+
+    .school-name {
+      display: block;
+      font-size: 22pt;
+      font-weight: 800;
+      line-height: 1.05;
+    }
+
+    .school-sub {
+      display: block;
+      font-size: 11pt;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.84);
+      margin-top: 0.04in;
+    }
+
+    .meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.08in;
+      justify-content: flex-end;
+      max-width: 6.7in;
+    }
+
+    .pill {
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 999px;
+      padding: 0.07in 0.14in;
+      font-family: var(--mono);
+      font-size: 9pt;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(4px);
+    }
+
+    .title-row {
+      display: grid;
+      grid-template-columns: 1.7fr 0.9fr;
+      gap: 0.4in;
+      align-items: end;
+    }
+
+    .project-kicker {
+      display: inline-block;
+      margin-bottom: 0.13in;
+      font-family: var(--mono);
+      font-size: 10pt;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #c6efff;
+    }
+
+    h1 {
+      font-size: 33pt;
+      line-height: 1.04;
+      letter-spacing: -0.05em;
+      max-width: 12.8in;
+      text-wrap: balance;
+    }
+
+    .subhead {
+      margin-top: 0.12in;
+      max-width: 12.6in;
+      font-size: 15pt;
+      line-height: 1.45;
+      color: rgba(255, 255, 255, 0.86);
+    }
+
+    .authors-card {
+      padding: 0.18in 0.2in;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 0.16in;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .authors-label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 9pt;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #c6efff;
+      margin-bottom: 0.08in;
+    }
+
+    .authors-list {
+      font-size: 14pt;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.23fr) minmax(0, 0.97fr);
+      gap: 0.18in;
+      padding: 0.28in 0.34in 0.26in;
+      min-height: 0;
+      align-content: start;
+    }
+
+    .solution-spotlight {
+      grid-column: 1 / -1;
+      margin-bottom: 0.02in;
+      border: 1.4px solid var(--line-hi);
+      padding: 0.26in 0.3in;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(29, 78, 216, 0.16), transparent 45%),
+        linear-gradient(135deg, #f7faff, #edf4ff);
+    }
+
+    .solution-spotlight .headline {
+      font-size: 23pt;
+    }
+
+    .solution-spotlight .body {
+      font-size: 13pt;
+      line-height: 1.64;
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 0.18in;
+      min-height: 0;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--line);
+      border-radius: 0.18in;
+      box-shadow: var(--shadow), var(--glow);
+      padding: 0.22in 0.24in;
+    }
+
+    .background-card {
+      padding: 0.28in 0.3in;
+    }
+
+    .background-card .headline {
+      font-size: 22pt;
+      margin-bottom: 0.12in;
+    }
+
+    .background-card .body {
+      font-size: 13.2pt;
+      line-height: 1.66;
+    }
+
+    .background-card .audience-item {
+      padding: 0.12in 0.14in;
+    }
+
+    .background-card .audience-item p {
+      font-size: 11pt;
+    }
+
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.06in;
+      margin-bottom: 0.12in;
+      font-family: var(--mono);
+      font-size: 30pt;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--violet);
+    }
+
+    .section-tag::before {
+      content: '';
+      width: 0.14in;
+      height: 0.14in;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.85;
+    }
+
+    .headline {
+      font-size: 20pt;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.1in;
+    }
+
+    .body {
+      font-size: 12.5pt;
+      line-height: 1.62;
+      color: var(--muted);
+    }
+
+    .body strong {
+      color: var(--ink);
+    }
+
+    .audience-list {
+      list-style: none;
+      display: grid;
+      gap: 0.08in;
+      margin-top: 0.12in;
+    }
+
+    .audience-item {
+      display: grid;
+      grid-template-columns: 0.28in 1fr;
+      gap: 0.1in;
+      align-items: start;
+      padding: 0.1in 0.12in;
+      border-radius: 0.12in;
+      border: 1px solid var(--line);
+      background: #f0f5ff;
+    }
+
+    .audience-icon {
+      width: 0.24in;
+      height: 0.24in;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10pt;
+      background: rgba(29, 78, 216, 0.14);
+      color: var(--blue);
+      line-height: 1;
+      font-family: var(--mono);
+    }
+
+    .audience-item p {
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .signal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.12in;
+    }
+
+    .signal {
+      padding: 0.18in 0.16in;
+      border-radius: 0.16in;
+      background: linear-gradient(180deg, #f0f5ff 0%, #ffffff 100%);
+      border: 1px solid var(--line);
+      box-shadow: var(--glow);
+    }
+
+    .signal-value {
+      display: block;
+      font-family: var(--mono);
+      font-size: 28pt;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      color: var(--blue);
+      margin-bottom: 0.07in;
+    }
+
+    .signal-label {
+      font-size: 11pt;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .signal-label strong {
+      color: var(--ink);
+    }
+
+    .figure-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.12in;
+    }
+
+    .figure-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.14in;
+      align-items: baseline;
+    }
+
+    .figure-title h2,
+    .figure-title h3 {
+      font-size: 17pt;
+      line-height: 1.18;
+      letter-spacing: -0.03em;
+    }
+
+    .figure-note {
+      font-family: var(--mono);
+      font-size: 8.5pt;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--soft);
+      white-space: nowrap;
+    }
+
+    .figure-frame {
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+    }
+
+    .figure-frame img {
+      display: block;
+      width: 100%;
+      border-radius: 0.08in;
+    }
+
+    .caption {
+      font-size: 10.5pt;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .two-up {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.12in;
+    }
+
+    .mini-card {
+      padding: 0.16in;
+      border-radius: 0.14in;
+      background: #f0f5ff;
+      border: 1px solid var(--line);
+    }
+
+    .mini-card h3 {
+      font-size: 13pt;
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.08in;
+    }
+
+    .mini-card p {
+      font-size: 10.5pt;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .framework {
+      display: flex;
+      flex-direction: column;
+      gap: 0.14in;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.1in;
+    }
+
+    .step {
+      padding: 0.16in;
+      border-radius: 0.14in;
+      background: linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%);
+      border: 1px solid var(--line);
+    }
+
+    .step-num {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 8.5pt;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 0.08in;
+    }
+
+    .step h3 {
+      font-size: 13pt;
+      line-height: 1.28;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.06in;
+    }
+
+    .step p {
+      font-size: 10.5pt;
+      line-height: 1.52;
+      color: var(--muted);
+    }
+
+    .metric-list,
+    .takeaway-list,
+    .corpus-list {
+      list-style: none;
+      display: grid;
+      gap: 0.1in;
+    }
+
+    .metric-item,
+    .takeaway-item,
+    .corpus-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.12in;
+      align-items: start;
+      padding: 0.14in 0.16in;
+      background: #f0f5ff;
+      border: 1px solid var(--line);
+      border-radius: 0.14in;
+    }
+
+    .metric-key,
+    .takeaway-key,
+    .corpus-key {
+      font-family: var(--mono);
+      font-size: 13pt;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--navy);
+      min-width: 0.84in;
+    }
+
+    .metric-copy strong,
+    .takeaway-copy strong,
+    .corpus-copy strong {
+      display: block;
+      font-size: 12pt;
+      line-height: 1.35;
+      margin-bottom: 0.04in;
+      color: var(--ink);
+    }
+
+    .metric-copy span,
+    .takeaway-copy span,
+    .corpus-copy span {
+      display: block;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .domain-columns {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.1in;
+    }
+
+    .domain-card {
+      padding: 0.16in;
+      border-radius: 0.14in;
+      border: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    .domain-card h3 {
+      font-size: 12pt;
+      line-height: 1.3;
+      margin-bottom: 0.07in;
+      letter-spacing: -0.02em;
+    }
+
+    .domain-card p {
+      font-size: 10pt;
+      line-height: 1.5;
+      color: var(--muted);
+      margin-bottom: 0.08in;
+    }
+
+    .domain-chip {
+      display: inline-block;
+      margin-bottom: 0.08in;
+      padding: 0.04in 0.08in;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 8pt;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .chip-skip {
+      color: #0d7f57;
+      background: rgba(16, 185, 129, 0.12);
+    }
+
+    .chip-optional {
+      color: #8d5b00;
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    .chip-required {
+      color: #a13a29;
+      background: rgba(239, 68, 68, 0.12);
+    }
+
+    .domain-card ul {
+      list-style: none;
+      display: grid;
+      gap: 0.06in;
+    }
+
+    .domain-card li {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.08in;
+      font-size: 10pt;
+      line-height: 1.35;
+      color: var(--muted);
+    }
+
+    .domain-card li strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.25in;
+      padding: 0.18in 0.5in 0.24in;
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 0.03in;
+    }
+
+    .footer-brand strong {
+      font-size: 15pt;
+      line-height: 1.1;
+    }
+
+    .footer-brand span,
+    .footer-meta {
+      font-family: var(--mono);
+      font-size: 9pt;
+      line-height: 1.5;
+      color: var(--soft);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .footer-meta {
+      text-align: right;
+    }
+
+    /* ── GNNIE-style highlights & callouts ─────────────────────────── */
+    .hl {
+      background: #fef9c3;
+      color: #713f12;
+      border-radius: 3px;
+      padding: 0.01em 0.22em;
+      font-weight: 700;
+    }
+
+    .hl-blue {
+      background: #dbeafe;
+      color: #1e3a8a;
+      border-radius: 3px;
+      padding: 0.01em 0.22em;
+      font-weight: 700;
+    }
+
+    .hl-red {
+      background: #fee2e2;
+      color: #991b1b;
+      border-radius: 3px;
+      padding: 0.01em 0.22em;
+      font-weight: 700;
+    }
+
+    .hl-violet {
+      background: #ede9fe;
+      color: #4c1d95;
+      border-radius: 3px;
+      padding: 0.01em 0.22em;
+      font-weight: 700;
+    }
+
+    .hl-green {
+      background: #d1fae5;
+      color: #065f46;
+      border-radius: 3px;
+      padding: 0.01em 0.22em;
+      font-weight: 700;
+    }
+
+    /* Big pull-stat row — GNNIE style */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.14in;
+      margin: 0.18in 0 0.14in;
+    }
+
+    .stat-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.04in;
+      padding: 0.16in 0.18in;
+      border-radius: 0.14in;
+      background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+      color: #ffffff;
+    }
+
+    .stat-block.red {
+      background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+    }
+
+    .stat-num {
+      font-family: var(--mono);
+      font-size: 32pt;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .stat-desc {
+      font-size: 11pt;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.82);
+    }
+
+    .stat-desc strong {
+      color: #ffffff;
+      display: block;
+      margin-bottom: 0.02em;
+    }
+
+    /* inline year-anchor */
+    .year-tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10pt;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      background: var(--navy);
+      color: #ffffff;
+      border-radius: 4px;
+      padding: 0.02em 0.18em;
+      margin-right: 0.04em;
+    }
+  </style>
+</head>
+<body>
+  <div class="poster">
+    <div class="sheet">
+      <header class="header">
+        <div class="meta-row">
+          <div class="school-lockup">
+            <div class="school-bar"></div>
+            <div>
+              <span class="school-label">UC Berkeley</span>
+              <span class="school-name">School of Information</span>
+              <span class="school-sub">MIMS Final Project Poster · 2026</span>
+            </div>
+          </div>
+          <div class="meta-pills">
+            <span class="pill">MIMS Final Project</span>
+            <span class="pill">2026</span>
+            <span class="pill">Pew ATP + U.S. Census ACS</span>
+          </div>
+        </div>
+
+        <div class="title-row">
+          <div>
+            <!-- <span class="project-kicker">CivicSim</span> -->
+            <h1>CivicSim</h1>
+            <!-- <p class="subhead">
+              A print-focused summary of the core claim, the three empirical failures we found,
+              and the framework we propose for building better synthetic populations.
+            </p> -->
+          </div>
+
+          <div class="authors-card">
+            <span class="authors-label">Participating Students</span>
+            <div class="authors-list">
+              Sushanti Kerani<br>
+              Anagha Ananth<br>
+              Aratrik Paul<br>
+              Vikramsingh Rathod<br>
+              Minkush Jain
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="main">
+        <div class="card framework solution-spotlight">
+          <span class="section-tag">Our Solution</span>
+          <h2 class="headline">CivicSim replaces biased panels with <span class="hl-blue">census-grounded synthetic agents</span> conditioned on <span class="hl-blue">evidence-selected demographics</span>.</h2>
+          <p class="body">
+            We separate <strong>who people are</strong> (anchored to <span class="hl-green">U.S. Census ACS microdata</span>) from <strong>what they are likely to think</strong>
+            (grounded in <span class="hl-green">38,449 Pew ATP respondents across 79 survey waves</span>).
+            Feature selection is driven by <span class="hl-violet">information gain</span>, not convention — so every agent carries the traits that actually predict opinion.
+          </p>
+          <div class="figure-frame">
+            <img src="assets/architecture.png" alt="CivicSim architecture showing structural and behavioral grounding streams">
+          </div>
+          <div class="steps">
+            <div class="step">
+              <span class="step-num">Step 01</span>
+              <h3>Start with a realistic population.</h3>
+              <p>Build agents from Census microdata so the simulated public mirrors real demographics.</p>
+            </div>
+            <div class="step">
+              <span class="step-num">Step 02</span>
+              <h3>Choose traits that actually improve prediction.</h3>
+              <p>Use evidence-based feature selection instead of relying on default demographic bundles.</p>
+            </div>
+            <div class="step">
+              <span class="step-num">Step 03</span>
+              <h3>Use geography where it matters most.</h3>
+              <p>Apply location detail by topic, adding finer granularity for younger groups when needed.</p>
+            </div>
+          </div>
+        </div>
+
+        <section class="column">
+          <div class="card background-card">
+            <span class="section-tag">Background</span>
+            <h2 class="headline">In 2024, American polls produced the largest demographic prediction error in four decades of modern survey research.</h2>
+            <p class="body">
+              <span class="year-tag">2024</span> Pre-election polls predicted Harris would win
+              <span class="hl-red">Hispanic voters by 20+ points</span> and
+              <span class="hl-red">young voters (18–29) by 28–31 points</span>.
+              On election night, those projections collapsed. Hispanic men swung
+              <span class="hl">33 points</span> toward Trump in four years — from Biden&nbsp;+23 in 2020 to Trump&nbsp;+10 in 2024.
+              Among voters under 30, polls missed by
+              <span class="hl">17–27 percentage points</span>; Harris won that group by just 4–11 points instead of the promised supermajority.
+            </p>
+
+            <div class="stat-row">
+              <div class="stat-block red">
+                <span class="stat-num">−27 pp</span>
+                <div class="stat-desc">
+                  <strong>Young voter polling miss</strong>
+                  Polls predicted Harris&nbsp;+28 among 18–29 year-olds. Actual result: Harris&nbsp;+4 to&nbsp;+11. A collapse of up to 27 percentage points.
+                </div>
+              </div>
+              <div class="stat-block red">
+                <span class="stat-num">33 pt</span>
+                <div class="stat-desc">
+                  <strong>Latino men swing, 2020→2024</strong>
+                  Biden won Latino men by 23 pts; Trump won them by 10. The largest four-year demographic swing measured in modern U.S. elections.
+                </div>
+              </div>
+            </div>
+
+            <p class="body" style="margin-top:0.14in;">
+              These weren't random noise. Polls
+              <span class="hl-blue">systematically under-sampled lower-income, non-college, and rural Hispanic respondents</span> —
+              the exact sub-groups whose behavior changed most. The same
+              <span class="hl-blue">income and geography blind spots</span>
+              reappear election cycle after election cycle because
+              <span class="hl">survey convenience panels misrepresent who is actually in America</span>.
+              Phone-survey response rates have fallen from
+              <span class="hl-red">36% in 1997 to under 6% today</span>,
+              concentrating respondents among the engaged, educated, and affluent — and making these errors structural, not accidental.
+            </p>
+          </div>
+
+          <div class="card">
+            <span class="section-tag">Problem</span>
+            <h2 class="headline">Polls use the wrong people and the wrong variables — and both errors compound.</h2>
+            <p class="body">
+              Survey convenience panels <span class="hl-red">over-represent high-income, college-educated, coastal respondents</span>.
+              Then, even within those skewed samples, analysts condition on
+              <span class="hl-red">age, race, and gender</span> — the traits that feel intuitive but carry
+              <span class="hl">less than 11% of available opinion signal</span>.
+              The two most predictive variables —
+              <span class="hl-blue">income bracket</span> and <span class="hl-blue">census division</span> —
+              are routinely ignored.
+            </p>
+          </div>
+
+          <div class="signal-grid">
+            <div class="signal">
+              <span class="signal-value">6×</span>
+              <div class="signal-label"><strong>More predictive</strong> — income&nbsp;+&nbsp;geography vs. conventional age&nbsp;+&nbsp;race&nbsp;+&nbsp;gender (0.73 vs. 0.11 nats IG).</div>
+            </div>
+            <div class="signal">
+              <span class="signal-value">47%</span>
+              <div class="signal-label"><strong>Of all opinion predictability</strong> comes from census division alone — the variable most models drop entirely.</div>
+            </div>
+            <div class="signal">
+              <span class="signal-value">17 pp</span>
+              <div class="signal-label"><strong>Income representation gap</strong> — survey panels show 24% high earners; U.S. Census shows 42%.</div>
+            </div>
+          </div>
+
+          <div class="card figure-card">
+            <span class="section-tag">Proof of Problem</span>
+            <div class="figure-title">
+              <h2>Proof 1: Survey-based populations can miss or flatten key communities.</h2>
+              <span class="figure-note">Representation Gap</span>
+            </div>
+            <div class="figure-frame">
+              <img src="assets/figures/fig11_poster_focal.png" alt="Misrepresentation of key subgroups in survey data versus Census data">
+            </div>
+            <p class="caption">
+              Even after statistical weighting, some communities are still represented inaccurately.
+              The worst case: <span class="hl-red">TVD = 0.42</span> for Black, rural, low-income respondents —
+              meaning <span class="hl-red">42% of their opinion probability mass</span> lands in the wrong census division when income bias goes uncorrected.
+            </p>
+          </div>
+
+          <div class="card figure-card">
+            <div class="figure-title">
+              <h2>Proof 2: Common demographic inputs leave useful predictive information unused.</h2>
+              <span class="figure-note">Feature Gap</span>
+            </div>
+            <div class="two-up">
+              <div class="figure-frame">
+                <img src="assets/figures/fig_ablation.png" alt="Greedy variable selection versus conventional demographic selection">
+              </div>
+              <div class="figure-frame">
+                <img src="assets/figures/fig_loo.png" alt="Unique contribution of each demographic variable to opinion prediction">
+              </div>
+            </div>
+            <div class="two-up">
+              <div class="mini-card">
+                <h3>The greedy path reaches <span class="hl-blue">0.73 nats</span>. The conventional path reaches only <span class="hl-red">0.11 nats</span>.</h3>
+                <p>Age + race + education — the default polling bundle — captures less than 11% of available opinion signal. Income + geography captures 6× more.</p>
+              </div>
+              <div class="mini-card">
+                <h3>Census division contributes <span class="hl-violet">47%</span> of joint predictive power. Income bracket contributes <span class="hl-violet">46%</span>.</h3>
+                <p>Together, these two variables explain 93% of all opinion predictability — yet neither appears in standard demographic weighting schemes.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card figure-card">
+            <div class="figure-title">
+              <h2>Proof 3: The importance of location changes by topic.</h2>
+              <span class="figure-note">Geography Gap</span>
+            </div>
+            <div class="figure-frame">
+              <img src="assets/figures/fig9_lollipop.png" alt="Most divergent demographic slices between survey and Census data">
+            </div>
+            <p class="caption">
+              Place matters a lot for some issues and very little for others.
+              <span class="hl-violet">International affairs and immigration</span> retain strong geographic signal even after demographic conditioning;
+              <span class="hl-green">technology and environment</span> transfer cleanly without it.
+              One-size-fits-all geography assumptions introduce avoidable error.
+            </p>
+          </div>
+        </section>
+
+        <section class="column">
+          <div class="card">
+            <span class="section-tag">Evaluation Framework</span>
+            <h2 class="headline">We evaluate representation, prediction quality, and when location adds value.</h2>
+            <ul class="metric-list">
+              <li class="metric-item">
+                <div class="metric-key">TVD</div>
+                <div class="metric-copy">
+                  <strong>Representation Check</strong>
+                  <span>Measures how closely a modeled population matches real-world population distributions.</span>
+                </div>
+              </li>
+              <li class="metric-item">
+                <div class="metric-key">IG</div>
+                <div class="metric-copy">
+                  <strong>Predictive Value Check</strong>
+                  <span>Measures which demographic inputs truly improve opinion prediction across policy questions.</span>
+                </div>
+              </li>
+              <li class="metric-item">
+                <div class="metric-key">JS</div>
+                <div class="metric-copy">
+                  <strong>Geography Relevance Check</strong>
+                  <span>Measures when location still changes predicted opinions after accounting for demographics.</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <span class="section-tag">Results / Conclusion</span>
+            <h2 class="headline">What we learned for building public-facing opinion simulators.</h2>
+            <ul class="takeaway-list">
+              <li class="takeaway-item">
+                <div class="takeaway-key">01</div>
+                <div class="takeaway-copy">
+                  <strong>Ground population in Census, not convenience panels.</strong>
+                  <span>ACS microdata eliminates the <span class="hl-red">income over-representation gap</span> that caused 2024's largest prediction errors. Survey panels can't be re-weighted out of structural absence.</span>
+                </div>
+              </li>
+              <li class="takeaway-item">
+                <div class="takeaway-key">02</div>
+                <div class="takeaway-copy">
+                  <strong>Select features by information gain, not convention.</strong>
+                  <span>Replacing age + race + gender with <span class="hl-blue">income + geography</span> increases opinion predictability <span class="hl-blue">6×</span> with no added model complexity.</span>
+                </div>
+              </li>
+              <li class="takeaway-item">
+                <div class="takeaway-key">03</div>
+                <div class="takeaway-copy">
+                  <strong>Apply geography selectively by domain.</strong>
+                  <span>Census division conditioning is <span class="hl-violet">required for international affairs and immigration</span>; it adds noise for technology and environment. Topic-aware geography beats always-on.</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <span class="section-tag">Results / Conclusion</span>
+            <h2 class="headline">Practical guidance: when to include location in the model.</h2>
+            <div class="domain-columns">
+              <div class="domain-card">
+                <span class="domain-chip chip-skip">Skip</span>
+                <h3>Geography unnecessary after demographics.</h3>
+                <p>Use demographic conditioning alone for the cleanest portable model.</p>
+                <ul>
+                  <li><strong>Technology</strong><span>JS 0.119</span></li>
+                  <li><strong>Environment / Climate</strong><span>JS 0.119</span></li>
+                </ul>
+              </div>
+              <div class="domain-card">
+                <span class="domain-chip chip-optional">Optional</span>
+                <h3>Helpful for precision, especially in young cohorts.</h3>
+                <p>Add regional context when the task needs more fidelity or focuses on ages 18 to 29.</p>
+                <ul>
+                  <li><strong>Health</strong><span>JS 0.129</span></li>
+                  <li><strong>Economy</strong><span>JS 0.135</span></li>
+                  <li><strong>Politics / Government</strong><span>JS 0.142</span></li>
+                  <li><strong>Immigration</strong><span>JS 0.150</span></li>
+                </ul>
+              </div>
+              <div class="domain-card">
+                <span class="domain-chip chip-required">Required</span>
+                <h3>Location should remain in the model.</h3>
+                <p>Opinion differences persist strongly enough that regional context should be explicitly preserved.</p>
+                <ul>
+                  <li><strong>International Affairs</strong><span>JS 0.174</span></li>
+                  <li><strong>Young adults</strong><span>Need extra geographic tier</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <span class="section-tag">Results / Conclusion</span>
+            <h2 class="headline">Scope of evidence behind these findings.</h2>
+            <ul class="corpus-list">
+              <li class="corpus-item">
+                <div class="corpus-key"><span class="hl-blue">79</span></div>
+                <div class="corpus-copy">
+                  <strong>Pew ATP survey waves</strong>
+                  <span>W80 – W159 (2021–2024), spanning <span class="hl-blue">10 policy domains</span> from immigration to international affairs.</span>
+                </div>
+              </li>
+              <li class="corpus-item">
+                <div class="corpus-key"><span class="hl-blue">38,449</span></div>
+                <div class="corpus-copy">
+                  <strong>Unique respondents</strong>
+                  <span>Per-cell opinion distributions estimated across <span class="hl-violet">8 demographic dimensions</span> with graceful backoff when cells are sparse.</span>
+                </div>
+              </li>
+              <li class="corpus-item">
+                <div class="corpus-key"><span class="hl-green">~10.2M</span></div>
+                <div class="corpus-copy">
+                  <strong>Census ACS person records</strong>
+                  <span>Largest-remainder allocation guarantees agents match <span class="hl-green">real U.S. marginal distributions</span> for income, geography, age, and race.</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-brand">
+          <strong>CivicSim</strong>
+          <span>UC Berkeley School of Information · MIMS Final Project · 2026</span>
+        </div>
+        <div class="footer-meta">
+          Sushanti Kerani · Anagha Ananth · Aratrik Paul · Vikramsingh Rathod · Minkush Jain
+        </div>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>
