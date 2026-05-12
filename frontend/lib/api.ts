@@ -151,6 +151,12 @@ export const api = {
       "/poll",
       { method: "POST", body: JSON.stringify(body) },
     ),
+  deleteSimulation: async (sim_id: string): Promise<void> => {
+    const res = await fetch(`${API_BASE}/simulations/${encodeURIComponent(sim_id)}`, {
+      method: "DELETE",
+    });
+    if (!res.ok && res.status !== 404) throw new Error(`Delete failed: ${res.status}`);
+  },
 };
 
 /**

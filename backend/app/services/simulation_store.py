@@ -136,6 +136,18 @@ def list_simulations(limit: int = 50) -> list[dict]:
     return results
 
 
+def delete_simulation(sim_id: str) -> bool:
+    """Delete the simulation folder. Returns True if deleted, False if not found."""
+    import shutil
+    root = _simulations_root()
+    folder = root / sim_id
+    if not folder.is_dir():
+        return False
+    shutil.rmtree(folder)
+    logger.info("simulation_store: deleted %s", sim_id)
+    return True
+
+
 def get_simulation(sim_id: str) -> dict | None:
     """Return full simulation data for a given sim_id, or None."""
     root = _simulations_root()
