@@ -12,7 +12,7 @@ type Props = {
 function KLBar({ kl, max }: { kl: number; max: number }) {
   const pct = max > 0 ? Math.round((kl / max) * 100) : 0;
   return (
-    <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-white/10">
+    <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-[color:var(--color-fill-track)]">
       <div
         className="h-full rounded-full bg-[color:var(--color-cyan)] opacity-70"
         style={{ width: `${pct}%` }}

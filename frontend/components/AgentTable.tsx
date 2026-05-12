@@ -25,7 +25,7 @@ export function AgentTable({ agents }: { agents: Agent[] }) {
           </thead>
           <tbody className="divide-y divide-[color:var(--color-border)]">
             {agents.map((a) => (
-              <tr key={a.agent_id} className="hover:bg-white/[0.02]">
+              <tr key={a.agent_id} className="hover:bg-[color:var(--color-hover-row)]">
                 <td className="px-4 py-3 font-mono text-[color:var(--color-cyan)]">
                   {a.agent_id}
                 </td>

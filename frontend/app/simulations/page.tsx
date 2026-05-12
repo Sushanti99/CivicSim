@@ -59,7 +59,7 @@ function DistributionBars({ dist }: { dist: AnswerProb[] }) {
               {Math.round(d.prob * 100)}%
             </span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-white/8">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-[color:var(--color-fill-track)]">
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
@@ -132,11 +132,11 @@ function SimCard({ sim }: { sim: SimRun }) {
       <div className="mt-4 flex items-center justify-between border-t border-[color:var(--color-border)] pt-3">
         <div className="flex items-center gap-3 text-xs text-[color:var(--color-text-faint)]">
           <span>
-            <span className="font-mono text-white">{sim.n_agents}</span> agents
+            <span className="font-mono text-[color:var(--color-text)]">{sim.n_agents}</span> agents
           </span>
           {sim.selected_dims && sim.selected_dims.length > 0 && (
             <span>
-              <span className="font-mono text-white">{sim.selected_dims.length}</span> dims
+              <span className="font-mono text-[color:var(--color-text)]">{sim.selected_dims.length}</span> dims
             </span>
           )}
           {topAnswer && topAnswer.prob > 0 && (
@@ -208,10 +208,10 @@ export default function SimulationsPage() {
             CivicSim
           </Link>
           <nav className="flex items-center gap-6 text-sm">
-            <Link href="/simulate" className="text-[color:var(--color-text-dim)] hover:text-white">
+            <Link href="/simulate" className="text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)]">
               Simulate
             </Link>
-            <span className="text-white">Simulations</span>
+            <span className="text-[color:var(--color-text)]">Simulations</span>
           </nav>
         </div>
       </header>
@@ -229,7 +229,7 @@ export default function SimulationsPage() {
           </div>
           <Link
             href="/simulate"
-            className="rounded-full bg-[color:var(--color-cyan)] px-5 py-2.5 text-sm font-semibold text-black hover:opacity-90"
+            className="rounded-full bg-[color:var(--color-cyan)] px-5 py-2.5 text-sm font-semibold text-[color:var(--color-on-accent)] hover:opacity-90"
           >
             + New simulation
           </Link>
@@ -256,7 +256,7 @@ export default function SimulationsPage() {
             <p className="mt-4 text-[color:var(--color-text-dim)]">No simulations yet.</p>
             <Link
               href="/simulate"
-              className="mt-5 rounded-full bg-[color:var(--color-cyan)] px-6 py-2.5 text-sm font-semibold text-black hover:opacity-90"
+              className="mt-5 rounded-full bg-[color:var(--color-cyan)] px-6 py-2.5 text-sm font-semibold text-[color:var(--color-on-accent)] hover:opacity-90"
             >
               Run your first simulation
             </Link>

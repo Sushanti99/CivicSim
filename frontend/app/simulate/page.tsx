@@ -159,10 +159,10 @@ export default function SimulatePage() {
             CivicSim
           </Link>
           <nav className="flex items-center gap-6 text-sm">
-            <span className="text-white">Simulate</span>
+            <span className="text-[color:var(--color-text)]">Simulate</span>
             <Link
               href="/simulations"
-              className="text-[color:var(--color-text-dim)] hover:text-white"
+              className="text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)]"
             >
               Simulations
             </Link>
@@ -260,14 +260,14 @@ export default function SimulatePage() {
             <button
               disabled={!canRun}
               onClick={run}
-              className="flex-1 rounded-full bg-[color:var(--color-cyan)] px-5 py-3 font-medium text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex-1 rounded-full bg-[color:var(--color-cyan)] px-5 py-3 font-medium text-[color:var(--color-on-accent)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {status === "running" ? "Running…" : "Run simulation"}
             </button>
             {status === "running" && (
               <button
                 onClick={stop}
-                className="rounded-full border border-[color:var(--color-border-hi)] px-5 py-3 font-medium hover:bg-white/5"
+                className="rounded-full border border-[color:var(--color-border-hi)] px-5 py-3 font-medium hover:bg-[color:var(--color-hover)]"
               >
                 Stop
               </button>

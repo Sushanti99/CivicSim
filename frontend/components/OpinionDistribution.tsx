@@ -34,8 +34,8 @@ export function OpinionDistribution({
             <XAxis
               type="number"
               domain={[0, 100]}
-              tick={{ fill: "#a0a8bd", fontSize: 12 }}
-              axisLine={{ stroke: "#1B2238" }}
+              tick={{ fill: "var(--color-text-dim)", fontSize: 12 }}
+              axisLine={{ stroke: "var(--color-border-hi)" }}
               tickLine={false}
               tickFormatter={(v) => `${v}%`}
             />
@@ -43,23 +43,23 @@ export function OpinionDistribution({
               type="category"
               dataKey="answer"
               width={180}
-              tick={{ fill: "#e8eaf0", fontSize: 12 }}
+              tick={{ fill: "var(--color-text)", fontSize: 12 }}
               axisLine={false}
               tickLine={false}
             />
             <Tooltip
-              cursor={{ fill: "rgba(255,255,255,0.04)" }}
+              cursor={{ fill: "var(--color-hover-row)" }}
               contentStyle={{
-                background: "#0F1421",
-                border: "1px solid rgba(255,255,255,0.12)",
+                background: "var(--color-surface)",
+                border: "1px solid var(--color-border-hi)",
                 borderRadius: 8,
-                color: "#e8eaf0",
+                color: "var(--color-text)",
               }}
               formatter={(v: number) => [`${v}%`, "share"]}
             />
             <Bar dataKey="pct" radius={[4, 4, 4, 4]}>
               {data.map((_, i) => (
-                <Cell key={i} fill={i % 2 === 0 ? "#00D4FF" : "#A855F7"} />
+                <Cell key={i} fill={i % 2 === 0 ? "var(--color-cyan)" : "var(--color-violet)"} />
               ))}
             </Bar>
           </BarChart>

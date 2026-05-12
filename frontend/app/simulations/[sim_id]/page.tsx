@@ -181,12 +181,12 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-3 text-xs shadow-xl">
-      <div className="mb-2 font-semibold text-white">{label}</div>
+      <div className="mb-2 font-semibold text-[color:var(--color-text)]">{label}</div>
       {payload.map((p) => (
         <div key={p.name} className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full" style={{ background: p.color }} />
           <span className="text-[color:var(--color-text-dim)]">{p.name}</span>
-          <span className="font-mono font-bold text-white">{p.value}%</span>
+          <span className="font-mono font-bold text-[color:var(--color-text)]">{p.value}%</span>
         </div>
       ))}
     </div>
@@ -274,7 +274,7 @@ export default function SimulationDetailPage({
     <Shell>
       {/* breadcrumb */}
       <div className="mb-6 flex items-center gap-2 text-sm text-[color:var(--color-text-dim)]">
-        <Link href="/simulations" className="hover:text-white">Simulations</Link>
+        <Link href="/simulations" className="hover:text-[color:var(--color-text)]">Simulations</Link>
         <span>/</span>
         <span className="font-mono text-[color:var(--color-cyan)]">#{serial}</span>
       </div>
@@ -306,7 +306,7 @@ export default function SimulationDetailPage({
           </div>
           <Link
             href="/simulate"
-            className="shrink-0 rounded-full border border-[color:var(--color-border-hi)] px-4 py-2 text-sm hover:bg-white/5"
+            className="shrink-0 rounded-full border border-[color:var(--color-border-hi)] px-4 py-2 text-sm hover:bg-[color:var(--color-hover)]"
           >
             New simulation
           </Link>
@@ -349,11 +349,11 @@ export default function SimulationDetailPage({
           <SectionCard title="Support by Age Group">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={ageRows} barCategoryGap="30%">
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="group" tick={{ fill: "#a0a8bd", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis unit="%" tick={{ fill: "#a0a8bd", fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 100]} />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
-                <Legend wrapperStyle={{ fontSize: 11, color: "#a0a8bd" }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-chart-grid)" />
+                <XAxis dataKey="group" tick={{ fill: "var(--color-text-dim)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis unit="%" tick={{ fill: "var(--color-text-dim)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 100]} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: "var(--color-hover-row)" }} />
+                <Legend wrapperStyle={{ fontSize: 11, color: "var(--color-text-dim)" }} />
                 {chartAnswers.map((ans, i) => (
                   <Bar key={ans} dataKey={ans} fill={answerColor(i)} radius={[4, 4, 0, 0]} maxBarSize={28} />
                 ))}
@@ -366,11 +366,11 @@ export default function SimulationDetailPage({
           <SectionCard title="Support by Race / Ethnicity">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={raceRows} layout="vertical" barCategoryGap="30%">
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" horizontal={false} />
-                <XAxis type="number" unit="%" tick={{ fill: "#a0a8bd", fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 100]} />
-                <YAxis type="category" dataKey="group" tick={{ fill: "#a0a8bd", fontSize: 11 }} axisLine={false} tickLine={false} width={60} />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
-                <Legend wrapperStyle={{ fontSize: 11, color: "#a0a8bd" }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-chart-grid)" horizontal={false} />
+                <XAxis type="number" unit="%" tick={{ fill: "var(--color-text-dim)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 100]} />
+                <YAxis type="category" dataKey="group" tick={{ fill: "var(--color-text-dim)", fontSize: 11 }} axisLine={false} tickLine={false} width={60} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: "var(--color-hover-row)" }} />
+                <Legend wrapperStyle={{ fontSize: 11, color: "var(--color-text-dim)" }} />
                 {chartAnswers.map((ans, i) => (
                   <Bar key={ans} dataKey={ans} fill={answerColor(i)} radius={[0, 4, 4, 0]} maxBarSize={20} />
                 ))}
@@ -383,11 +383,11 @@ export default function SimulationDetailPage({
           <SectionCard title="Support by Income Level">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={incomeRows} barCategoryGap="30%">
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="group" tick={{ fill: "#a0a8bd", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis unit="%" tick={{ fill: "#a0a8bd", fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 100]} />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
-                <Legend wrapperStyle={{ fontSize: 11, color: "#a0a8bd" }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-chart-grid)" />
+                <XAxis dataKey="group" tick={{ fill: "var(--color-text-dim)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis unit="%" tick={{ fill: "var(--color-text-dim)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 100]} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: "var(--color-hover-row)" }} />
+                <Legend wrapperStyle={{ fontSize: 11, color: "var(--color-text-dim)" }} />
                 {chartAnswers.map((ans, i) => (
                   <Bar key={ans} dataKey={ans} fill={answerColor(i)} radius={[4, 4, 0, 0]} maxBarSize={28} />
                 ))}
@@ -407,7 +407,7 @@ export default function SimulationDetailPage({
                     {Math.round(d.prob * 100)}%
                   </span>
                 </div>
-                <div className="h-3 w-full overflow-hidden rounded-full bg-white/8">
+                <div className="h-3 w-full overflow-hidden rounded-full bg-[color:var(--color-fill-track)]">
                   <div
                     className="h-full rounded-full transition-all duration-700"
                     style={{
@@ -478,7 +478,7 @@ export default function SimulationDetailPage({
           {agents.length > 8 && (
             <button
               onClick={() => setShowAllAgents((v) => !v)}
-              className="mt-4 w-full rounded-xl border border-[color:var(--color-border)] py-2 text-xs text-[color:var(--color-text-dim)] hover:border-[color:var(--color-border-hi)] hover:text-white"
+              className="mt-4 w-full rounded-xl border border-[color:var(--color-border)] py-2 text-xs text-[color:var(--color-text-dim)] hover:border-[color:var(--color-border-hi)] hover:text-[color:var(--color-text)]"
             >
               {showAllAgents ? "Show less" : `Show all ${agents.length} agents`}
             </button>
@@ -549,10 +549,10 @@ function Shell({ children }: { children: React.ReactNode }) {
             CivicSim
           </Link>
           <nav className="flex items-center gap-6 text-sm">
-            <Link href="/simulate" className="text-[color:var(--color-text-dim)] hover:text-white">
+            <Link href="/simulate" className="text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)]">
               Simulate
             </Link>
-            <Link href="/simulations" className="text-[color:var(--color-text-dim)] hover:text-white">
+            <Link href="/simulations" className="text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)]">
               Simulations
             </Link>
           </nav>

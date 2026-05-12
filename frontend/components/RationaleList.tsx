@@ -34,7 +34,7 @@ export function RationaleList({
           >
             <button
               onClick={() => setOpen(isOpen ? null : r.agent_id)}
-              className="flex w-full items-start gap-4 p-4 text-left hover:bg-white/[0.02]"
+              className="flex w-full items-start gap-4 p-4 text-left hover:bg-[color:var(--color-hover-row)]"
             >
               <span className="font-mono text-sm text-[color:var(--color-cyan)]">
                 #{r.agent_id}
@@ -50,7 +50,7 @@ export function RationaleList({
               <span className="text-[color:var(--color-text-faint)]">{isOpen ? "−" : "+"}</span>
             </button>
             {isOpen && (
-              <div className="border-t border-[color:var(--color-border)] bg-black/20 p-4 text-sm text-[color:var(--color-text-dim)]">
+              <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-nested)] p-4 text-sm text-[color:var(--color-text-dim)]">
                 <div className="mb-2 italic">&ldquo;{r.rationale}&rdquo;</div>
                 {r.prior.length > 0 && (
                   <div className="mt-3">
