@@ -24,7 +24,7 @@ export function QuestionPicker({
           onChange={(e) => onChange({ questionId: e.target.value, freeText: "" })}
           className="mt-2 w-full rounded-xl border border-[color:var(--color-border-hi)] bg-[color:var(--color-surface)] px-4 py-3 text-[color:var(--color-text)] focus:border-[color:var(--color-cyan)] focus:outline-none"
         >
-          <option value="">— pick one —</option>
+          <option value="">Pick one</option>
           {questions.map((q) => (
             <option key={q.question_id} value={q.question_id}>
               {q.question_label}

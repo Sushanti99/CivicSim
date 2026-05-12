@@ -136,7 +136,7 @@ function generateInsights(
   const backedOff = agents.filter((a) => a.backoff_steps.length > 0).length;
   if (backedOff > agents.length * 0.5) {
     insights.push(
-      `${backedOff}/${agents.length} agents required prior backoff — cell-level ATP data sparse for this configuration.`,
+      `${backedOff}/${agents.length} agents required prior backoff; cell-level ATP data is sparse for this configuration.`,
     );
   }
 
@@ -515,7 +515,7 @@ export default function SimulationDetailPage({
               <div className="space-y-1.5 text-sm">
                 {[
                   ["Location", slugToLabel(data.location)],
-                  ["Domain", data.domain_label ?? "—"],
+                  ["Domain", data.domain_label ?? "N/A"],
                   ["Agents", `${agents.length}`],
                   ["Prior backoff", `${agents.filter((a) => a.backoff_steps.length > 0).length}/${agents.length} agents`],
                   ["ATP priors source", "PEW ATP 2021 (synthetic for demo)"],

@@ -12,8 +12,8 @@ const KIND_ORDER = ["region", "division", "county"];
 
 function formatPopulation(pop: number | null): string {
   if (pop == null) return "";
-  if (pop >= 1_000_000) return ` — pop ~${(pop / 1_000_000).toFixed(1)}M`;
-  if (pop >= 1_000) return ` — pop ~${(pop / 1_000).toFixed(0)}K`;
+  if (pop >= 1_000_000) return ` (pop ~${(pop / 1_000_000).toFixed(1)}M)`;
+  if (pop >= 1_000) return ` (pop ~${(pop / 1_000).toFixed(0)}K)`;
   return "";
 }
 
