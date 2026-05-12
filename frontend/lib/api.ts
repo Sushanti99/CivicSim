@@ -105,7 +105,7 @@ export type SimulateRequest = {
 };
 
 export type SimulateEvent =
-  | { event: "meta"; data: { sim_id: string; question_id: string; question_label: string; matched_from_free_text: boolean; answer_options: string[]; domain: string | null; domain_label: string | null } }
+  | { event: "meta"; data: { sim_id: string; question_id: string | null; question_label: string; has_prior: boolean; prior_source_label: string | null; answer_options: string[]; domain: string | null; domain_label: string | null } }
   | { event: "agent_sampled"; data: Agent }
   | { event: "prior_attached"; data: { agent_id: number; prior: AnswerProb[]; used_filter: Record<string, string>; backoff_steps: string[] } }
   | { event: "agent_responded"; data: AgentResponse }

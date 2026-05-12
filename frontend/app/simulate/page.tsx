@@ -43,7 +43,8 @@ export default function SimulatePage() {
   const [simId, setSimId] = useState<string | null>(null);
   const [meta, setMeta] = useState<{
     question_label: string;
-    matched: boolean;
+    has_prior: boolean;
+    prior_source_label: string | null;
     domain_label: string | null;
   } | null>(null);
 
@@ -117,7 +118,8 @@ export default function SimulatePage() {
           setSimId(ev.data.sim_id);
           setMeta({
             question_label: ev.data.question_label,
-            matched: ev.data.matched_from_free_text,
+            has_prior: ev.data.has_prior,
+            prior_source_label: ev.data.prior_source_label,
             domain_label: ev.data.domain_label,
           });
         } else if (ev.event === "agent_sampled") {
@@ -180,17 +182,17 @@ export default function SimulatePage() {
             </p>
           </div>
 
-          {/* Step 1 — Location */}
+          {/* Step 1: Location */}
           <StepCard step={1} title="Location">
             <LocationPicker locations={locations} value={location} onChange={setLocation} />
           </StepCard>
 
-          {/* Step 2 — Domain */}
+          {/* Step 2: Domain */}
           <StepCard step={2} title="Policy domain">
             <DomainPicker domains={domains} value={domainId} onChange={setDomainId} />
           </StepCard>
 
-          {/* Step 3 — Dimensions (shown when domain is selected) */}
+          {/* Step 3: Dimensions (shown when domain is selected) */}
           {activeDomain && (
             <StepCard step={3} title="Demographic conditioning">
               <DimensionSelector
@@ -206,13 +208,13 @@ export default function SimulatePage() {
               )}
               {activeDomain.geo_decision === "not_needed" && (
                 <p className="mt-3 text-xs text-[color:var(--color-text-dim)]">
-                  ✓ Experiment 3: geography adds minimal signal here — demographic dims dominate.
+                  ✓ Experiment 3: geography adds minimal signal here, demographic dims dominate.
                 </p>
               )}
             </StepCard>
           )}
 
-          {/* Step 4 — Question */}
+          {/* Step 4: Question */}
           <StepCard step={activeDomain ? 4 : 3} title="Policy question">
             <QuestionPicker
               questions={
@@ -231,12 +233,12 @@ export default function SimulatePage() {
             />
             {activeDomain && activeDomain.question_ids.length === 0 && (
               <p className="mt-1.5 text-xs text-[color:var(--color-text-dim)]">
-                No curated questions for this domain — use free text above.
+                No curated questions for this domain. Use free text above.
               </p>
             )}
           </StepCard>
 
-          {/* Step 5 — Sample size */}
+          {/* Step 5: Sample size */}
           <StepCard step={activeDomain ? 5 : 4} title="Sample size">
             <label className="block">
               <span className="flex items-center justify-between text-xs uppercase tracking-wider text-[color:var(--color-text-faint)]">
@@ -308,18 +310,36 @@ export default function SimulatePage() {
             </div>
           )}
 
-          {/* Matched question */}
+          {/* Question + prior status */}
           {meta && (
-            <div className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]/40 p-5">
+            <div className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]/40 p-5 space-y-3">
               <div className="flex flex-wrap gap-2 text-xs uppercase tracking-wider text-[color:var(--color-text-faint)]">
                 {meta.domain_label && (
                   <span className="rounded-full border border-[color:var(--color-cyan)]/30 bg-[color:var(--color-cyan)]/10 px-2 py-0.5 text-[color:var(--color-cyan)]">
                     {meta.domain_label}
                   </span>
                 )}
-                <span>Question{meta.matched ? " (matched from your text)" : ""}</span>
+                <span>Question</span>
               </div>
-              <div className="mt-1 text-lg">{meta.question_label}</div>
+              <div className="text-lg font-medium">{meta.question_label}</div>
+              {meta.has_prior && meta.prior_source_label ? (
+                <div className="flex items-start gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/8 px-3 py-2.5 text-xs text-emerald-400">
+                  <span className="mt-px shrink-0">✓</span>
+                  <span>
+                    <strong className="font-semibold">Demographically grounded.</strong>{" "}
+                    Agents carry empirical priors from the closest ATP survey question:{" "}
+                    <em>&ldquo;{meta.prior_source_label}&rdquo;</em>
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-start gap-2 rounded-xl border border-amber-500/25 bg-amber-500/8 px-3 py-2.5 text-xs text-amber-400">
+                  <span className="mt-px shrink-0">⚠</span>
+                  <span>
+                    <strong className="font-semibold">No survey prior available.</strong>{" "}
+                    No ATP question closely matches this topic. Agents are conditioned on demographics only — responses reflect persona, not empirically observed opinion distributions.
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
