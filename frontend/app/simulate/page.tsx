@@ -1,27 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
-  Agent,
-  AgentResponse,
-  AnswerProb,
   Domain,
   Location,
   QuestionMeta,
   api,
-  simulateStream,
 } from "@/lib/api";
-import { AgentTable } from "@/components/AgentTable";
 import { DimensionSelector } from "@/components/DimensionSelector";
 import { DomainPicker } from "@/components/DomainPicker";
 import { LocationPicker } from "@/components/LocationPicker";
-import { OpinionDistribution } from "@/components/OpinionDistribution";
 import { QuestionPicker } from "@/components/QuestionPicker";
-import { RationaleList } from "@/components/RationaleList";
-
-type Status = "idle" | "running" | "done" | "error";
 
 export default function SimulatePage() {
   // ---- catalog data ----
@@ -37,22 +28,7 @@ export default function SimulatePage() {
   const [freeText, setFreeText] = useState<string>("");
   const [n, setN] = useState<number>(15);
 
-  // ---- run state ----
-  const [status, setStatus] = useState<Status>("idle");
-  const [error, setError] = useState<string | null>(null);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
-  const [simId, setSimId] = useState<string | null>(null);
-  const [meta, setMeta] = useState<{
-    question_label: string;
-    matched: boolean;
-    domain_label: string | null;
-  } | null>(null);
-
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [responses, setResponses] = useState<AgentResponse[]>([]);
-  const [aggregate, setAggregate] = useState<AnswerProb[]>([]);
-
-  const abortRef = useRef<AbortController | null>(null);
 
   // ---- load catalogs ----
   useEffect(() => {
@@ -86,70 +62,8 @@ export default function SimulatePage() {
     });
   }
 
-  function reset() {
-    setAgents([]);
-    setResponses([]);
-    setAggregate([]);
-    setMeta(null);
-    setError(null);
-    setSimId(null);
-  }
-
-  async function run() {
-    abortRef.current?.abort();
-    const ctrl = new AbortController();
-    abortRef.current = ctrl;
-    reset();
-    setStatus("running");
-
-    try {
-      for await (const ev of simulateStream(
-        {
-          location,
-          n,
-          question_id: questionId || undefined,
-          free_text: freeText || undefined,
-          domain: domainId || undefined,
-          selected_dims: selectedDims.size > 0 ? [...selectedDims] : undefined,
-        },
-        ctrl.signal,
-      )) {
-        if (ev.event === "meta") {
-          setSimId(ev.data.sim_id);
-          setMeta({
-            question_label: ev.data.question_label,
-            matched: ev.data.matched_from_free_text,
-            domain_label: ev.data.domain_label,
-          });
-        } else if (ev.event === "agent_sampled") {
-          setAgents((prev) => [...prev, ev.data]);
-        } else if (ev.event === "agent_responded") {
-          setResponses((prev) => [...prev, ev.data]);
-        } else if (ev.event === "aggregate") {
-          setAggregate(ev.data.distribution);
-        } else if (ev.event === "done") {
-          setSimId(ev.data.sim_id);
-          setStatus("done");
-        } else if (ev.event === "error") {
-          throw new Error(ev.data.message);
-        }
-      }
-      setStatus("done");
-    } catch (err) {
-      if (ctrl.signal.aborted) return;
-      setStatus("error");
-      setError(err instanceof Error ? err.message : String(err));
-    }
-  }
-
-  function stop() {
-    abortRef.current?.abort();
-    setStatus("idle");
-  }
-
   const activeDomain = domains.find((d) => d.id === domainId) ?? null;
-  const canRun =
-    !!location && (!!questionId || freeText.trim().length > 4) && status !== "running";
+  const canRun = !!location && (!!questionId || freeText.trim().length > 4);
 
   return (
     <div className="min-h-screen">
@@ -293,71 +207,20 @@ export default function SimulatePage() {
           )}
         </aside>
 
-        {/* ── Right panel: results ── */}
-        <section className="space-y-8">
-          {/* Simulation saved banner */}
-          {simId && (
-            <div className="rounded-2xl border border-[color:var(--color-cyan)]/30 bg-[color:var(--color-cyan)]/5 px-5 py-4">
-              <div className="flex items-center justify-between">
-                <div className="text-xs uppercase tracking-wider text-[color:var(--color-cyan)]">
-                  Simulation saved
-                </div>
-                {status === "done" && (
-                  <Link
-                    href="/simulations"
-                    className="rounded-full border border-[color:var(--color-cyan)]/40 px-3 py-1 text-xs text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)]/10"
-                  >
-                    View dashboard →
-                  </Link>
-                )}
-              </div>
-              <div className="mt-1 font-mono text-sm text-[color:var(--color-text-dim)]">
-                data/simulations/{simId}/
-              </div>
-              <p className="mt-1 text-xs text-[color:var(--color-text-dim)]">
-                Per-agent JSON files: demographics · prior · stance · rationale
-              </p>
-            </div>
-          )}
-
-          {/* Matched question */}
-          {meta && (
-            <div className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]/40 p-5">
-              <div className="flex flex-wrap gap-2 text-xs uppercase tracking-wider text-[color:var(--color-text-faint)]">
-                {meta.domain_label && (
-                  <span className="rounded-full border border-[color:var(--color-cyan)]/30 bg-[color:var(--color-cyan)]/10 px-2 py-0.5 text-[color:var(--color-cyan)]">
-                    {meta.domain_label}
-                  </span>
-                )}
-                <span>Question{meta.matched ? " (matched from your text)" : ""}</span>
-              </div>
-              <div className="mt-1 text-lg">{meta.question_label}</div>
-            </div>
-          )}
-
-          <div>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
-              Aggregate distribution
-            </h2>
-            <OpinionDistribution
-              distribution={aggregate}
-              title={`n = ${responses.length}`}
-              empty="The aggregate will appear once the LLM has responded for every agent."
-            />
-          </div>
-
-          <div>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
-              Synthetic electorate
-            </h2>
-            <AgentTable agents={agents} />
-          </div>
-
-          <div>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
-              Per-agent rationales
-            </h2>
-            <RationaleList agents={agents} responses={responses} />
+        {/* ── Right panel: placeholder ── */}
+        <section className="flex items-start justify-center pt-16">
+          <div className="max-w-sm text-center space-y-3">
+            <div className="text-4xl text-[color:var(--color-cyan)] opacity-30">◇</div>
+            <p className="text-sm text-[color:var(--color-text-dim)]">
+              Results will appear here once a simulation completes.
+            </p>
+            <p className="text-xs text-[color:var(--color-text-faint)]">
+              In the meantime, browse{" "}
+              <Link href="/simulations" className="text-[color:var(--color-cyan)] underline underline-offset-2">
+                example runs
+              </Link>{" "}
+              to see what the output looks like.
+            </p>
           </div>
         </section>
       </main>

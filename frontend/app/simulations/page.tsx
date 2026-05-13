@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 
 import { AnswerProb } from "@/lib/api";
 
@@ -21,11 +20,6 @@ type SimRun = {
 };
 
 // ── helpers ───────────────────────────────────────────────────────────────────
-
-function parseSerial(sim_id: string): number | undefined {
-  const n = parseInt(sim_id.split("__")[0], 10);
-  return isNaN(n) ? undefined : n;
-}
 
 function formatTs(ts?: string) {
   if (!ts) return "N/A";
@@ -76,53 +70,16 @@ function DistributionBars({ dist }: { dist: AnswerProb[] }) {
 
 // ── card ──────────────────────────────────────────────────────────────────────
 
-function SimCard({ sim, onDeleted }: { sim: SimRun; onDeleted: (id: string) => void }) {
-  const [deleting, setDeleting] = useState(false);
+function SimCard({ sim }: { sim: SimRun }) {
   const topAnswer = sim.summary?.distribution
     ? [...sim.summary.distribution].sort((a, b) => b.prob - a.prob)[0]
     : null;
-
-  async function handleDelete(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!confirm(`Delete simulation #${sim.serial ?? sim.sim_id}? This cannot be undone.`)) return;
-    setDeleting(true);
-    try {
-      await api.deleteSimulation(sim.sim_id);
-      onDeleted(sim.sim_id);
-    } catch {
-      alert("Failed to delete simulation. Check that the backend is running.");
-      setDeleting(false);
-    }
-  }
 
   return (
     <Link
       href={`/simulations/${sim.sim_id}`}
       className="group relative flex flex-col rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]/60 p-5 transition hover:border-[color:var(--color-border-hi)] hover:bg-[color:var(--color-surface)]"
     >
-      {/* delete button — floats top-right, only visible on hover */}
-      <button
-        onClick={handleDelete}
-        disabled={deleting}
-        title="Delete simulation"
-        className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-[color:var(--color-text-faint)] opacity-0 transition group-hover:opacity-100 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        {deleting ? (
-          <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-            <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
-            <path d="M12 2a10 10 0 0 1 10 10" />
-          </svg>
-        ) : (
-          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="3 6 5 6 21 6" />
-            <path d="M19 6l-1 14H6L5 6" />
-            <path d="M10 11v6M14 11v6" />
-            <path d="M9 6V4h6v2" />
-          </svg>
-        )}
-      </button>
-
       {/* top row */}
       <div className="flex items-start gap-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--color-cyan)]/12 font-mono text-sm font-bold text-[color:var(--color-cyan)]">
@@ -281,12 +238,8 @@ const MOCK_SIMS: SimRun[] = [
 // ── page ──────────────────────────────────────────────────────────────────────
 
 export default function SimulationsPage() {
-  const [sims] = useState<SimRun[]>(MOCK_SIMS);
-  const [loading] = useState(false);
-
-  function handleDeleted(_sim_id: string) {
-    // static demo — deletions are not persisted
-  }
+  const sims = MOCK_SIMS;
+  const loading = false;
 
   const totalAgents = sims.reduce((s, r) => s + r.n_agents, 0);
   const complete = sims.filter((r) => r.complete).length;
@@ -358,7 +311,7 @@ export default function SimulationsPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {sims.map((sim) => (
-              <SimCard key={sim.sim_id} sim={sim} onDeleted={handleDeleted} />
+              <SimCard key={sim.sim_id} sim={sim} />
             ))}
           </div>
         )}
