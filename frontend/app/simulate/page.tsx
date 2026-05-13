@@ -67,7 +67,7 @@ export default function SimulatePage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-[color:var(--color-border)]">
+      <header className="sticky top-0 z-20 border-b border-[color:var(--color-border)] bg-[color:var(--color-bg)]/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between px-8">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <span className="text-[color:var(--color-cyan)]">◇</span>
