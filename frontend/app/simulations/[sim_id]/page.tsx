@@ -15,6 +15,174 @@ import {
 
 import { AgentRecord, AnswerProb, SimulationDetail, api } from "@/lib/api";
 
+// ── static mock data ──────────────────────────────────────────────────────────
+
+function mockAgent(
+  id: number, age: string, race: string, income: string,
+  occupation: string, stance: string, rationale: string,
+  dist: AnswerProb[],
+): AgentRecord {
+  return {
+    agent_id: id,
+    demographics: { agent_id: id, age, race, income, occupation },
+    selected_dims: null,
+    used_filter: {},
+    backoff_steps: [],
+    prior: dist,
+    stance,
+    rationale,
+  };
+}
+
+const MOCK_DETAILS: Record<string, SimulationDetail> = {
+  "3__region_west__economy": {
+    sim_id: "3__region_west__economy",
+    timestamp: "2026-05-10T14:32:00Z",
+    location: "region_west",
+    domain: "economy",
+    domain_label: "Economy & Jobs",
+    question_id: "ATP_W92_Q5",
+    question_label: "Do you think the federal government should raise the federal minimum wage to $15 per hour?",
+    n: 8,
+    selected_dims: ["age_group", "income_group", "educ_group"],
+    matched_from_free_text: false,
+    summary: {
+      n: 8,
+      distribution: [
+        { answer_label: "Strongly favor", prob: 0.44 },
+        { answer_label: "Somewhat favor", prob: 0.28 },
+        { answer_label: "Neither", prob: 0.08 },
+        { answer_label: "Somewhat oppose", prob: 0.12 },
+        { answer_label: "Strongly oppose", prob: 0.08 },
+      ],
+    },
+    agents: [
+      mockAgent(1, "25 to 34 years", "White alone", "$35,000 to $49,999", "Service worker", "Strongly favor",
+        "A $15 minimum wage would directly benefit me and millions of low-wage workers. The cost of living in the West is extremely high and $7.25 is simply not survivable.", [
+        { answer_label: "Strongly favor", prob: 0.62 }, { answer_label: "Somewhat favor", prob: 0.25 }, { answer_label: "Neither", prob: 0.07 }, { answer_label: "Somewhat oppose", prob: 0.04 }, { answer_label: "Strongly oppose", prob: 0.02 }]),
+      mockAgent(2, "45 to 54 years", "Black or African American alone", "$50,000 to $74,999", "Healthcare worker", "Strongly favor",
+        "Raising the minimum wage addresses longstanding racial and economic inequities. Many Black workers are concentrated in low-wage jobs and a federal floor would make a real difference.", [
+        { answer_label: "Strongly favor", prob: 0.71 }, { answer_label: "Somewhat favor", prob: 0.18 }, { answer_label: "Neither", prob: 0.05 }, { answer_label: "Somewhat oppose", prob: 0.04 }, { answer_label: "Strongly oppose", prob: 0.02 }]),
+      mockAgent(3, "55 to 64 years", "White alone", "$100,000 to $149,999", "Small business owner", "Somewhat oppose",
+        "I understand the intent but a uniform $15 floor ignores regional cost differences. Rural small businesses operate on thin margins and this would force layoffs or closures.", [
+        { answer_label: "Strongly favor", prob: 0.18 }, { answer_label: "Somewhat favor", prob: 0.22 }, { answer_label: "Neither", prob: 0.14 }, { answer_label: "Somewhat oppose", prob: 0.31 }, { answer_label: "Strongly oppose", prob: 0.15 }]),
+      mockAgent(4, "22 to 24 years", "Hispanic or Latino", "$25,000 to $34,999", "Retail worker", "Strongly favor",
+        "I work two jobs and still can't afford rent. A $15 minimum wage is the bare minimum for basic dignity. I strongly support this policy.", [
+        { answer_label: "Strongly favor", prob: 0.68 }, { answer_label: "Somewhat favor", prob: 0.20 }, { answer_label: "Neither", prob: 0.06 }, { answer_label: "Somewhat oppose", prob: 0.04 }, { answer_label: "Strongly oppose", prob: 0.02 }]),
+      mockAgent(5, "35 to 44 years", "Asian alone", "$75,000 to $99,999", "Software engineer", "Somewhat favor",
+        "Reducing income inequality is important for social stability. The evidence on job losses is mixed and I lean toward the wage floor providing net benefit to workers.", [
+        { answer_label: "Strongly favor", prob: 0.35 }, { answer_label: "Somewhat favor", prob: 0.40 }, { answer_label: "Neither", prob: 0.12 }, { answer_label: "Somewhat oppose", prob: 0.10 }, { answer_label: "Strongly oppose", prob: 0.03 }]),
+      mockAgent(6, "65 years and over", "White alone", "$150,000 or more", "Retired executive", "Strongly oppose",
+        "Mandating wages distorts labor markets. Businesses should be free to set wages based on productivity. This is an overreach that will cause unemployment among the very workers it aims to help.", [
+        { answer_label: "Strongly favor", prob: 0.12 }, { answer_label: "Somewhat favor", prob: 0.16 }, { answer_label: "Neither", prob: 0.10 }, { answer_label: "Somewhat oppose", prob: 0.27 }, { answer_label: "Strongly oppose", prob: 0.35 }]),
+      mockAgent(7, "18 to 24 years", "White alone", "Less than $10,000", "Student / part-time", "Strongly favor",
+        "As a student working part-time, I can barely cover basic expenses. A higher minimum wage would let me focus on my education rather than working 30 hours a week to survive.", [
+        { answer_label: "Strongly favor", prob: 0.60 }, { answer_label: "Somewhat favor", prob: 0.23 }, { answer_label: "Neither", prob: 0.09 }, { answer_label: "Somewhat oppose", prob: 0.05 }, { answer_label: "Strongly oppose", prob: 0.03 }]),
+      mockAgent(8, "40 to 44 years", "Two or more races", "$35,000 to $49,999", "Truck driver", "Somewhat favor",
+        "I earn above minimum wage but raising the floor would compress wages upward and benefit workers like me too. I think a gradual phase-in makes sense.", [
+        { answer_label: "Strongly favor", prob: 0.40 }, { answer_label: "Somewhat favor", prob: 0.38 }, { answer_label: "Neither", prob: 0.10 }, { answer_label: "Somewhat oppose", prob: 0.09 }, { answer_label: "Strongly oppose", prob: 0.03 }]),
+    ],
+  },
+
+  "2__region_south__healthcare": {
+    sim_id: "2__region_south__healthcare",
+    timestamp: "2026-05-09T09:15:00Z",
+    location: "region_south",
+    domain: "healthcare",
+    domain_label: "Healthcare",
+    question_id: "ATP_W94_Q12",
+    question_label: "Should the federal government provide health insurance to all Americans, even if it means raising taxes?",
+    n: 8,
+    selected_dims: ["age_group", "race", "income_group"],
+    matched_from_free_text: false,
+    summary: {
+      n: 8,
+      distribution: [
+        { answer_label: "Strongly support", prob: 0.35 },
+        { answer_label: "Somewhat support", prob: 0.25 },
+        { answer_label: "Neither", prob: 0.10 },
+        { answer_label: "Somewhat oppose", prob: 0.18 },
+        { answer_label: "Strongly oppose", prob: 0.12 },
+      ],
+    },
+    agents: [
+      mockAgent(1, "45 to 54 years", "Black or African American alone", "$25,000 to $34,999", "Home health aide", "Strongly support",
+        "Healthcare is a human right. I work in healthcare but can barely afford my own insurance. Universal coverage would transform lives in my community, especially in the rural South.", [
+        { answer_label: "Strongly support", prob: 0.67 }, { answer_label: "Somewhat support", prob: 0.20 }, { answer_label: "Neither", prob: 0.06 }, { answer_label: "Somewhat oppose", prob: 0.05 }, { answer_label: "Strongly oppose", prob: 0.02 }]),
+      mockAgent(2, "55 to 64 years", "White alone", "$50,000 to $74,999", "Factory worker", "Somewhat support",
+        "I've seen too many neighbors skip the doctor because they can't afford it. A universal system isn't perfect but the current one clearly isn't working for working people.", [
+        { answer_label: "Strongly support", prob: 0.38 }, { answer_label: "Somewhat support", prob: 0.35 }, { answer_label: "Neither", prob: 0.12 }, { answer_label: "Somewhat oppose", prob: 0.10 }, { answer_label: "Strongly oppose", prob: 0.05 }]),
+      mockAgent(3, "35 to 44 years", "White alone", "$100,000 to $149,999", "Physician", "Somewhat oppose",
+        "I support expanding coverage but a government monopoly worries me. It could undermine medical innovation and create long wait times as we've seen in other countries.", [
+        { answer_label: "Strongly support", prob: 0.20 }, { answer_label: "Somewhat support", prob: 0.22 }, { answer_label: "Neither", prob: 0.14 }, { answer_label: "Somewhat oppose", prob: 0.30 }, { answer_label: "Strongly oppose", prob: 0.14 }]),
+      mockAgent(4, "65 years and over", "White alone", "$35,000 to $49,999", "Retired teacher", "Strongly support",
+        "I've been on Medicare for years and it's been a lifesaver. Everyone deserves that security. The tax increase is worth it for peace of mind and healthier communities.", [
+        { answer_label: "Strongly support", prob: 0.55 }, { answer_label: "Somewhat support", prob: 0.28 }, { answer_label: "Neither", prob: 0.08 }, { answer_label: "Somewhat oppose", prob: 0.06 }, { answer_label: "Strongly oppose", prob: 0.03 }]),
+      mockAgent(5, "25 to 34 years", "Hispanic or Latino", "$15,000 to $24,999", "Restaurant worker", "Strongly support",
+        "I have no insurance and live in fear of getting sick. A universal system would let me see a doctor before a problem becomes a crisis. This is long overdue.", [
+        { answer_label: "Strongly support", prob: 0.72 }, { answer_label: "Somewhat support", prob: 0.18 }, { answer_label: "Neither", prob: 0.05 }, { answer_label: "Somewhat oppose", prob: 0.03 }, { answer_label: "Strongly oppose", prob: 0.02 }]),
+      mockAgent(6, "50 to 54 years", "White alone", "$150,000 or more", "Business executive", "Strongly oppose",
+        "The private sector delivers better outcomes through competition and choice. Government-run healthcare will be bureaucratic, inefficient, and funded by unsustainable tax hikes.", [
+        { answer_label: "Strongly support", prob: 0.10 }, { answer_label: "Somewhat support", prob: 0.12 }, { answer_label: "Neither", prob: 0.10 }, { answer_label: "Somewhat oppose", prob: 0.28 }, { answer_label: "Strongly oppose", prob: 0.40 }]),
+      mockAgent(7, "30 to 34 years", "Asian alone", "$75,000 to $99,999", "Nurse", "Somewhat support",
+        "Universal coverage would reduce ER crowding and preventive care costs. I'd accept a modest tax increase if it means everyone gets basic coverage.", [
+        { answer_label: "Strongly support", prob: 0.35 }, { answer_label: "Somewhat support", prob: 0.42 }, { answer_label: "Neither", prob: 0.12 }, { answer_label: "Somewhat oppose", prob: 0.08 }, { answer_label: "Strongly oppose", prob: 0.03 }]),
+      mockAgent(8, "18 to 24 years", "Black or African American alone", "Less than $10,000", "College student", "Strongly support",
+        "Healthcare costs are the number one cause of bankruptcy. Young people need coverage for mental health, preventive care, and emergencies. Universal insurance is the only fair solution.", [
+        { answer_label: "Strongly support", prob: 0.65 }, { answer_label: "Somewhat support", prob: 0.22 }, { answer_label: "Neither", prob: 0.07 }, { answer_label: "Somewhat oppose", prob: 0.04 }, { answer_label: "Strongly oppose", prob: 0.02 }]),
+    ],
+  },
+
+  "1__region_northeast__immigration": {
+    sim_id: "1__region_northeast__immigration",
+    timestamp: "2026-05-08T18:47:00Z",
+    location: "region_northeast",
+    domain: "immigration",
+    domain_label: "Immigration",
+    question_id: "ATP_W89_Q8",
+    question_label: "Should the U.S. allow more immigrants to enter the country legally than it currently does?",
+    n: 8,
+    selected_dims: ["age_group", "educ_group"],
+    matched_from_free_text: false,
+    summary: {
+      n: 8,
+      distribution: [
+        { answer_label: "A lot more", prob: 0.20 },
+        { answer_label: "Some more", prob: 0.30 },
+        { answer_label: "Same as now", prob: 0.22 },
+        { answer_label: "Fewer", prob: 0.18 },
+        { answer_label: "A lot fewer", prob: 0.10 },
+      ],
+    },
+    agents: [
+      mockAgent(1, "30 to 34 years", "Asian alone", "$75,000 to $99,999", "Software engineer", "A lot more",
+        "As a child of immigrants, I know firsthand the contributions immigrants make to the economy and culture. Legal immigration pathways are too slow and limited. We need significant expansion.", [
+        { answer_label: "A lot more", prob: 0.48 }, { answer_label: "Some more", prob: 0.32 }, { answer_label: "Same as now", prob: 0.12 }, { answer_label: "Fewer", prob: 0.05 }, { answer_label: "A lot fewer", prob: 0.03 }]),
+      mockAgent(2, "55 to 64 years", "White alone", "$50,000 to $74,999", "Union electrician", "Fewer",
+        "I support legal immigration but at the current pace it's depressing wages in construction trades. We should slow down until wages stabilize for workers who are already here.", [
+        { answer_label: "A lot more", prob: 0.08 }, { answer_label: "Some more", prob: 0.15 }, { answer_label: "Same as now", prob: 0.22 }, { answer_label: "Fewer", prob: 0.38 }, { answer_label: "A lot fewer", prob: 0.17 }]),
+      mockAgent(3, "25 to 34 years", "Hispanic or Latino", "$25,000 to $34,999", "Restaurant cook", "Some more",
+        "Expanding legal immigration benefits the economy and reduces the backlog that pushes people toward illegal entry. A moderate increase is the pragmatic middle ground.", [
+        { answer_label: "A lot more", prob: 0.30 }, { answer_label: "Some more", prob: 0.40 }, { answer_label: "Same as now", prob: 0.18 }, { answer_label: "Fewer", prob: 0.08 }, { answer_label: "A lot fewer", prob: 0.04 }]),
+      mockAgent(4, "65 years and over", "White alone", "$35,000 to $49,999", "Retired nurse", "Same as now",
+        "I think the current level is about right. We need to do a better job integrating those already here before opening the door further. Quality over quantity.", [
+        { answer_label: "A lot more", prob: 0.12 }, { answer_label: "Some more", prob: 0.22 }, { answer_label: "Same as now", prob: 0.40 }, { answer_label: "Fewer", prob: 0.18 }, { answer_label: "A lot fewer", prob: 0.08 }]),
+      mockAgent(5, "22 to 24 years", "Black or African American alone", "Less than $10,000", "Student", "Some more",
+        "Immigration enriches our culture and fills gaps in the labor market. I'd support a moderate increase focused on skills and family reunification.", [
+        { answer_label: "A lot more", prob: 0.25 }, { answer_label: "Some more", prob: 0.42 }, { answer_label: "Same as now", prob: 0.20 }, { answer_label: "Fewer", prob: 0.09 }, { answer_label: "A lot fewer", prob: 0.04 }]),
+      mockAgent(6, "45 to 54 years", "White alone", "$150,000 or more", "Attorney", "A lot more",
+        "The economic case for immigration is overwhelming. Immigrants start businesses, pay taxes, and fill both high-skill and essential labor roles. Restrictionism is shortsighted.", [
+        { answer_label: "A lot more", prob: 0.52 }, { answer_label: "Some more", prob: 0.30 }, { answer_label: "Same as now", prob: 0.10 }, { answer_label: "Fewer", prob: 0.05 }, { answer_label: "A lot fewer", prob: 0.03 }]),
+      mockAgent(7, "40 to 44 years", "White alone", "$100,000 to $149,999", "Small business owner", "A lot fewer",
+        "I can't find affordable housing for my employees in this city. Rapid population growth from immigration is driving up costs for everyone. We need a pause to catch up on infrastructure.", [
+        { answer_label: "A lot more", prob: 0.06 }, { answer_label: "Some more", prob: 0.10 }, { answer_label: "Same as now", prob: 0.18 }, { answer_label: "Fewer", prob: 0.30 }, { answer_label: "A lot fewer", prob: 0.36 }]),
+      mockAgent(8, "35 to 44 years", "Asian alone", "$50,000 to $74,999", "University researcher", "Some more",
+        "Attracting global talent strengthens American research and innovation. A moderate increase in high-skill immigration would be particularly beneficial.", [
+        { answer_label: "A lot more", prob: 0.28 }, { answer_label: "Some more", prob: 0.45 }, { answer_label: "Same as now", prob: 0.18 }, { answer_label: "Fewer", prob: 0.07 }, { answer_label: "A lot fewer", prob: 0.02 }]),
+    ],
+  },
+};
+
 // ── colour palette ─────────────────────────────────────────────────────────────
 
 const ANSWER_COLORS = ["#00d4ff", "#a855f7", "#f59e0b", "#f43f5e", "#10b981", "#64748b"];
@@ -221,6 +389,12 @@ export default function SimulationDetailPage({
   const [showAllAgents, setShowAllAgents] = useState(false);
 
   useEffect(() => {
+    const mock = MOCK_DETAILS[sim_id];
+    if (mock) {
+      setData(mock);
+      setLoading(false);
+      return;
+    }
     api
       .simulationDetail(sim_id)
       .then(setData)
