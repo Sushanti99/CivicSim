@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/logo.png" alt="CivicSim" width="240" />
+<img src="docs/logo.png?v=2" alt="CivicSim" width="240" />
 
 **Ground it before you simulate it.**
 
