@@ -207,17 +207,20 @@ export default function SimulatePage() {
           )}
         </aside>
 
-        {/* ── Right panel: placeholder ── */}
+        {/* ── Right panel: disclaimer ── */}
         <section className="flex items-start justify-center pt-16">
-          <div className="max-w-sm text-center space-y-3">
-            <div className="text-4xl text-[color:var(--color-cyan)] opacity-30">◇</div>
-            <p className="text-sm text-[color:var(--color-text-dim)]">
-              Results will appear here once a simulation completes.
+          <div className="w-full max-w-md rounded-2xl border border-[color:var(--color-border-hi)] bg-[color:var(--color-surface)] p-7 space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🔒</span>
+              <span className="text-lg font-semibold text-[color:var(--color-text)]">Not available to the public yet</span>
+            </div>
+            <p className="text-sm text-[color:var(--color-text-dim)] leading-relaxed">
+              The live simulator is currently restricted to our research team. We&apos;re working on opening access soon.
             </p>
-            <p className="text-xs text-[color:var(--color-text-faint)]">
-              In the meantime, browse{" "}
+            <p className="text-sm text-[color:var(--color-text-dim)] leading-relaxed">
+              In the meantime, explore example simulation runs on the{" "}
               <Link href="/simulations" className="text-[color:var(--color-cyan)] underline underline-offset-2">
-                example runs
+                Simulations dashboard
               </Link>{" "}
               to see what the output looks like.
             </p>
