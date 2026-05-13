@@ -332,6 +332,9 @@ export default function SimulationsPage() {
               Simulate
             </Link>
             <span className="text-[color:var(--color-text)]">Simulations</span>
+            <Link href="/simulations/evals" className="text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)]">
+              Evals
+            </Link>
           </nav>
         </div>
       </header>
