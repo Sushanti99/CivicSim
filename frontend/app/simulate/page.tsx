@@ -40,6 +40,7 @@ export default function SimulatePage() {
   // ---- run state ----
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [simId, setSimId] = useState<string | null>(null);
   const [meta, setMeta] = useState<{
     question_label: string;
@@ -259,24 +260,35 @@ export default function SimulatePage() {
           <div className="flex gap-3">
             <button
               disabled={!canRun}
-              onClick={run}
+              onClick={() => setShowDisclaimer(true)}
               className="flex-1 rounded-full bg-[color:var(--color-cyan)] px-5 py-3 font-medium text-[color:var(--color-on-accent)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {status === "running" ? "Running…" : "Run simulation"}
+              Run simulation
             </button>
-            {status === "running" && (
-              <button
-                onClick={stop}
-                className="rounded-full border border-[color:var(--color-border-hi)] px-5 py-3 font-medium hover:bg-[color:var(--color-hover)]"
-              >
-                Stop
-              </button>
-            )}
           </div>
 
-          {error && (
-            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
-              {error}
+          {showDisclaimer && (
+            <div className="rounded-2xl border border-[color:var(--color-border-hi)] bg-[color:var(--color-surface)] p-5 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🔒</span>
+                <span className="font-semibold text-[color:var(--color-text)]">Not available to the public yet</span>
+              </div>
+              <p className="text-sm text-[color:var(--color-text-dim)] leading-relaxed">
+                The live simulator is currently restricted to our research team. We&apos;re working on opening access soon.
+              </p>
+              <p className="text-sm text-[color:var(--color-text-dim)] leading-relaxed">
+                In the meantime, explore example simulation runs on the{" "}
+                <Link href="/simulations" className="text-[color:var(--color-cyan)] underline underline-offset-2">
+                  Simulations dashboard
+                </Link>{" "}
+                to see what the output looks like.
+              </p>
+              <button
+                onClick={() => setShowDisclaimer(false)}
+                className="text-xs text-[color:var(--color-text-faint)] hover:text-[color:var(--color-text-dim)] transition"
+              >
+                Dismiss
+              </button>
             </div>
           )}
         </aside>
