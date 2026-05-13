@@ -311,7 +311,7 @@ function StatTile({ label, value, color, sub }: { label: string; value: string; 
   return (
     <div className="flex flex-col rounded-2xl border p-6" style={{ borderColor: color + "33", background: color + "0d" }}>
       <div className="text-xs font-bold uppercase tracking-widest" style={{ color }}>{label}</div>
-      <div className="mt-2 text-5xl font-extrabold leading-none" style={{ color }}>{value}</div>
+      <div className="mt-2 text-3xl font-extrabold leading-none sm:text-5xl" style={{ color }}>{value}</div>
       {sub && <div className="mt-2 text-xs text-[color:var(--color-text-dim)]">{sub}</div>}
     </div>
   );
@@ -409,8 +409,8 @@ export default async function SimulationDetailPage({
       </div>
 
       {/* policy header */}
-      <div className="mb-8 rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]/60 p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-8 rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]/60 p-4 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
               {data.domain_label && (
@@ -423,7 +423,7 @@ export default async function SimulationDetailPage({
               </span>
               <span className="text-xs text-[color:var(--color-text-faint)]">n = {agents.length}</span>
             </div>
-            <h1 className="mt-3 text-2xl font-bold leading-snug">{data.question_label}</h1>
+            <h1 className="mt-3 text-xl font-bold leading-snug sm:text-2xl">{data.question_label}</h1>
             <div className="mt-2 text-xs text-[color:var(--color-text-faint)]">
               {formatTs(data.timestamp)}
               {data.matched_from_free_text && " · matched from free text"}
@@ -431,7 +431,7 @@ export default async function SimulationDetailPage({
           </div>
           <Link
             href="/simulate"
-            className="shrink-0 rounded-full border border-[color:var(--color-border-hi)] px-4 py-2 text-sm hover:bg-[color:var(--color-hover)]"
+            className="self-start shrink-0 rounded-full border border-[color:var(--color-border-hi)] px-4 py-2 text-sm hover:bg-[color:var(--color-hover)]"
           >
             New simulation
           </Link>
@@ -507,7 +507,7 @@ export default async function SimulationDetailPage({
       <div className="mt-6">
         <SectionCard title={`Agent Responses (${agents.length})`}>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[600px] text-sm">
               <thead>
                 <tr className="border-b border-[color:var(--color-border)] text-xs uppercase tracking-wider text-[color:var(--color-text-faint)]">
                   <th className="pb-3 pr-4 text-left">#</th>
@@ -597,7 +597,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-20 border-b border-[color:var(--color-border)] bg-[color:var(--color-bg)]/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-8">
+        <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 sm:px-8">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <span className="text-[color:var(--color-cyan)]">◇</span>
             CivicSim
@@ -608,7 +608,7 @@ function Shell({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
       </header>
-      <main className="mx-auto max-w-[1280px] px-8 py-10">{children}</main>
+      <main className="mx-auto max-w-[1280px] px-4 py-8 sm:px-8 sm:py-10">{children}</main>
     </div>
   );
 }

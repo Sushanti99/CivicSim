@@ -249,7 +249,7 @@ export default function SimulationsPage() {
     <div className="min-h-screen">
       {/* ── nav ── */}
       <header className="sticky top-0 z-20 border-b border-[color:var(--color-border)] bg-[color:var(--color-bg)]/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-8">
+        <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 sm:px-8">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <span className="text-[color:var(--color-cyan)]">◇</span>
             CivicSim
@@ -263,11 +263,11 @@ export default function SimulationsPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1280px] px-8 py-10">
+      <main className="mx-auto max-w-[1280px] px-4 py-8 sm:px-8 sm:py-10">
         {/* ── page header ── */}
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Simulation runs</h1>
+            <h1 className="text-2xl font-bold sm:text-3xl">Simulation runs</h1>
             <p className="mt-1 text-sm text-[color:var(--color-text-dim)]">
               Each run is persisted to{" "}
               <code className="font-mono text-[color:var(--color-cyan)]">data/simulations/</code>{" "}
