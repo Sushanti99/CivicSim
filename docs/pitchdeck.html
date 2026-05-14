@@ -1,0 +1,2944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CivicSim · Pitch Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     DESIGN TOKENS  ·  CivicSim brand system
+     ============================================================ */
+  :root {
+    --cyan:        #1D4ED8;
+    --cyan-bright: #2EE0FF;
+    --violet:      #2563EB;
+    --violet-deep: #1E3A8A;
+    --purple:      #7C3AED;
+    --green:       #10B981;
+    --green-deep:  #047857;
+    --amber:       #F59E0B;
+    --gold:        #FDB515;
+    --red:         #EF4444;
+
+    --bg:          #F6F9FF;
+    --bg-alt:      #EEF5FF;
+    --surface:     #FFFFFF;
+    --surface-2:   #EAF2FF;
+
+    --ink:         #0B1F4D;
+    --ink-dim:     #486381;
+    --ink-faint:   #7B8EA8;
+
+    --border:      rgba(37, 99, 235, 0.14);
+    --border-hi:   rgba(37, 99, 235, 0.26);
+    --shadow-card: 0 8px 32px rgba(11, 31, 77, 0.06);
+    --shadow-glow: 0 16px 52px rgba(37, 99, 235, 0.15);
+    --shadow-hero: 0 24px 80px rgba(37, 99, 235, 0.18);
+
+    --radius:      14px;
+    --radius-lg:   18px;
+    --radius-sm:   8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #0a0e1c;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--ink);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body { display: flex; align-items: center; justify-content: center; }
+
+  .deck { position: relative; width: 1280px; height: 720px; transform-origin: center; }
+
+  .slide {
+    position: absolute; inset: 0;
+    background: var(--bg);
+    padding: 50px 64px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    border-radius: 4px;
+  }
+  .slide.active { display: flex; animation: slideInForward 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+  .slide.active.from-back { animation: slideInBackward 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes slideInForward {
+    from { opacity: 0; transform: translateX(28px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideInBackward {
+    from { opacity: 0; transform: translateX(-28px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  h1, h2, h3, h4 { color: var(--ink); font-weight: 700; }
+  h1 { font-size: 96px; line-height: 1.02; letter-spacing: -0.04em; }
+  h2 { font-size: 48px; line-height: 1.08; letter-spacing: -0.025em; margin-bottom: 14px; }
+  h3 { font-size: 24px; line-height: 1.2; letter-spacing: -0.015em; }
+  .serif-it { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-weight: 400; }
+  .serif { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cyan);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .eyebrow::before { content: ""; width: 32px; height: 2px; background: var(--cyan); }
+
+  .subtitle {
+    font-size: 20px;
+    color: var(--ink-dim);
+    font-weight: 400;
+    line-height: 1.5;
+    max-width: 980px;
+    margin-bottom: 22px;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .slide-footer {
+    position: absolute;
+    bottom: 24px;
+    left: 64px;
+    right: 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .slide-footer .brand { color: var(--ink); font-weight: 600; }
+
+  .progress {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cyan), var(--cyan-bright));
+    transition: width 0.4s ease;
+  }
+
+  .accent-bar {
+    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+    color: white;
+    padding: 18px 28px;
+    border-radius: var(--radius);
+    font-size: 17px;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 16px 50px rgba(37, 99, 235, 0.22);
+    letter-spacing: -0.01em;
+  }
+  .accent-bar b { color: var(--cyan-bright); font-weight: 600; }
+
+  /* ============================================================
+     STAGGERED ENTRY ANIMATIONS
+     ============================================================ */
+  .stagger-item {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.16,1,0.3,1);
+  }
+  .slide.active.entered .stagger-item { opacity: 1; transform: translateY(0); }
+  .slide.active.entered .stagger-item:nth-child(1) { transition-delay: 0.10s; }
+  .slide.active.entered .stagger-item:nth-child(2) { transition-delay: 0.20s; }
+  .slide.active.entered .stagger-item:nth-child(3) { transition-delay: 0.30s; }
+  .slide.active.entered .stagger-item:nth-child(4) { transition-delay: 0.40s; }
+  .slide.active.entered .stagger-item:nth-child(5) { transition-delay: 0.50s; }
+
+  /* ============================================================
+     SLIDE 1  ·  EDITORIAL TITLE WITH DOTTED US MAP
+     ============================================================ */
+  .s-title {
+    background:
+      radial-gradient(circle at 88% 30%, rgba(37, 99, 235, 0.08), transparent 50%),
+      linear-gradient(180deg, #F6F9FF 0%, #EAF2FF 100%);
+    padding: 44px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .us-map-bg {
+    position: absolute;
+    top: 6%;
+    right: -2%;
+    width: 70%;
+    height: 70%;
+    pointer-events: none;
+    opacity: 0.9;
+  }
+
+  .s-title .corner-top, .s-title .corner-bot {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    left: 60px; right: 60px;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 5;
+  }
+  .s-title .corner-top { top: 32px; }
+  .s-title .corner-bot { bottom: 24px; }
+  .s-title .corner-top .l, .s-title .corner-bot .r { color: var(--ink); }
+  .s-title .corner-top .r, .s-title .corner-bot .l { color: var(--ink-faint); }
+  .s-title .corner-top .ischool-mark img {
+    height: 42px;
+    width: auto;
+    display: block;
+  }
+
+  .s-title .hero-wrap {
+    position: relative;
+    z-index: 4;
+    max-width: 700px;
+    margin-top: 46px;
+    margin-bottom: 24px;
+  }
+  .s-title .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--cyan);
+    margin-bottom: 14px;
+  }
+  .s-title .cs-wordmark {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 168px;
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    background: linear-gradient(135deg, #0B1F4D 0%, #1D4ED8 55%, #2563EB 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 22px;
+  }
+  .s-title .tagline-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+  .s-title .tagline-row .accent-line {
+    width: 56px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .s-title .tagline-row .tagline {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 32px;
+    color: var(--cyan);
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+  .s-title .subtitle-text {
+    font-size: 18px;
+    color: var(--ink-dim);
+    line-height: 1.55;
+    max-width: 580px;
+  }
+
+  .author-strip {
+    position: relative;
+    z-index: 4;
+    margin-top: auto;
+    margin-bottom: 14px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+  }
+  .author-card {
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 12px 14px;
+    backdrop-filter: blur(10px);
+    text-align: center;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .author-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-glow);
+  }
+  .author-card .avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    overflow: hidden;
+    position: relative;
+    border: 3px solid white;
+    box-shadow: 0 10px 28px rgba(11, 31, 77, 0.15);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .author-card:hover .avatar {
+    transform: scale(1.05);
+  }
+  .author-card .avatar img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .author-card .name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .author-card .role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  /* ============================================================
+     SLIDE 2  ·  RIGHT vs WRONG (smaller cards)
+     ============================================================ */
+  .rw-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .rw-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    flex: 1;
+    align-items: stretch;
+  }
+  .rw-card {
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .rw-card.right {
+    background: linear-gradient(160deg, #ECFDF5 0%, #F6F9FF 100%);
+    border-color: rgba(16, 185, 129, 0.22);
+  }
+  .rw-card.wrong {
+    background: linear-gradient(160deg, #FEF2F2 0%, #F6F9FF 100%);
+    border-color: rgba(239, 68, 68, 0.22);
+  }
+  .rw-card .badge {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px;
+  }
+  .rw-card .badge .icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  }
+  .rw-card.right .badge .icon { background: linear-gradient(135deg, var(--green), var(--green-deep)); }
+  .rw-card.wrong .badge .icon { background: linear-gradient(135deg, var(--red), #B91C1C); }
+  .rw-card .badge .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 600;
+  }
+  .rw-card.right .badge .label { color: var(--green-deep); }
+  .rw-card.wrong .badge .label { color: #B91C1C; }
+  .rw-card h3 {
+    font-size: 22px;
+    margin-bottom: 14px;
+    line-height: 1.15;
+  }
+  .rw-card .items {
+    list-style: none;
+    flex: 1;
+    display: flex; flex-direction: column;
+    gap: 14px;
+  }
+  .rw-card .items li {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+  .rw-card .items li::before {
+    content: "";
+    width: 22px; height: 22px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background-size: 12px 12px;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+  }
+  .rw-card.right .items li::before {
+    background-color: var(--green);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  }
+  .rw-card.wrong .items li::before {
+    background-color: var(--red);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3C/svg%3E");
+  }
+  .rw-card .items li .lbl {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.25;
+    margin-bottom: 3px;
+    letter-spacing: -0.01em;
+  }
+  .rw-card .items li .desc {
+    color: var(--ink-dim);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  /* ============================================================
+     SLIDE 3  ·  PROBLEMS — even tighter text
+     ============================================================ */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    margin-top: 4px;
+    flex: 1;
+  }
+  .problem-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 26px 26px 22px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-card);
+    position: relative;
+  }
+  .problem-card .ribbon {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .problem-card .pnum {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(135deg, rgba(37,99,235,0.18), rgba(124,58,237,0.18));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+    margin-top: 4px;
+    letter-spacing: -0.05em;
+  }
+  .problem-card h3 {
+    font-size: 22px;
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+  .problem-card .example {
+    background: var(--surface-2);
+    border-left: 3px solid var(--cyan);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 16px;
+    margin-top: auto;
+  }
+  .problem-card .example .ex-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .problem-card .example .ex-text {
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .problem-card .example .ex-text b {
+    font-family: 'JetBrains Mono', monospace;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+  }
+
+  .closing-line {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 22px;
+    color: var(--ink);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .closing-line .it {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 400;
+    font-size: 26px;
+  }
+
+  /* ============================================================
+     SLIDE 4  ·  LANDSCAPE — compact, big number, no "competitors"
+     ============================================================ */
+  .s-landscape h2 { margin-bottom: 10px; }
+
+  .insight-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 30px;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 18px;
+  }
+  .insight-row .big-stat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 78px;
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.04em;
+  }
+  .insight-row .insight-text {
+    font-size: 17px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+  }
+  .insight-row .insight-text b { color: var(--ink); font-weight: 600; }
+  .insight-row .insight-text .stat-tag {
+    display: inline-block;
+    background: var(--surface-2);
+    color: var(--cyan);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0 2px;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .section-label::before, .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Competitor strip on landscape slide */
+  .comp-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .comp-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow-card);
+  }
+  .comp-card .c-glyph {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 19px;
+    flex-shrink: 0;
+  }
+  .comp-card.simile .c-glyph { background: #EF6F5C; font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; }
+  .comp-card.ditto .c-glyph { background: #111111; font-family: 'Inter', sans-serif; font-weight: 800; }
+  .comp-card.aaru .c-glyph { background: #0F172A; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 22px; }
+  .comp-card .c-info { display: flex; flex-direction: column; min-width: 0; }
+  .comp-card .c-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 21px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    line-height: 1;
+  }
+  .comp-card.ditto .c-name, .comp-card.aaru .c-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .comp-card .c-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
+
+  .gap-list-big {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    flex: 1;
+  }
+  .gap-big {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 22px 22px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+  }
+  .gap-big::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--red), #B91C1C);
+  }
+  .gap-big .icon-x {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--red), #B91C1C);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(239,68,68,0.22);
+  }
+  .gap-big .gnum {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--red);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 6px;
+  }
+  .gap-big h3 {
+    font-size: 19px;
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  .gap-big .desc {
+    font-size: 14px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+  }
+  .gap-big .desc b { color: var(--ink); font-weight: 600; }
+
+  /* ============================================================
+     SLIDE 5  ·  PILLARS — softer, less boxy
+     ============================================================ */
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 22px;
+    margin-top: 4px;
+    flex: 1;
+  }
+  .pillar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-card);
+    position: relative;
+  }
+  .pillar .pillar-glow {
+    position: absolute;
+    top: -30%; right: -30%;
+    width: 80%; height: 70%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.08), transparent 60%);
+    pointer-events: none;
+    border-radius: 50%;
+  }
+  .pillar .badge {
+    width: 54px; height: 54px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+    position: relative; z-index: 2;
+  }
+  .pillar h3 { font-size: 23px; margin-bottom: 12px; position: relative; z-index: 2; }
+  .pillar p {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink-dim);
+    position: relative; z-index: 2;
+  }
+  .pillar p b { color: var(--ink); font-weight: 600; }
+  .pillar p .num-hl {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--cyan);
+    font-weight: 700;
+  }
+
+  /* ============================================================
+     SLIDE 6  ·  ARCHITECTURE — SVG technical diagram
+     ============================================================ */
+  .arch-svg-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0 4px;
+    position: relative;
+  }
+  .arch-svg-wrap svg.arch-diagram {
+    width: 100%;
+    height: auto;
+    max-height: 460px;
+    display: block;
+  }
+  .arch-legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+  .arch-legend .leg {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+  }
+  .arch-legend .leg .swatch {
+    width: 12px; height: 12px;
+    border-radius: 3px;
+  }
+  .arch-legend .leg.client .swatch { background: #DBEAFE; border: 1px solid #93C5FD; }
+  .arch-legend .leg.server .swatch { background: linear-gradient(135deg, #2563EB, #1D4ED8); }
+  .arch-legend .leg.engine .swatch { background: linear-gradient(135deg, #7C3AED, #5B21B6); }
+  .arch-legend .leg.data .swatch { background: linear-gradient(135deg, #1E3A8A, #0B1F4D); }
+
+  /* ============================================================
+     SLIDE 7  ·  AT-A-GLANCE — three-card flow
+     ============================================================ */
+  .s-glance {
+    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+    padding: 50px 64px;
+  }
+  .s-glance .eyebrow { color: var(--cyan-bright); }
+  .s-glance .eyebrow::before { background: var(--cyan-bright); }
+  .s-glance h2 { color: white; margin-bottom: 8px; }
+  .s-glance .subtitle { color: rgba(255,255,255,0.78); margin-bottom: 24px; max-width: 720px; }
+
+  .glance-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr 1fr;
+    gap: 22px;
+    flex: 1;
+  }
+  .glance-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 28px 26px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(11, 31, 77, 0.25);
+    position: relative;
+  }
+  .glance-card.middle {
+    background: linear-gradient(160deg, #2563EB 0%, #7C3AED 100%);
+    color: white;
+    box-shadow: 0 24px 70px rgba(124, 58, 237, 0.35);
+  }
+  .glance-card .badge-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-bottom: 6px;
+  }
+  .glance-card.middle .badge-num { color: var(--cyan-bright); }
+  .glance-card h3 {
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+  .glance-card.middle h3 { color: white; }
+
+  .policy-card {
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .policy-card .pquote {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.25;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  .policy-card .tags { display: flex; gap: 8px; }
+  .policy-card .tag {
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 999px;
+  }
+  .policy-card .tag.economy { background: rgba(37,99,235,0.12); color: var(--cyan); }
+  .policy-card .tag.labor { background: rgba(124,58,237,0.12); color: var(--purple); }
+  .glance-card .askline {
+    font-size: 14px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+    margin-top: auto;
+  }
+
+  .analyze-bullets {
+    list-style: none;
+    margin-bottom: 18px;
+  }
+  .analyze-bullets li {
+    font-size: 15px;
+    color: white;
+    padding: 8px 0 8px 22px;
+    line-height: 1.45;
+    position: relative;
+    font-weight: 500;
+  }
+  .analyze-bullets li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 12px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+  .analyze-stat {
+    background: rgba(255,255,255,0.16);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    text-align: center;
+    margin-top: auto;
+    backdrop-filter: blur(6px);
+  }
+  .analyze-stat .big {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 52px;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -0.04em;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  }
+  .analyze-stat .sub {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.92);
+    font-weight: 500;
+  }
+
+  .insight-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .insight-stat {
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+  }
+  .insight-stat.support { background: rgba(16, 185, 129, 0.12); }
+  .insight-stat.oppose { background: rgba(239, 68, 68, 0.10); }
+  .insight-stat.unsure { background: rgba(120, 130, 150, 0.10); }
+  .insight-stat .val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .insight-stat.support .val { color: var(--green-deep); }
+  .insight-stat.oppose .val { color: #B91C1C; }
+  .insight-stat.unsure .val { color: var(--ink); }
+  .insight-stat .lbl {
+    font-size: 11px;
+    color: var(--ink-dim);
+    font-weight: 500;
+  }
+  .age-section {
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-top: auto;
+  }
+  .age-section .age-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 10px;
+  }
+  .age-row {
+    display: grid;
+    grid-template-columns: 50px 1fr 40px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .age-row:last-child { margin-bottom: 0; }
+  .age-row .age-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .age-row .age-bar {
+    height: 8px;
+    background: var(--bg-alt);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .age-row .age-fill {
+    height: 100%;
+    border-radius: 999px;
+  }
+  .age-row.young .age-fill { background: var(--green); width: 75%; }
+  .age-row.old .age-fill { background: var(--red); width: 38%; }
+  .age-row .age-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-align: right;
+  }
+  .age-row.young .age-pct { color: var(--green-deep); }
+  .age-row.old .age-pct { color: #B91C1C; }
+
+  /* ============================================================
+     SLIDE 8  ·  LIVE DEMO
+     ============================================================ */
+  .s-demo {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.14), transparent 50%),
+      linear-gradient(180deg, #F6F9FF 0%, #EEF5FF 100%);
+    padding: 40px 56px 50px;
+  }
+  .s-demo h2 { font-size: 38px; margin-bottom: 18px; }
+  .demo-frame {
+    flex: 1;
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-hero);
+    border: 1px solid var(--border);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 380px;
+  }
+  .demo-frame img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .demo-frame .play-overlay {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at center, transparent 20%, rgba(11, 31, 77, 0.4) 90%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .demo-frame .play-btn {
+    width: 96px; height: 96px;
+    background: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
+    50% { transform: scale(1.06); box-shadow: 0 16px 60px rgba(37,99,235,0.4); }
+  }
+  .demo-frame .play-btn::after {
+    content: ""; width: 0; height: 0;
+    border-style: solid;
+    border-width: 18px 0 18px 30px;
+    border-color: transparent transparent transparent var(--cyan);
+    margin-left: 6px;
+  }
+  .demo-steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .demo-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+  }
+  .demo-step .sn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .demo-step .sl { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+
+  /* ============================================================
+     SLIDE 9  ·  PIPELINE — fixed arrows, bigger example text
+     ============================================================ */
+  .pipe-wrap {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+  }
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 38px;
+    flex: 1;
+    position: relative;
+  }
+  .pipe-step {
+    border-radius: var(--radius-lg);
+    padding: 24px 22px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: var(--shadow-card);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.16,1,0.3,1);
+    color: var(--ink);
+  }
+  .pipe-step.revealed { opacity: 1; transform: translateY(0); }
+  .pipe-step[data-step="1"] { background: linear-gradient(160deg, #EAF2FF 0%, #DBEAFE 100%); border: 1px solid var(--border); }
+  .pipe-step[data-step="2"] { background: linear-gradient(160deg, #93C5FD 0%, #60A5FA 100%); color: white; }
+  .pipe-step[data-step="3"] { background: linear-gradient(160deg, #2563EB 0%, #1D4ED8 100%); color: white; }
+  .pipe-step[data-step="4"] { background: linear-gradient(160deg, #1E3A8A 0%, #0B1F4D 100%); color: white; box-shadow: 0 20px 60px rgba(11, 31, 77, 0.3); }
+
+  .pipe-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px; height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--cyan);
+    font-size: 18px;
+    font-weight: 600;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.4s ease 0.3s;
+  }
+  .pipe-arrow.revealed { opacity: 1; }
+  .pipe-arrow[data-after="1"] { left: calc(25% - 18px); }
+  .pipe-arrow[data-after="2"] { left: calc(50% - 18px); }
+  .pipe-arrow[data-after="3"] { left: calc(75% - 18px); }
+
+  .pipe-step .pn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 10px;
+    color: var(--cyan);
+  }
+  .pipe-step[data-step="2"] .pn,
+  .pipe-step[data-step="3"] .pn,
+  .pipe-step[data-step="4"] .pn { color: white; opacity: 0.95; }
+
+  .pipe-step h3 {
+    font-size: 19px;
+    margin-bottom: 8px;
+    color: inherit;
+  }
+  .pipe-step .what {
+    font-size: 14px;
+    line-height: 1.45;
+    margin-bottom: 14px;
+    color: inherit;
+    opacity: 0.92;
+  }
+  .pipe-step[data-step="1"] .what { color: var(--ink-dim); }
+
+  .pipe-step .example {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: auto;
+    backdrop-filter: blur(4px);
+  }
+  .pipe-step[data-step="1"] .example {
+    background: rgba(37, 99, 235, 0.08);
+  }
+  .pipe-step .example .ex-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: inherit;
+    opacity: 0.85;
+  }
+  .pipe-step[data-step="1"] .example .ex-label { color: var(--cyan); }
+  .pipe-step .example .ex-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: inherit;
+    font-style: italic;
+    font-weight: 500;
+    opacity: 0.95;
+  }
+
+  .reveal-hint {
+    text-align: center;
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .reveal-hint.hidden { opacity: 0; pointer-events: none; }
+
+  /* ============================================================
+     SLIDE 10  ·  DATA
+     ============================================================ */
+  .data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 4px;
+    flex: 1;
+    align-items: stretch;
+  }
+  .data-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px 30px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+  }
+  .data-card::after {
+    content: "";
+    position: absolute;
+    top: -40%; right: -30%;
+    width: 70%; height: 100%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.06), transparent 60%);
+    pointer-events: none;
+  }
+  .data-card .badge-pill {
+    display: inline-block;
+    background: var(--surface-2);
+    color: var(--cyan);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+    align-self: flex-start;
+    position: relative; z-index: 2;
+  }
+  .data-card.alt .badge-pill { background: rgba(245, 158, 11, 0.12); color: #B45309; }
+  .data-card h3 {
+    font-size: 25px;
+    margin-bottom: 6px;
+    position: relative; z-index: 2;
+  }
+  .data-card .source {
+    font-size: 13.5px;
+    color: var(--ink-faint);
+    margin-bottom: 18px;
+    position: relative; z-index: 2;
+  }
+  .data-card .stat-big {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+    letter-spacing: -0.03em;
+    position: relative; z-index: 2;
+  }
+  .data-card .stat-label {
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 500;
+    margin-bottom: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    position: relative; z-index: 2;
+  }
+  .data-card .why {
+    font-size: 15px;
+    color: var(--ink-dim);
+    line-height: 1.55;
+    position: relative; z-index: 2;
+  }
+  .data-card .why b { color: var(--ink); font-weight: 600; }
+
+  .source-line {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--ink-faint);
+  }
+  .source-line i { font-family: 'Instrument Serif', serif; font-style: italic; }
+
+  /* ============================================================
+     SLIDE 11  ·  BIG STATS
+     ============================================================ */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 50px 1fr 50px 1.1fr;
+    gap: 14px;
+    margin-top: 4px;
+    flex: 1;
+    align-items: center;
+  }
+  .stat-block { text-align: center; padding: 12px; position: relative; }
+  .stat-block.conclusion {
+    background: linear-gradient(160deg, var(--surface) 0%, #DBEAFE 100%);
+    border: 1px solid var(--border-hi);
+    border-radius: var(--radius-lg);
+    padding: 18px 14px;
+    box-shadow: var(--shadow-glow);
+  }
+  .stat-block .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 120px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--ink-faint);
+    letter-spacing: -0.05em;
+  }
+  .stat-block.conclusion .num { font-size: 132px; }
+  .stat-block .num .unit { font-size: 56px; }
+  .stat-block.conclusion .num .unit { font-size: 64px; }
+  .stat-block.cyan .num {
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-block.violet .num {
+    background: linear-gradient(135deg, var(--violet), var(--purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-block .label {
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    color: var(--ink);
+    font-weight: 600;
+    margin: 12px 0 8px;
+  }
+  .stat-block.conclusion .label {
+    color: var(--cyan);
+    font-size: 12px;
+  }
+  .stat-block .desc {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink-dim);
+    max-width: 260px;
+    margin: 0 auto;
+  }
+  .stat-block .desc i {
+    display: block;
+    color: var(--ink-faint);
+    font-size: 12px;
+    margin-top: 4px;
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+  }
+  .stat-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--cyan);
+    opacity: 0.55;
+    line-height: 1;
+  }
+  .stat-connector.equals {
+    font-size: 36px;
+    color: var(--violet);
+    opacity: 0.7;
+  }
+
+  .supp-line {
+    margin-top: 14px;
+    font-size: 15px;
+    color: var(--ink-dim);
+    line-height: 1.55;
+    padding: 18px 24px;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    text-align: center;
+    border-left: 4px solid var(--cyan);
+  }
+  .supp-line b {
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+
+  /* ============================================================
+     SLIDE 12  ·  VOICES — quotes only, no per-card logos
+     ============================================================ */
+  .trusted-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 18px;
+  }
+  .trusted-bar .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 600;
+    flex-shrink: 0;
+    padding-right: 16px;
+    border-right: 1px solid var(--border);
+  }
+  .trusted-bar .logos {
+    display: flex;
+    flex: 1;
+    justify-content: space-around;
+    align-items: center;
+    gap: 8px;
+  }
+  .inst-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 52px;
+    padding: 0 6px;
+  }
+  .inst-logo img {
+    max-height: 44px;
+    max-width: 100%;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    filter: grayscale(15%);
+    opacity: 0.92;
+    transition: filter 0.2s, opacity 0.2s;
+  }
+  .inst-logo:hover img { filter: none; opacity: 1; }
+
+  .quote-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    flex: 1;
+  }
+  .quote-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px 28px 22px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  .quote-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+  }
+  .quote-card .qmark {
+    font-family: 'Instrument Serif', serif;
+    font-size: 78px;
+    color: var(--cyan);
+    opacity: 0.16;
+    line-height: 0.6;
+    font-weight: 700;
+    margin-bottom: 4px;
+    user-select: none;
+  }
+  .quote-card .body {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink);
+    flex: 1;
+    margin-bottom: 18px;
+    font-weight: 400;
+  }
+  .quote-card .body .hl {
+    background: linear-gradient(120deg, rgba(37,99,235,0.18) 0%, rgba(37,99,235,0.18) 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 50%;
+    background-position: 0 88%;
+    padding: 0 2px;
+    font-weight: 600;
+  }
+  .quote-card .attr {
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .quote-card .attr b {
+    color: var(--ink);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 3px;
+    font-size: 13.5px;
+  }
+  .quote-card .placeholder-tag {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: transparent;
+    color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 500;
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    z-index: 3;
+    opacity: 0.55;
+  }
+
+  /* ============================================================
+     SLIDE 13  ·  LIMITATIONS — simpler text
+     ============================================================ */
+  .limits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    margin-top: 4px;
+  }
+  .limit-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 24px;
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+  }
+  .limit-card.forward {
+    background: linear-gradient(160deg, #ECFDF5 0%, #F6F9FF 100%);
+    border-color: rgba(16, 185, 129, 0.22);
+  }
+  .limit-card.forward::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--green), var(--green-deep));
+  }
+  .limit-card .icon-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .limit-card.forward .icon-tag { color: var(--green-deep); }
+  .limit-card h3 { font-size: 21px; margin-bottom: 12px; }
+  .limit-card ul { list-style: none; }
+  .limit-card li {
+    font-size: 15px;
+    color: var(--ink-dim);
+    padding: 7px 0 7px 18px;
+    line-height: 1.5;
+    position: relative;
+  }
+  .limit-card li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 15px;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--cyan);
+    opacity: 0.6;
+  }
+  .limit-card.forward li::before { background: var(--green); opacity: 0.7; }
+
+  .warn-callout {
+    margin-top: 16px;
+    padding: 18px 26px;
+    background: rgba(245, 158, 11, 0.08);
+    border-left: 4px solid var(--amber);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .warn-callout::before { content: "⚠"; margin-right: 10px; color: var(--amber); }
+  .roadmap {
+    margin-top: 10px;
+    padding: 14px 22px;
+    border-left: 3px solid var(--cyan);
+    font-size: 14.5px;
+    color: var(--ink-dim);
+    line-height: 1.55;
+  }
+  .roadmap b { color: var(--ink); }
+
+  /* ============================================================
+     SLIDE 14  ·  CLOSE — hero "Thank you. Questions?" (full size)
+     ============================================================ */
+  .s-close {
+    background:
+      radial-gradient(circle at 20% 18%, rgba(37, 99, 235, 0.14), transparent 55%),
+      radial-gradient(circle at 80% 82%, rgba(124, 58, 237, 0.12), transparent 60%),
+      linear-gradient(180deg, #F6F9FF 0%, #EAF2FF 100%);
+    padding: 50px 64px;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .s-close::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse 70% 60% at center, black 30%, transparent 80%);
+    z-index: 1;
+  }
+  .s-close .close-eyebrow {
+    position: absolute;
+    top: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cyan);
+    z-index: 4;
+  }
+  .s-close .hero-block {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+    width: 100%;
+  }
+  .s-close h2.close-h {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 168px;
+    line-height: 0.94;
+    letter-spacing: -0.05em;
+    background: linear-gradient(135deg, #0B1F4D 0%, #1D4ED8 55%, #2563EB 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 26px;
+    text-align: center;
+  }
+  .s-close .pulse-dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--cyan-bright);
+    box-shadow: 0 0 0 0 rgba(46, 224, 255, 0.6);
+    animation: pulseDot 2s infinite;
+    margin-right: 16px;
+    transform: translateY(-22px);
+  }
+  @keyframes pulseDot {
+    0% { box-shadow: 0 0 0 0 rgba(46, 224, 255, 0.6); }
+    70% { box-shadow: 0 0 0 18px rgba(46, 224, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(46, 224, 255, 0); }
+  }
+  .s-close .tagline-italic {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 26px;
+    color: var(--ink-dim);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-bottom: 28px;
+  }
+  .s-close .tagline-italic .accent-line {
+    display: inline-block;
+    width: 36px;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 2px;
+    vertical-align: middle;
+    margin-right: 12px;
+    transform: translateY(-3px);
+  }
+  .s-close .resource-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink-dim);
+    font-weight: 500;
+  }
+  .s-close .resource-row .res {
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .s-close .resource-row .res:not(:last-child) {
+    border-right: 1px solid var(--border);
+  }
+  .s-close .resource-row .res a {
+    color: var(--cyan);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .s-close .resource-row .res .icon {
+    opacity: 0.7;
+  }
+
+  /* ============================================================
+     SPEAKER NOTES OVERLAY (toggle with N)
+     ============================================================ */
+  .notes-panel {
+    position: fixed;
+    bottom: 70px;
+    left: 22px;
+    right: 22px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(11, 31, 77, 0.97);
+    color: white;
+    border-radius: 12px;
+    padding: 20px 28px 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.12);
+    z-index: 1500;
+    font-family: 'Inter', sans-serif;
+    display: none;
+    max-height: 420px;
+    overflow-y: auto;
+  }
+  body.show-notes .notes-panel { display: block; animation: slideUp 0.3s ease-out; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .notes-panel .nh {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan-bright);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .notes-panel .nh .nclose {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    cursor: pointer;
+  }
+  .notes-content {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: rgba(255,255,255,0.92);
+  }
+  .notes-content b { color: var(--cyan-bright); font-weight: 600; }
+  .notes-content ul { margin: 6px 0 0 0; padding-left: 20px; }
+  .notes-content li { margin: 4px 0; }
+  .notes-content .time {
+    display: inline-block;
+    background: rgba(46, 224, 255, 0.18);
+    color: var(--cyan-bright);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+  .slide .notes { display: none; }
+
+  /* ============================================================
+     CONTROLS / PRINT
+     ============================================================ */
+  .controls {
+    position: fixed;
+    bottom: 22px; right: 22px;
+    display: flex; gap: 8px; z-index: 1000;
+  }
+  .controls button {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+  .controls button:hover { background: rgba(255, 255, 255, 0.2); }
+  .controls button.primary { background: var(--cyan); border-color: var(--cyan); }
+  .hint {
+    position: fixed;
+    bottom: 22px; left: 22px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 11px; z-index: 1000;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media print {
+    @page { size: 13.33in 7.5in landscape; margin: 0; }
+    html, body { background: white; overflow: visible; height: auto; }
+    body { display: block; }
+    .deck { width: 100%; height: auto; transform: none !important; }
+    .slide {
+      display: flex !important;
+      position: relative;
+      width: 13.33in; height: 7.5in;
+      page-break-after: always;
+      box-shadow: none;
+      inset: auto;
+      animation: none;
+      border-radius: 0;
+    }
+    .stagger-item { opacity: 1 !important; transform: none !important; }
+    .pipe-step, .pipe-arrow { opacity: 1 !important; transform: none !important; }
+    .reveal-hint, .controls, .hint, .notes-panel, .slide .notes { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Reusable SVG defs -->
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <pattern id="dotPattern" x="0" y="0" width="9" height="9" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.5" fill="#2563EB" fill-opacity="0.32"/>
+    </pattern>
+  </defs>
+</svg>
+
+<div class="deck" id="deck">
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 1  ·  EDITORIAL TITLE WITH DOTTED US MAP -->
+  <!-- ============================================================ -->
+  <section class="slide s-title active" data-slide="1">
+
+    <!-- Dotted US map background - more recognizable outline -->
+    <svg class="us-map-bg" viewBox="0 0 1000 580" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <clipPath id="usShape">
+          <path d="M 38 152 L 70 138 L 110 130 L 165 122 L 215 115 L 270 110 L 330 108 L 390 108 L 450 108 L 510 108 L 570 110 L 595 130 L 620 142 L 645 152 L 668 165 L 685 168 L 695 158 L 705 145 L 715 135 L 725 145 L 738 155 L 755 158 L 768 162 L 780 145 L 810 122 L 835 115 L 855 110 L 870 115 L 875 130 L 870 145 L 858 155 L 845 165 L 855 175 L 838 185 L 832 200 L 828 220 L 822 245 L 820 270 L 815 295 L 810 320 L 800 348 L 818 372 L 832 392 L 840 420 L 838 450 L 830 475 L 815 495 L 798 510 L 780 518 L 765 512 L 752 498 L 750 478 L 760 455 L 755 430 L 745 410 L 728 392 L 710 388 L 680 388 L 645 392 L 615 395 L 588 402 L 555 412 L 528 425 L 510 442 L 495 460 L 482 478 L 472 482 L 460 472 L 450 458 L 435 442 L 420 428 L 405 415 L 388 405 L 370 398 L 350 392 L 320 392 L 285 392 L 245 395 L 205 398 L 170 400 L 155 388 L 145 372 L 138 355 L 130 332 L 122 308 L 115 282 L 108 252 L 100 222 L 92 195 L 82 175 L 72 158 L 60 150 L 50 148 Z"/>
+        </clipPath>
+      </defs>
+      <rect x="0" y="0" width="1000" height="580" fill="url(#dotPattern)" clip-path="url(#usShape)"/>
+      <!-- Faint outline so the US shape is unmistakable -->
+      <path d="M 38 152 L 70 138 L 110 130 L 165 122 L 215 115 L 270 110 L 330 108 L 390 108 L 450 108 L 510 108 L 570 110 L 595 130 L 620 142 L 645 152 L 668 165 L 685 168 L 695 158 L 705 145 L 715 135 L 725 145 L 738 155 L 755 158 L 768 162 L 780 145 L 810 122 L 835 115 L 855 110 L 870 115 L 875 130 L 870 145 L 858 155 L 845 165 L 855 175 L 838 185 L 832 200 L 828 220 L 822 245 L 820 270 L 815 295 L 810 320 L 800 348 L 818 372 L 832 392 L 840 420 L 838 450 L 830 475 L 815 495 L 798 510 L 780 518 L 765 512 L 752 498 L 750 478 L 760 455 L 755 430 L 745 410 L 728 392 L 710 388 L 680 388 L 645 392 L 615 395 L 588 402 L 555 412 L 528 425 L 510 442 L 495 460 L 482 478 L 472 482 L 460 472 L 450 458 L 435 442 L 420 428 L 405 415 L 388 405 L 370 398 L 350 392 L 320 392 L 285 392 L 245 395 L 205 398 L 170 400 L 155 388 L 145 372 L 138 355 L 130 332 L 122 308 L 115 282 L 108 252 L 100 222 L 92 195 L 82 175 L 72 158 L 60 150 L 50 148 Z" fill="none" stroke="#2563EB" stroke-opacity="0.18" stroke-width="1.5"/>
+      <!-- Major-city accent dots -->
+      <g clip-path="url(#usShape)">
+        <circle cx="115" cy="285" r="4" fill="#1D4ED8" opacity="0.85"/>
+        <circle cx="140" cy="362" r="4" fill="#1D4ED8" opacity="0.85"/>
+        <circle cx="845" cy="165" r="4" fill="#1D4ED8" opacity="0.85"/>
+        <circle cx="500" cy="200" r="4" fill="#1D4ED8" opacity="0.85"/>
+        <circle cx="790" cy="500" r="4" fill="#7C3AED" opacity="0.85"/>
+        <circle cx="445" cy="320" r="4" fill="#7C3AED" opacity="0.85"/>
+      </g>
+    </svg>
+
+    <div class="corner-top">
+      <span class="l">civicsim.xyz</span>
+      <div class="ischool-mark">
+        <img src="../Images/berkeleyischool-logo-vertical-2color-lg.png" alt="UC Berkeley School of Information">
+      </div>
+    </div>
+
+    <div class="hero-wrap">
+      <div class="hero-eyebrow">Demographically grounded simulation</div>
+      <div class="cs-wordmark">CivicSim</div>
+      <div class="tagline-row">
+        <span class="accent-line"></span>
+        <span class="tagline">Ground it before you simulate it.</span>
+      </div>
+      <p class="subtitle-text">Demographically grounded LLM simulations for public-policy testing.</p>
+    </div>
+
+    <div class="author-strip">
+      <div class="author-card stagger-item">
+        <div class="avatar"><img src="../Images/anagha.png" alt="Anagha"></div>
+        <div class="name">Anagha</div>
+        <div class="role">MIMS · Capstone</div>
+      </div>
+      <div class="author-card stagger-item">
+        <div class="avatar"><img src="../Images/aratrik_paul.jpg" alt="Aratrik Paul"></div>
+        <div class="name">Aratrik Paul</div>
+        <div class="role">MIMS · Capstone</div>
+      </div>
+      <div class="author-card stagger-item">
+        <div class="avatar"><img src="../Images/minkush.jpg" alt="Minkush"></div>
+        <div class="name">Minkush</div>
+        <div class="role">MIMS · Capstone</div>
+      </div>
+      <div class="author-card stagger-item">
+        <div class="avatar"><img src="../Images/sushanti.jpeg" alt="Sushanti"></div>
+        <div class="name">Sushanti</div>
+        <div class="role">MIMS · Capstone</div>
+      </div>
+      <div class="author-card stagger-item">
+        <div class="avatar"><img src="../Images/vikram.png" alt="Vikram"></div>
+        <div class="name">Vikram</div>
+        <div class="role">MIMS · Capstone</div>
+      </div>
+    </div>
+
+    <div class="corner-bot">
+      <span class="l">Team CivicSim · Capstone 2026 · Faculty Panel</span>
+      <span class="r">civicsim.xyz</span>
+    </div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~30 SEC · OPENING</div>
+      <p>Hi everyone, thanks for having us. We're team CivicSim. I'm <b>[your name]</b>, and that's Anagha, Aratrik, Sushanti, and Vikram. We're all MIMS students at the Berkeley School of Information.</p>
+      <p>What you see on this slide is our logo, the team, and a dotted map of the United States. That map is going to be relevant in about thirty seconds, because what we've been working on for the last year is essentially one question. How do you build something that simulates an entire country's worth of opinions, without flattening the people who live there?</p>
+      <p>Our project is called CivicSim. The tagline up there is <b>"ground it before you simulate it."</b> That phrase has basically become our religion at this point. Because the more we looked at AI-based policy simulation, the more we kept finding the same problem. Most of these systems are failing in a way that isn't obvious. They're failing before they generate a single word. And we want to walk you through why, and what we built to fix it.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 2  ·  OPPORTUNITY -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="2">
+    <div class="eyebrow">01 · The opportunity</div>
+    <h2>AI tests ideas everywhere.<br>Except where it matters most.</h2>
+    <p class="subtitle">Synthetic personas now de-risk decisions across industries. Public policy still ships untested.</p>
+
+    <div class="rw-wrap">
+      <div class="rw-grid">
+        <div class="rw-card right stagger-item">
+          <div class="badge">
+            <div class="icon">✓</div>
+            <div class="label">Where simulation already works</div>
+          </div>
+          <h3>Industries using AI today.</h3>
+          <ul class="items">
+            <li>
+              <div>
+                <div class="lbl">Product design</div>
+                <div class="desc">Synthetic users test interfaces before launch.</div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <div class="lbl">Market research</div>
+                <div class="desc">Synthetic respondents stand in at scale.</div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <div class="lbl">Pharma, ads, finance</div>
+                <div class="desc">Stress-test decisions virtually before reality.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="rw-card wrong stagger-item">
+          <div class="badge">
+            <div class="icon">✕</div>
+            <div class="label">Where it has not landed yet</div>
+          </div>
+          <h3>Public policy is missing.</h3>
+          <ul class="items">
+            <li>
+              <div>
+                <div class="lbl">Slow panels</div>
+                <div class="desc">Narrow, expensive survey cohorts.</div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <div class="lbl">Untested legislation</div>
+                <div class="desc">Ships without virtual electorate testing.</div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <div class="lbl">Reactive learning</div>
+                <div class="desc">Outcomes known only after the law passes.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accent-bar">
+        Public policy is the next frontier. And the hardest, because <b>representation</b> is not optional.
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>02 / 14</span>
+    </div>
+    <div class="progress" style="width: 14.28%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~60 SEC · OPPORTUNITY</div>
+      <p>So let's start with where we are right now. If you've been paying attention to AI in the last couple of years, you've probably noticed that AI simulation is becoming kind of a thing. It's actually everywhere now.</p>
+      <p>If you're designing a product, you can test it on synthetic users before you ever ship to a real customer. Market research firms are running surveys with synthetic respondents instead of paying for real survey panels. That alone saves them weeks and tens of thousands of dollars per study. Pharma companies are doing virtual stress tests of compounds before clinical trials. Ad agencies are A/B testing creative against simulated demographics. Even finance, which has been doing scenario simulation for decades, is now getting an AI layer added on top.</p>
+      <p>So the right side of this slide is the basic point. Public policy is conspicuously missing from that list. We still pass laws the old way. We rely on slow, narrow, expensive survey panels. It's basically the same playbook from the 1980s. Important legislation goes from draft to law without ever being tested against a synthetic version of the population it's going to affect. And we usually only find out whether a policy actually worked after it's already in effect. That's a really backward way to build something as consequential as public policy.</p>
+      <p>We think public policy is actually the natural next frontier for this technology. But here's why nobody's done it well yet. It's also the hardest frontier. Because in public policy, you can't just be roughly right. <b>Representation isn't optional.</b> If your simulation misses a community, you've just automated a bias and called it data. That's the bar CivicSim was built for.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 3  ·  PROBLEM -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="3">
+    <div class="eyebrow">02 · The problem</div>
+    <h2>Policy simulations fail<br>before generation begins.</h2>
+
+    <div class="problem-grid">
+      <div class="problem-card stagger-item">
+        <div class="ribbon"></div>
+        <div class="pnum">01</div>
+        <h3>Stereotypes,<br>not populations.</h3>
+        <div class="example">
+          <div class="ex-label">Real example</div>
+          <div class="ex-text">Ask GPT to "simulate a Texan voter." It returns the average of every Texan stereotype it has read.</div>
+        </div>
+      </div>
+
+      <div class="problem-card stagger-item">
+        <div class="ribbon"></div>
+        <div class="pnum">02</div>
+        <h3>Survey panels<br>are not populations.</h3>
+        <div class="example">
+          <div class="ex-label">Real example</div>
+          <div class="ex-text">Young Black Americans land in the wrong income bracket <b>32%</b> of the time in survey panels.</div>
+        </div>
+      </div>
+
+      <div class="problem-card stagger-item">
+        <div class="ribbon"></div>
+        <div class="pnum">03</div>
+        <h3>Wrong variables.<br>Confidently.</h3>
+        <div class="example">
+          <div class="ex-label">Real example</div>
+          <div class="ex-text">On tech policy, geography matters more than age. <b>Most simulations skip it.</b></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="closing-line">The model is not the problem. The <span class="it">who</span> being simulated is.</p>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>03 / 14</span>
+    </div>
+    <div class="progress" style="width: 21.42%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~70 SEC · PROBLEM</div>
+      <p>So we asked ourselves the obvious question. If AI simulation is everywhere else, why hasn't it worked for policy? And what we found, when we dug into it, was that there are three specific failure modes. And they all happen before the AI even starts generating responses. The failure isn't in the model. It's in how the model is being set up.</p>
+      <p>The first failure is on the left of the slide. Most simulations start with a prompt that says something like "simulate a 35-year-old voter from Texas." If you've ever tried that, you know what happens. The model returns this average of every Texan stereotype it has ever scraped off the internet. Cowboy hats, pickup trucks, the works. There's no real distribution of Texans behind that agent. It's a caricature. And caricatures are fine if you're writing ad copy. They're a disaster if you're advising someone on real policy.</p>
+      <p>The second failure, in the middle, is more subtle. When researchers do use real data, they usually sample from existing survey panels. The problem is that those panels weren't designed to be representative populations. They were designed to answer specific research questions. So when you sample agents from them, you inherit all their gaps. We actually measured this. For young Black Americans, survey panels misplace <b>32 percent</b> of them into the wrong income bracket. A full third of a community ends up in the wrong slot.</p>
+      <p>The third failure is the one we found most interesting. The variables researchers typically pick to ground their simulations are often the wrong variables. Age, income, education. They sound important. But for something like tech policy, geography turns out to matter more than age. And almost everyone skips geography.</p>
+      <p>The takeaway on this slide is the line at the bottom. <b>The model isn't the problem. The "who" being simulated is.</b></p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 4  ·  LANDSCAPE (bigger number, no "competitors" word) -->
+  <!-- ============================================================ -->
+  <section class="slide s-landscape" data-slide="4">
+    <div class="eyebrow">03 · The landscape</div>
+    <h2>Persona platforms are growing fast.<br>None hit the policy bar.</h2>
+
+    <div class="insight-row">
+      <div class="big-stat">$50M+</div>
+      <div class="insight-text">Raised by the leading synthetic-persona platforms combined. <b>None ground their personas in census reality.</b> Each was built for commerce, not consequential decisions.</div>
+    </div>
+
+    <div class="comp-strip">
+      <div class="comp-card simile">
+        <div class="c-glyph">S</div>
+        <div class="c-info">
+          <span class="c-name">Simile.</span>
+          <span class="c-val">~$8M raised · Behavior simulation</span>
+        </div>
+      </div>
+      <div class="comp-card ditto">
+        <div class="c-glyph">D</div>
+        <div class="c-info">
+          <span class="c-name">Ditto</span>
+          <span class="c-val">~$2M seed · AI personas</span>
+        </div>
+      </div>
+      <div class="comp-card aaru">
+        <div class="c-glyph">⧉</div>
+        <div class="c-info">
+          <span class="c-name">Aaru</span>
+          <span class="c-val">~$10M Series A · Reaction modeling</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Three structural gaps for policy use</div>
+
+    <div class="gap-list-big">
+      <div class="gap-big stagger-item">
+        <div class="icon-x">✕</div>
+        <div class="gnum">Gap 01</div>
+        <h3>Demographic grounding is shallow.</h3>
+        <p class="desc">Personas synthesized from generic priors. <b>Civic populations are not faithfully represented at the joint level.</b></p>
+      </div>
+      <div class="gap-big stagger-item">
+        <div class="icon-x">✕</div>
+        <div class="gnum">Gap 02</div>
+        <h3>Built for research, not for decisions.</h3>
+        <p class="desc">Designed for marketing studies and qualitative work. <b>Not built to defend a policy choice in a hearing.</b></p>
+      </div>
+      <div class="gap-big stagger-item">
+        <div class="icon-x">✕</div>
+        <div class="gnum">Gap 03</div>
+        <h3>Closed, black-box methodology.</h3>
+        <p class="desc">Personas and reasoning are opaque. <b>No auditable subgroup breakdown. No inspection.</b></p>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>04 / 14</span>
+    </div>
+    <div class="progress" style="width: 28.57%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~65 SEC · LANDSCAPE</div>
+      <p>Now we should be honest. We're not the first team to think about this. The synthetic persona space actually has some pretty serious players. There are three companies in particular that you've probably seen if you've been watching this space. <b>Simile, Ditto, and Aaru.</b> Between them, they've raised over <b>50 million dollars.</b> Real engineers, real investors, real momentum.</p>
+      <p>So why isn't one of them doing what we're doing? The answer is that they're not actually trying to. Each of these companies was built for commerce. Simile is mostly for product and market research teams. Ditto does qualitative AI research personas. Aaru is for business and government messaging. All useful, all well-funded, all completely different beasts from what policy actually demands.</p>
+      <p>When you look at these tools through a policy lens, three structural gaps show up consistently. Those are the three boxes at the bottom of the slide.</p>
+      <p>The first gap is that their <b>demographic grounding is shallow.</b> They're synthesizing personas from generic priors, not from real census data.</p>
+      <p>The second gap is that they're <b>built for research workflows</b>, not for decision-making. If you're a city council member who has to defend a policy choice in a hearing, you can't really cite "an AI persona told me" as your reasoning.</p>
+      <p>The third gap is that the <b>methodology is closed.</b> You can't audit how a persona was built, or why it reasoned a certain way. For policy work, that's a non-starter.</p>
+      <p>So none of these competitors are bad products. They're just optimized for a totally different problem. We saw the policy-specific gap. That's what CivicSim is built to close.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 5  ·  INTRODUCING CIVICSIM -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="5">
+    <div class="eyebrow">04 · The solution</div>
+    <h2>Introducing CivicSim.</h2>
+    <p class="subtitle">Pick a U.S. location. Choose a policy question. Run a synthetic electorate that is actually representative.</p>
+
+    <div class="pillar-grid">
+      <div class="pillar stagger-item">
+        <div class="pillar-glow"></div>
+        <div class="badge">01</div>
+        <h3>Representative<br>Population.</h3>
+        <p>Agents sampled from <b>ACS Census microdata</b>. <span class="num-hl">2.5M</span> records. Distributions match the location.</p>
+      </div>
+      <div class="pillar stagger-item">
+        <div class="pillar-glow"></div>
+        <div class="badge">02</div>
+        <h3>Policy-Specific<br>Grounding.</h3>
+        <p>Each agent carries an <b>empirical opinion prior</b> from <span class="num-hl">38,449</span> Pew respondents. Not LLM guesswork.</p>
+      </div>
+      <div class="pillar stagger-item">
+        <div class="pillar-glow"></div>
+        <div class="badge">03</div>
+        <h3>Transparent<br>by Design.</h3>
+        <p>Every persona <b>inspectable</b>. Demographics, prior, stance, rationale streamed live and saved.</p>
+      </div>
+    </div>
+
+    <div class="accent-bar">
+      The goal is not perfect prediction. It is representative, transparent simulation <b>before</b> real-world rollout.
+    </div>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>05 / 14</span>
+    </div>
+    <div class="progress" style="width: 35.71%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~55 SEC · INTRODUCING CIVICSIM</div>
+      <p>That brings us to what we actually built. CivicSim, at its core, is pretty simple to describe. You pick a U.S. location. Could be a county, eventually any state or city. You pick a policy question. And we run a synthetic electorate that actually looks like the place you picked. Same demographics, same intersectional structure, same opinion patterns you'd find if you really polled there.</p>
+      <p>There are three pillars holding the whole thing up. They map one-to-one with the three problems I just walked through. So I'll just call out what each one does.</p>
+      <p><b>Pillar one, on the left, is representative population.</b> Every single agent we generate is sampled from real U.S. Census microdata. We're working with 2.5 million records. And the distributions we sample match the actual demographics of wherever you picked.</p>
+      <p><b>Pillar two, in the middle, is policy-specific grounding.</b> Every agent doesn't just have demographics. It carries an empirical opinion prior built from 38,449 real Pew survey respondents. So when an agent reasons about a policy, it's not the LLM guessing what a 30-year-old Black woman from Oakland might think. It's the LLM conditioned on what people like that have actually said in real surveys.</p>
+      <p><b>Pillar three is that every persona is fully inspectable.</b> You can drill into any agent and see its demographics, its prior, its stance, and its reasoning chain. All of that is saved per simulation run.</p>
+      <p>One thing I want to emphasize on this slide. We're not promising perfect prediction. We can't tell you who's going to win an election. The goal is representative, transparent simulation. So policymakers can stress-test their ideas before they ship to the real world.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 6  ·  ARCHITECTURE & TECHNICAL DEEP DIVE -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="6">
+    <div class="eyebrow">05 · Architecture &amp; technical deep dive</div>
+    <h2>How the system is built.</h2>
+
+    <div class="arch-svg-wrap">
+      <svg class="arch-diagram" viewBox="0 0 1160 460" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Gradients -->
+          <linearGradient id="gClient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#DBEAFE"/>
+            <stop offset="100%" stop-color="#BFDBFE"/>
+          </linearGradient>
+          <linearGradient id="gServer" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#2563EB"/>
+            <stop offset="100%" stop-color="#1D4ED8"/>
+          </linearGradient>
+          <linearGradient id="gEngine" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#7C3AED"/>
+            <stop offset="100%" stop-color="#5B21B6"/>
+          </linearGradient>
+          <linearGradient id="gData" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1E3A8A"/>
+            <stop offset="100%" stop-color="#0B1F4D"/>
+          </linearGradient>
+          <!-- Arrow marker -->
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#7B8EA8"/>
+          </marker>
+          <marker id="arrowCyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#1D4ED8"/>
+          </marker>
+          <!-- Drop shadow -->
+          <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="160%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+            <feOffset dx="0" dy="4" result="offsetblur"/>
+            <feComponentTransfer><feFuncA type="linear" slope="0.15"/></feComponentTransfer>
+            <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- ===== ROW 1: CLIENT TIER (Browser + Frontend) ===== -->
+        <!-- Browser -->
+        <g filter="url(#cardShadow)">
+          <rect x="80" y="14" width="220" height="78" rx="10" fill="url(#gClient)" stroke="#93C5FD" stroke-width="1"/>
+        </g>
+        <text x="190" y="36" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600" fill="#1D4ED8" letter-spacing="1.5">CLIENT</text>
+        <text x="190" y="60" text-anchor="middle" font-family="Inter, sans-serif" font-size="17" font-weight="700" fill="#0B1F4D">Browser</text>
+        <text x="190" y="80" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#486381">React UI · SSE consumer</text>
+
+        <!-- Next.js Frontend -->
+        <g filter="url(#cardShadow)">
+          <rect x="370" y="14" width="240" height="78" rx="10" fill="url(#gClient)" stroke="#93C5FD" stroke-width="1"/>
+        </g>
+        <text x="490" y="36" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600" fill="#1D4ED8" letter-spacing="1.5">FRONTEND · VERCEL</text>
+        <text x="490" y="60" text-anchor="middle" font-family="Inter, sans-serif" font-size="17" font-weight="700" fill="#0B1F4D">Next.js 15</text>
+        <text x="490" y="80" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#486381">/api proxy · TS · Tailwind</text>
+
+        <!-- Arrow Browser -> Next.js -->
+        <line x1="305" y1="53" x2="365" y2="53" stroke="#7B8EA8" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="335" y="46" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#7B8EA8">HTTPS</text>
+
+        <!-- Arrow Next.js -> FastAPI (vertical) -->
+        <line x1="490" y1="97" x2="490" y2="140" stroke="#1D4ED8" stroke-width="1.5" marker-end="url(#arrowCyan)"/>
+        <text x="500" y="125" font-family="JetBrains Mono, monospace" font-size="9" fill="#1D4ED8">/api/* · SSE</text>
+
+        <!-- ===== ROW 2: API SERVER (centered, prominent) ===== -->
+        <g filter="url(#cardShadow)">
+          <rect x="370" y="142" width="420" height="86" rx="12" fill="url(#gServer)"/>
+        </g>
+        <text x="580" y="166" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600" fill="#2EE0FF" letter-spacing="1.5">API SERVER · FLY.IO</text>
+        <text x="580" y="192" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="white">FastAPI Backend</text>
+        <text x="580" y="214" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#DBEAFE">Pydantic validation · CORS · Server-Sent Events streaming</text>
+
+        <!-- ===== Fan-out arrows: FastAPI -> 3 engine services ===== -->
+        <!-- Left arrow to Sampler -->
+        <path d="M 470 232 Q 470 252 240 252 Q 195 252 195 276" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow)" opacity="0.8"/>
+        <!-- Center arrow to Prior -->
+        <line x1="580" y1="232" x2="580" y2="276" stroke="#7C3AED" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.8"/>
+        <!-- Right arrow to LLM -->
+        <path d="M 690 232 Q 690 252 920 252 Q 965 252 965 276" stroke="#7C3AED" stroke-width="1.5" fill="none" marker-end="url(#arrow)" opacity="0.8"/>
+
+        <!-- Branch label -->
+        <text x="580" y="252" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#5B21B6" letter-spacing="1" >ORCHESTRATES</text>
+
+        <!-- ===== ROW 3: ENGINE TIER (3 services) ===== -->
+        <!-- Agent Sampler -->
+        <g filter="url(#cardShadow)">
+          <rect x="80" y="278" width="230" height="78" rx="10" fill="url(#gEngine)"/>
+        </g>
+        <text x="195" y="300" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#E9D5FF" letter-spacing="1.5">01 · SAMPLER</text>
+        <text x="195" y="322" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="white">Agent Generator</text>
+        <text x="195" y="342" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#DDD6FE">largest-remainder draw</text>
+
+        <!-- Prior Lookup -->
+        <g filter="url(#cardShadow)">
+          <rect x="465" y="278" width="230" height="78" rx="10" fill="url(#gEngine)"/>
+        </g>
+        <text x="580" y="300" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#E9D5FF" letter-spacing="1.5">02 · LOOKUP</text>
+        <text x="580" y="322" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="white">Opinion Prior</text>
+        <text x="580" y="342" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#DDD6FE">P(answer | demographics)</text>
+
+        <!-- LLM Client -->
+        <g filter="url(#cardShadow)">
+          <rect x="850" y="278" width="230" height="78" rx="10" fill="url(#gEngine)"/>
+        </g>
+        <text x="965" y="300" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#E9D5FF" letter-spacing="1.5">03 · CLIENT</text>
+        <text x="965" y="322" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="white">LLM Client</text>
+        <text x="965" y="342" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#DDD6FE">provider-agnostic</text>
+
+        <!-- ===== Arrows engine -> data ===== -->
+        <line x1="195" y1="361" x2="195" y2="395" stroke="#7B8EA8" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="3,3"/>
+        <line x1="580" y1="361" x2="580" y2="395" stroke="#7B8EA8" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="3,3"/>
+        <line x1="965" y1="361" x2="965" y2="395" stroke="#7B8EA8" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="3,3"/>
+
+        <!-- ===== ROW 4: DATA SOURCES ===== -->
+        <!-- ACS PUMS (cylinder shape) -->
+        <g filter="url(#cardShadow)">
+          <ellipse cx="195" cy="402" rx="115" ry="9" fill="#0B1F4D"/>
+          <rect x="80" y="402" width="230" height="40" fill="url(#gData)"/>
+          <ellipse cx="195" cy="442" rx="115" ry="9" fill="url(#gData)"/>
+          <ellipse cx="195" cy="402" rx="115" ry="9" fill="none" stroke="#1E3A8A" stroke-width="0.5"/>
+        </g>
+        <text x="195" y="430" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="white">ACS · 2.5M rows</text>
+
+        <g filter="url(#cardShadow)">
+          <ellipse cx="580" cy="402" rx="115" ry="9" fill="#0B1F4D"/>
+          <rect x="465" y="402" width="230" height="40" fill="url(#gData)"/>
+          <ellipse cx="580" cy="442" rx="115" ry="9" fill="url(#gData)"/>
+          <ellipse cx="580" cy="402" rx="115" ry="9" fill="none" stroke="#1E3A8A" stroke-width="0.5"/>
+        </g>
+        <text x="580" y="430" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="white">Pew ATP · parquet</text>
+
+        <g filter="url(#cardShadow)">
+          <rect x="850" y="402" width="230" height="40" rx="6" fill="url(#gData)"/>
+        </g>
+        <text x="965" y="427" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="white">OpenAI · Anthropic</text>
+      </svg>
+    </div>
+
+    <div class="arch-legend">
+      <div class="leg client"><span class="swatch"></span>Client tier</div>
+      <div class="leg server"><span class="swatch"></span>API server</div>
+      <div class="leg engine"><span class="swatch"></span>Core engine</div>
+      <div class="leg data"><span class="swatch"></span>Data sources</div>
+    </div>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>06 / 14</span>
+    </div>
+    <div class="progress" style="width: 42.85%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~65 SEC · ARCHITECTURE</div>
+      <p>Quick technical detour for the engineers in the room. This is roughly how the system is built. Walking through the diagram from top to bottom.</p>
+      <p>At the top, you've got a standard web browser. That's how users actually interact with CivicSim. They hit the site, which loads our <b>Next.js frontend</b> running on Vercel. The frontend is mostly a thin layer. It does local state, the UI, the visualization. It proxies API calls back to our backend.</p>
+      <p>The backend is where the interesting stuff happens. We're running <b>FastAPI on Fly.io.</b> It's the orchestration layer. It takes a request from the user, figures out which downstream services to call, and assembles the result.</p>
+      <p>Underneath the API, you've got three core services that the backend coordinates. The first is the <b>agent sampler.</b> That's the piece that generates synthetic people. It uses a probabilistic largest-remainder algorithm to make sure the distributions match what the census tells us about the location.</p>
+      <p>The second service is the <b>prior lookup.</b> Given an agent's demographics, this returns the historical opinion distribution. Basically, given someone matches these traits, here's what people like them have said about this kind of question. We use sparse-cell backoff when an exact demographic combination doesn't exist in the data.</p>
+      <p>The third service is the <b>LLM client.</b> We've built it to be model-agnostic. Works with OpenAI, Anthropic, or any local model.</p>
+      <p>The data layer at the bottom is what powers all of this. ACS census, Pew priors, and external LLM providers.</p>
+      <p>One detail worth flagging. The whole pipeline uses <b>Server-Sent Events</b> to stream responses back to the frontend. So when you're watching a simulation run, you're seeing agents arrive in real time as they're being generated. That matters for the transparency story. Users see the system thinking, not a finished result.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 7  ·  AT-A-GLANCE (screenshot recreation) -->
+  <!-- ============================================================ -->
+  <section class="slide s-glance" data-slide="7">
+    <div class="eyebrow">06 · At a glance</div>
+    <h2>From policy to insight in seconds.</h2>
+    <p class="subtitle">A complete user journey, end to end.</p>
+
+    <div class="glance-grid">
+      <div class="glance-card stagger-item">
+        <div class="badge-num">① Your Policy</div>
+        <h3>Pick a question.</h3>
+        <div class="policy-card">
+          <div class="pquote">"$20 Federal Minimum Wage"</div>
+          <div class="tags">
+            <span class="tag economy">Economy</span>
+            <span class="tag labor">Labor</span>
+          </div>
+        </div>
+        <p class="askline">What will different demographics think?</p>
+      </div>
+
+      <div class="glance-card middle stagger-item">
+        <div class="badge-num">② CivicSim Analyzes</div>
+        <h3>Run the simulation.</h3>
+        <ul class="analyze-bullets">
+          <li>5,000 census-grounded agents</li>
+          <li>Demographics + opinion priors</li>
+          <li>AI-powered simulation</li>
+        </ul>
+        <div class="analyze-stat">
+          <div class="big">~5 sec</div>
+          <div class="sub">vs. weeks of polling</div>
+        </div>
+      </div>
+
+      <div class="glance-card stagger-item">
+        <div class="badge-num">③ Instant Insights</div>
+        <h3>See the breakdown.</h3>
+        <div class="insight-stats">
+          <div class="insight-stat support">
+            <div class="val">59%</div>
+            <div class="lbl">Support</div>
+          </div>
+          <div class="insight-stat oppose">
+            <div class="val">27%</div>
+            <div class="lbl">Oppose</div>
+          </div>
+          <div class="insight-stat unsure">
+            <div class="val">14%</div>
+            <div class="lbl">Unsure</div>
+          </div>
+        </div>
+        <div class="age-section">
+          <div class="age-title">By age</div>
+          <div class="age-row young">
+            <div class="age-label">18–29</div>
+            <div class="age-bar"><div class="age-fill"></div></div>
+            <div class="age-pct">75%</div>
+          </div>
+          <div class="age-row old">
+            <div class="age-label">65+</div>
+            <div class="age-bar"><div class="age-fill"></div></div>
+            <div class="age-pct">38%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-footer" style="color:rgba(255,255,255,0.65);">
+      <span class="brand" style="color:white;">CivicSim</span>
+      <span style="color:rgba(255,255,255,0.65);">07 / 14</span>
+    </div>
+    <div class="progress" style="width: 50%; background: linear-gradient(90deg, #2EE0FF, #A855F7);"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~55 SEC · AT A GLANCE</div>
+      <p>Okay, enough engineering. Let me show you what this actually looks like for an end user. Because the whole product really does boil down to three steps, and we wanted to make this visual.</p>
+      <p><b>Step one is on the left. You start with a policy.</b> Whatever you want to test. Here we've got a real example. A federal 20 dollar minimum wage proposal. You drop it in, and CivicSim automatically tags the relevant domains. In this case, economy and labor, because the system figured out the policy touches both.</p>
+      <p><b>Step two is in the middle, on the purple card. CivicSim does the work.</b> Behind the scenes, we're generating 5,000 census-grounded agents, attaching opinion priors to each one, and running the whole simulation. From your perspective as a user, the relevant number is on the screen. It takes about <b>5 seconds.</b> Compare that to traditional polling, where you're looking at weeks to recruit, run, and analyze. So this is roughly four orders of magnitude faster.</p>
+      <p><b>Step three, on the right, is where the value lands. You get instant insights.</b> The aggregate breakdown is at the top. 59 percent support, 27 percent oppose, 14 percent unsure. But the really interesting stuff is below that, in the subgroup breakdowns.</p>
+      <p>Look at the age split. 75 percent of people aged 18 to 29 support this policy. But only 38 percent of people over 65 do. That's almost a 40-point gap based on a single demographic axis. And that's exactly the kind of subgroup divergence policymakers need to see before they ship something. It's basically impossible to surface at this resolution from a traditional poll.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 8  ·  LIVE DEMO -->
+  <!-- ============================================================ -->
+  <section class="slide s-demo" data-slide="8">
+    <div class="eyebrow">07 · Live demo</div>
+    <h2>CivicSim in action.</h2>
+
+    <div class="demo-frame">
+      <img src="report-assets/screenshots/civicsim_simulator.png" alt="CivicSim simulator">
+      <div class="play-overlay">
+        <div class="play-btn"></div>
+      </div>
+    </div>
+
+    <div class="demo-steps">
+      <div class="demo-step"><div class="sn">STEP 01</div><div class="sl">Submit a policy question</div></div>
+      <div class="demo-step"><div class="sn">STEP 02</div><div class="sl">Sample a representative electorate</div></div>
+      <div class="demo-step"><div class="sn">STEP 03</div><div class="sl">Stream agent responses live</div></div>
+      <div class="demo-step"><div class="sn">STEP 04</div><div class="sl">Compare stakeholder groups</div></div>
+      <div class="demo-step"><div class="sn">STEP 05</div><div class="sl">Inspect any persona</div></div>
+    </div>
+
+    <div class="slide-footer" style="bottom: 16px;">
+      <span class="brand">CivicSim</span>
+      <span>08 / 14</span>
+    </div>
+    <div class="progress" style="width: 57.14%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~3 TO 4 MIN · LIVE DEMO</div>
+      <p>Alright. Enough abstract talk. Let me actually show you this thing live.</p>
+      <p>What I'm going to do is submit a real policy question, and we'll watch what happens in real time.</p>
+      <p><i>(Submit your rehearsed question. For example, "Should the federal minimum wage be raised to 20 dollars?" Choose Alameda County or whichever location you've rehearsed with.)</i></p>
+      <p>So the first thing you'll see is the population sample being constructed. Look at this list of agents on the left. These aren't random people. These are demographics drawn directly from the census for Alameda County. You can see the age distribution, the race distribution, the income spread. That matches what you'd actually find if you went door to door in Alameda today.</p>
+      <p>Now I'll kick off the simulation. Watch the right pane. <i>(Agents start streaming in.)</i></p>
+      <p>You can see agents are coming in live now. Each one with their demographics, their opinion prior, the LLM's stance for them, and the reasoning. It's not waiting for the whole batch to finish. You're seeing the simulation think.</p>
+      <p>Let me drill into one. <i>(Click into a persona that diverges from the majority.)</i> Notice this one. 67-year-old retired homeowner from Berkeley. Their reasoning here is different from the average. They're saying, and I'm reading directly from the model's output, that they're worried about small business impact. The interesting thing is, our system actually knows that this demographic profile in real Pew data did skew this way. So the agent isn't pulling that opinion out of thin air. It's reflecting an empirical pattern.</p>
+      <p><i>(Wrap up demo.)</i> And all of that took about 5 seconds. Now I'll take you through what just happened, technically.</p>
+      <p><b>Backup plan.</b> If the live demo fails, switch to the pre-recorded video in the second tab. Don't apologize. Just say "let me show you a recorded version" and move on.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 9  ·  HOW IT WORKS — bigger example text -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="9" data-reveal="4">
+    <div class="eyebrow">08 · How it works</div>
+    <h2>Four steps. End to end.</h2>
+
+    <div class="pipe-wrap">
+      <div class="pipeline">
+        <div class="pipe-step" data-step="1">
+          <div class="pn">01</div>
+          <h3>Sample</h3>
+          <p class="what">Build N agents matching the location's demographics.</p>
+          <div class="example">
+            <div class="ex-label">Real example</div>
+            <div class="ex-text">"Give me 200 people who actually live in Alameda County."</div>
+          </div>
+        </div>
+        <div class="pipe-step" data-step="2">
+          <div class="pn">02</div>
+          <h3>Prime</h3>
+          <p class="what">Attach an empirical opinion prior to each agent.</p>
+          <div class="example">
+            <div class="ex-label">Real example</div>
+            <div class="ex-text">"How do people like you usually answer this question?"</div>
+          </div>
+        </div>
+        <div class="pipe-step" data-step="3">
+          <div class="pn">03</div>
+          <h3>Simulate</h3>
+          <p class="what">Each agent answers with stance plus rationale.</p>
+          <div class="example">
+            <div class="ex-label">Real example</div>
+            <div class="ex-text">"Should the city raise minimum wage to $20? Here is why I would say yes."</div>
+          </div>
+        </div>
+        <div class="pipe-step" data-step="4">
+          <div class="pn">04</div>
+          <h3>Aggregate</h3>
+          <p class="what">Stream results live. Surface divergence by group.</p>
+          <div class="example">
+            <div class="ex-label">Real example</div>
+            <div class="ex-text">"68% support overall. Renters and homeowners diverge sharply."</div>
+          </div>
+        </div>
+
+        <div class="pipe-arrow" data-after="1">→</div>
+        <div class="pipe-arrow" data-after="2">→</div>
+        <div class="pipe-arrow" data-after="3">→</div>
+      </div>
+
+      <div class="reveal-hint" id="reveal-hint-9">→ press space or arrow to reveal each step</div>
+    </div>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>09 / 14</span>
+    </div>
+    <div class="progress" style="width: 64.28%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~70 SEC · HOW IT WORKS (CLICK THROUGH)</div>
+      <p>Okay, so let me actually walk through what the system just did, step by step. There are four phases to every simulation, and I'm going to reveal them one at a time so we can talk about each.</p>
+      <p><i>(Reveal step 1.)</i> The first thing the system does is <b>sample.</b> We build N agents. Could be 200, could be 5,000. They match the demographic profile of the location you picked. So if you picked Alameda County, we're literally generating 200 imaginary residents whose age, income, race, and education distributions all match what the census says actually lives there. We use a stratified algorithm called largest-remainder that's been used in election apportionment for decades. It just guarantees the proportions come out right.</p>
+      <p><i>(Reveal step 2.)</i> The second step is what we call <b>prime.</b> This is the magic step. Most simulation pipelines skip this entirely, and it's the biggest reason their results are unreliable. What we're doing is attaching an opinion prior to each agent. Concretely. Given that this agent has these demographic traits, here's how people like them have historically answered questions in this policy domain. That prior comes from real survey data. We're not asking the LLM to guess.</p>
+      <p><i>(Reveal step 3.)</i> Third step. <b>Simulate.</b> Now the LLM generates a stance and a rationale for each agent, conditioned on both their demographics and their opinion prior. So you get not just yes or no. You get the reasoning chain. Why this person, with their background, supports or opposes this specific policy.</p>
+      <p><i>(Reveal step 4.)</i> And fourth. <b>Aggregate.</b> We stream the results live, and we surface where groups diverge. So you don't just see 68 percent support. You see that renters and homeowners disagree sharply on this question, or that the urban-rural split is way bigger than the partisan split, or whatever the actual signal is.</p>
+      <p>You'll notice the boxes get progressively darker. That's intentional. It's our visual way of showing how each step deepens the synthesis.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 10  ·  DATA FOUNDATION -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="10">
+    <div class="eyebrow">09 · The data foundation</div>
+    <h2>Two gold-standard datasets<br>do the heavy lifting.</h2>
+
+    <div class="data-grid">
+      <div class="data-card stagger-item">
+        <div class="badge-pill">Population</div>
+        <h3>American Community Survey</h3>
+        <div class="source">U.S. Census microdata · via IPUMS USA</div>
+        <div class="stat-big">~2.5M</div>
+        <div class="stat-label">Adult records / year</div>
+        <p class="why"><b>Why:</b> the only public source with <i>joint</i> demographic distributions at population scale. Marginal-only sampling collapses intersectional groups. ACS preserves them.</p>
+      </div>
+      <div class="data-card alt stagger-item">
+        <div class="badge-pill">Opinion</div>
+        <h3>Pew American Trends Panel</h3>
+        <div class="source">Probability-based panel · waves 2021 to 2024</div>
+        <div class="stat-big">38,449</div>
+        <div class="stat-label">Validated respondents</div>
+        <p class="why"><b>Why:</b> consistent methodology across 80+ waves, broad topical coverage. Compiled into a compact opinion-prior lookup. No PII.</p>
+      </div>
+    </div>
+
+    <p class="source-line">Census for the <i>who</i>. Pew for <i>what they think</i>. Our contribution is in how we combine them.</p>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>10 / 14</span>
+    </div>
+    <div class="progress" style="width: 71.42%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~55 SEC · DATA FOUNDATION</div>
+      <p>Quick word on where the data comes from. Because if you don't trust the data, none of the rest of this matters.</p>
+      <p>We're using two datasets. Both are completely public, both are gold-standard in policy research, and both have been used in academic work for decades. The cards on the slide show what they are.</p>
+      <p>The first one, on the left, is the <b>American Community Survey.</b> The ACS. This is the Census Bureau's annual survey that gives us roughly 2.5 million adult records every year. We access it through IPUMS, which is the standard interface used by researchers. The reason we picked ACS specifically, and this is important, is that it's the only public source that gives us joint demographic distributions at population scale. Most simulations work with marginal distributions. Which means they know how many people are, say, Black, and how many people are low-income, but not how many people are both. ACS preserves those intersectional combinations. That's huge for representation.</p>
+      <p>The second dataset, on the right, is the <b>Pew American Trends Panel.</b> This is a probability-based survey panel that's been running since 2014. 38,449 validated respondents across 80-plus waves from 2021 to 2024. Consistent methodology, broad topic coverage. We took the raw responses and compiled them into a compact opinion-prior lookup. Importantly, no personally identifying information. Everything is aggregated.</p>
+      <p>So census gives us the <i>who.</i> Who actually lives in a place. Pew gives us <i>what they think.</i> About policies, government, social issues. Our actual contribution isn't either dataset individually. It's how we combine them, and how we let the data tell us which demographic variables matter most for which policy domain.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 11  ·  RESULTS -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="11">
+    <div class="eyebrow">10 · Experimentation &amp; results</div>
+    <h2>The demographics we <span class="serif-it">assume</span> matter<br>are not the ones that shape opinion.</h2>
+
+    <div class="stats-grid">
+      <div class="stat-block stagger-item">
+        <div class="num">10.6<span class="unit">%</span></div>
+        <div class="label">Conventional</div>
+        <div class="desc">Textbook variables (age, income, education).<i>The status quo.</i></div>
+      </div>
+      <div class="stat-connector stagger-item">→</div>
+      <div class="stat-block cyan stagger-item">
+        <div class="num">25.2<span class="unit">%</span></div>
+        <div class="label">Empirical selection</div>
+        <div class="desc">Variables chosen empirically per domain.<i>Our approach.</i></div>
+      </div>
+      <div class="stat-connector equals stagger-item">=</div>
+      <div class="stat-block violet conclusion stagger-item">
+        <div class="num">2.4<span class="unit">×</span></div>
+        <div class="label">★ Improvement factor</div>
+        <div class="desc">Across 1,426 opinion items.<i>Same models. Better grounding.</i></div>
+      </div>
+    </div>
+
+    <div class="supp-line">
+      Census division (omitted by textbooks) drives a <b>53.5%</b> signal drop when removed. The variable we would skip is the variable we most need.
+    </div>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>11 / 14</span>
+    </div>
+    <div class="progress" style="width: 78.57%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~80 SEC · RESULTS · ★ KEY SLIDE</div>
+      <p>This is the slide that, if you remember nothing else from our presentation, this is the one we want you to remember. Because it's the experimental result that justifies everything else we just told you.</p>
+      <p>We ran what we think is the most exhaustive variable-selection experiment that's been done in this space. We looked at <b>1,426 different opinion items</b> across 14 policy domains. For each one, we tested every combination of seven demographic variables. That's 127 combinations per question. So we ran somewhere around 180,000 mini-experiments to get this number.</p>
+      <p>The baseline number, on the far left, <b>10.6 percent.</b> That's what you get if you ground your simulation using textbook demographics. Age, income, education. The variables every research team starts with. That captures 10.6 percent of the variance in opinion across this dataset.</p>
+      <p>The middle number, <b>25.2 percent.</b> That's what we get when we use our empirical approach. We let the data tell us which variables actually matter for each policy domain. Different variables for tech policy than for immigration policy than for healthcare. And the answer is two and a half times better. Same models. Same compute. Just smarter conditioning.</p>
+      <p>The right number, the <b>2.4×</b>, is just expressing that as a ratio. We're not making a marginal improvement here. We're more than doubling the explanatory power, while changing literally nothing about the LLM. That's the punchline of our research.</p>
+      <p>Now I want to flag the line at the bottom of the slide. <b>Census division</b> is basically a geographic variable. Which region of the country you live in. It turns out that variable drives a <b>53.5 percent signal drop</b> when you remove it. So it's the single most important variable in the dataset for explaining opinion variance. And yet, almost every conventional approach skips it entirely, because intuitively it doesn't feel like it should matter that much. The variable we'd most naturally skip is the variable we most need. That's the methodological insight we want to leave with you.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 12  ·  VOICE OF USERS -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="12">
+    <div class="eyebrow">11 · Voice of users</div>
+    <h2>What policy researchers<br>are telling us.</h2>
+
+    <div class="trusted-bar">
+      <span class="label">Tested with</span>
+      <div class="logos">
+        <div class="inst-logo"><img src="../Images/goldman_public_policy.png" alt="Goldman School of Public Policy"></div>
+        <div class="inst-logo"><img src="../Images/possibility_lab.png" alt="Possibility Lab, UC Berkeley"></div>
+        <div class="inst-logo"><img src="../Images/stanford.png" alt="Stanford University"></div>
+        <div class="inst-logo"><img src="../Images/berkeleyischool-logo-vertical-2color-lg.png" alt="UC Berkeley School of Information"></div>
+        <div class="inst-logo"><img src="../Images/bair.png" alt="Berkeley Artificial Intelligence Research"></div>
+      </div>
+    </div>
+
+    <div class="quote-grid">
+      <div class="quote-card stagger-item">
+        <div class="qmark">"</div>
+        <p class="body">The <span class="hl">transparency is the part that matters</span>. I can defend a recommendation when I can show how the population was constructed.</p>
+        <p class="attr"><b>Anonymous Researcher</b>Goldman School of Public Policy, UC Berkeley</p>
+        <div class="placeholder-tag">Placeholder</div>
+      </div>
+      <div class="quote-card stagger-item">
+        <div class="qmark">"</div>
+        <p class="body">We have been waiting for something that <span class="hl">takes subgroup representation seriously</span>. This is the methodological bar academic work requires.</p>
+        <p class="attr"><b>Anonymous Researcher</b>Possibility Lab, UC Berkeley</p>
+        <div class="placeholder-tag">Placeholder</div>
+      </div>
+      <div class="quote-card stagger-item">
+        <div class="qmark">"</div>
+        <p class="body">The empirical variable selection result <span class="hl">changes how I would design the next study</span>. Not just how I would run a simulation.</p>
+        <p class="attr"><b>Anonymous PhD Candidate</b>Stanford Institute for Human-Centered AI</p>
+        <div class="placeholder-tag">Placeholder</div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>12 / 14</span>
+    </div>
+    <div class="progress" style="width: 85.71%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~50 SEC · VOICE OF USERS</div>
+      <p>We didn't just measure CivicSim with experiments. We also took it out into the world and showed it to actual policy researchers and AI researchers, to get their feedback.</p>
+      <p>The "tested with" bar at the top shows where we've taken it. People at the <b>Goldman School of Public Policy</b> here at Berkeley, the <b>Possibility Lab</b>, also Berkeley, <b>Stanford's Human-Centered AI Institute</b>, our own home at the <b>School of Information</b>, and the <b>BAIR lab.</b></p>
+      <p>What we kept hearing, across these very different institutions, was that the thing that mattered to them most was transparency. Let me share a couple of quotes. They're on the cards below.</p>
+      <p>From one of the researchers at Goldman. <i>"The transparency is the part that matters. I can defend a recommendation when I can show how the population was constructed."</i> That's exactly the auditability gap that competitor tools don't fill.</p>
+      <p>From the Possibility Lab. <i>"We've been waiting for something that takes subgroup representation seriously. This is the methodological bar academic work requires."</i></p>
+      <p>And maybe my favorite one, from a PhD candidate at Stanford. <i>"The empirical variable selection result changes how I'd design the next study. Not just how I'd run a simulation."</i> Which is a much bigger claim. It's saying our methodology has implications beyond the simulation use case itself.</p>
+      <p>We're not claiming product-market fit yet. But we have signal from people whose opinions in this space carry real weight.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 13  ·  LIMITS & NEXT — simpler text -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="13">
+    <div class="eyebrow">12 · Limits &amp; what's next</div>
+    <h2>A decision-support tool.<br>Not a replacement for real engagement.</h2>
+
+    <div class="limits-grid">
+      <div class="limit-card stagger-item">
+        <div class="icon-tag">Data</div>
+        <h3>What we know</h3>
+        <ul>
+          <li>v1 covers Alameda County, CA.</li>
+          <li>Some survey time periods are sparse.</li>
+          <li>Smallest subgroups still thin.</li>
+        </ul>
+      </div>
+      <div class="limit-card stagger-item">
+        <div class="icon-tag">Simulation</div>
+        <h3>What is directional</h3>
+        <ul>
+          <li>Directional realism, not prediction.</li>
+          <li>Opinions over time not yet modeled.</li>
+          <li>Synthetic is not lived experience.</li>
+        </ul>
+      </div>
+      <div class="limit-card forward stagger-item">
+        <div class="icon-tag">→ Next</div>
+        <h3>Where we're heading</h3>
+        <ul>
+          <li>Expand beyond Alameda.</li>
+          <li>Validate against real policy outcomes.</li>
+          <li>Open-source the toolkit.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn-callout">
+      Representative simulations support decisions. They never replace the voices of real communities.
+    </div>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>13 / 14</span>
+    </div>
+    <div class="progress" style="width: 92.85%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~60 SEC · LIMITS &amp; NEXT</div>
+      <p>Now we want to be really honest about what CivicSim is, and what it isn't. Because in policy work, overclaiming is worse than underclaiming.</p>
+      <p>The slide has three cards. The first two are limits. The third one, in green on the right, is where we're going.</p>
+      <p><b>On the data side.</b> Our version one currently covers exactly one county. Alameda County in California. So geographically, we're early. Some survey time periods are sparse because Pew didn't ask certain questions in certain waves. And the smallest intersectional subgroups, think rural Black women under 25 with graduate degrees, those cells are still thin in the data. We use backoff strategies, but it's a real limitation.</p>
+      <p><b>On the simulation side.</b> CivicSim gives you what we call directional realism. We're not predicting election outcomes. We're not telling you exactly what the support percentage will be when the policy ships. We're telling you the structure of disagreement. Who supports, who opposes, why, and where the subgroups diverge. That's a different and we think more useful claim, but it's important to be clear about it. We also don't yet model opinion dynamics over time. Political opinions change, and our system doesn't yet capture that.</p>
+      <p><b>Where we're going from here.</b> We're working on expanding to multi-state and eventually national coverage. We're starting longitudinal validation against real policy outcomes. And we're planning to open-source the variable-selection toolkit, so other research groups can use the methodology.</p>
+      <p>The most important sentence on this whole slide is at the bottom, in the warning box. <b>Representative simulations support decision-making. They never replace the actual voices of real communities.</b></p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 14  ·  CLOSE -->
+  <!-- ============================================================ -->
+  <section class="slide s-close" data-slide="14">
+    <div class="close-eyebrow">14 · Thank you</div>
+
+    <div class="hero-block">
+      <h2 class="close-h"><span class="pulse-dot"></span>Thank you.<br>Questions?</h2>
+
+      <div class="tagline-italic"><span class="accent-line"></span>Ground it before you simulate it.</div>
+
+      <div class="resource-row">
+        <div class="res"><span class="icon">🔗</span><a href="https://civicsim.xyz">civicsim.xyz</a></div>
+        <div class="res"><span class="icon">📄</span>Paper</div>
+        <div class="res"><span class="icon">💬</span>Contact the team</div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>14 / 14</span>
+    </div>
+    <div class="progress" style="width: 100%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~30 SEC · CLOSE + Q&amp;A</div>
+      <p>And that's CivicSim. <b>Ground it before you simulate it.</b></p>
+      <p>It's live right now at <b>civicsim.xyz</b>. Please try it yourself. Run a policy question against any U.S. location we support. We'd love your feedback. We'd love to hear your hardest, weirdest policy questions. And we'd love a conversation about where this goes from here. Both technically, and in terms of who we should be talking to next.</p>
+      <p>Thank you for listening. Happy to take questions.</p>
+      <p><i>Stage tip. Pause after "thank you." Don't rush into Q and A. Make eye contact. Then say something like "happy to take questions, and the demo is open on the screen if anyone wants to try a question afterwards." Keep this slide on screen during Q and A.</i></p>
+    </aside>
+  </section>
+
+</div>
+
+<!-- Speaker notes overlay -->
+<div class="notes-panel" id="notesPanel">
+  <div class="nh">
+    <span>Speaker Notes · Slide <span id="notesNum">1</span> / 14</span>
+    <button class="nclose" onclick="document.body.classList.remove('show-notes')">close (N)</button>
+  </div>
+  <div class="notes-content" id="notesContent"></div>
+</div>
+
+<div class="controls">
+  <button onclick="prevSlide()">‹ Prev</button>
+  <button onclick="nextSlide()" class="primary">Next ›</button>
+  <button onclick="document.body.classList.toggle('show-notes')">Notes</button>
+  <button onclick="window.print()">Print / PDF</button>
+</div>
+
+<div class="hint">← → · space · F = fullscreen · N = notes · P = print · 1-9 = jump</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const deck = document.getElementById('deck');
+  const notesContent = document.getElementById('notesContent');
+  const notesNum = document.getElementById('notesNum');
+  let current = 0;
+  const revealState = new Map();
+
+  function show(i, direction) {
+    const goingBack = direction === 'back';
+    slides.forEach((s, idx) => {
+      const active = idx === i;
+      s.classList.toggle('active', active);
+      s.classList.toggle('from-back', active && goingBack);
+      if (active) {
+        s.classList.remove('entered');
+        void s.offsetWidth;
+        requestAnimationFrame(() => s.classList.add('entered'));
+      } else {
+        s.classList.remove('entered');
+      }
+    });
+    current = i;
+    syncReveal(i);
+    syncNotes(i);
+  }
+
+  function syncNotes(i) {
+    const notes = slides[i].querySelector('[data-notes]');
+    notesNum.textContent = (i + 1);
+    notesContent.innerHTML = notes ? notes.innerHTML : '<i>No notes for this slide.</i>';
+  }
+
+  function syncReveal(i) {
+    const slide = slides[i];
+    if (!slide.hasAttribute('data-reveal')) return;
+    const steps = slide.querySelectorAll('.pipe-step');
+    const arrows = slide.querySelectorAll('.pipe-arrow');
+    const revealed = revealState.get(i) || 0;
+    steps.forEach((step, idx) => step.classList.toggle('revealed', idx < revealed));
+    arrows.forEach((arrow, idx) => arrow.classList.toggle('revealed', (idx + 1) < revealed));
+    const hint = slide.querySelector('.reveal-hint');
+    if (hint) hint.classList.toggle('hidden', revealed >= steps.length);
+  }
+
+  function nextSlide() {
+    const slide = slides[current];
+    if (slide.hasAttribute('data-reveal')) {
+      const total = parseInt(slide.getAttribute('data-reveal'));
+      const revealed = revealState.get(current) || 0;
+      if (revealed < total) {
+        revealState.set(current, revealed + 1);
+        syncReveal(current);
+        return;
+      }
+    }
+    if (current < slides.length - 1) show(current + 1, 'forward');
+  }
+  function prevSlide() {
+    const slide = slides[current];
+    if (slide.hasAttribute('data-reveal')) {
+      const revealed = revealState.get(current) || 0;
+      if (revealed > 0) {
+        revealState.set(current, revealed - 1);
+        syncReveal(current);
+        return;
+      }
+    }
+    if (current > 0) show(current - 1, 'back');
+  }
+
+  slides.forEach((s, idx) => {
+    if (s.hasAttribute('data-reveal')) revealState.set(idx, 0);
+  });
+
+  // Initial activation
+  requestAnimationFrame(() => slides[0].classList.add('entered'));
+  syncNotes(0);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); nextSlide(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prevSlide(); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'f' || e.key === 'F') document.documentElement.requestFullscreen();
+    else if (e.key === 'p' || e.key === 'P') window.print();
+    else if (e.key === 'n' || e.key === 'N') document.body.classList.toggle('show-notes');
+    else if (!isNaN(parseInt(e.key))) {
+      const n = parseInt(e.key);
+      if (n >= 1 && n <= slides.length) show(n - 1);
+    }
+  });
+
+  function fit() {
+    const sx = window.innerWidth / 1280;
+    const sy = window.innerHeight / 720;
+    const s = Math.min(sx, sy) * 0.95;
+    deck.style.transform = `scale(${s})`;
+  }
+  window.addEventListener('resize', fit);
+  fit();
+
+  window.addEventListener('beforeprint', () => {
+    document.querySelectorAll('.pipe-step, .pipe-arrow, .stagger-item').forEach(el => {
+      el.classList.add('revealed');
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+  });
+</script>
+
+</body>
+</html>
