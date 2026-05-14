@@ -200,6 +200,84 @@ def get_question_label(question_id: str, compact_df: pd.DataFrame) -> str:
     return rows.iloc[0] if len(rows) > 0 else question_id
 
 
+# Hardcoded intersectional slices per dims-pattern. Keys are frozensets of dim names.
+# All values match S3 ATP column values exactly.
+_SLICES_INCOME_AGE_RACE: list[dict[str, str]] = [
+    {"income_group": "below_30000",      "age_group": "65+",   "race_eth": "Black or African-American"},
+    {"income_group": "below_30000",      "age_group": "18-29",  "race_eth": "White"},
+    {"income_group": "above_100000",     "age_group": "30-49",  "race_eth": "Asian or Asian-American"},
+    {"income_group": "above_100000",     "age_group": "50-64",  "race_eth": "Other"},
+    {"income_group": "40000_to_50000",   "age_group": "65+",   "race_eth": "Asian or Asian-American"},
+    {"income_group": "40000_to_50000",   "age_group": "18-29",  "race_eth": "Black or African-American"},
+    {"income_group": "40000_to_50000",   "age_group": "30-49",  "race_eth": "Other"},
+    {"income_group": "60000_to_70000",   "age_group": "50-64",  "race_eth": "White"},
+    {"income_group": "80000_to_90000",   "age_group": "65+",   "race_eth": "Black or African-American"},
+    {"income_group": "80000_to_90000",   "age_group": "18-29",  "race_eth": "Other"},
+    {"income_group": "90000_to_100000",  "age_group": "30-49",  "race_eth": "White"},
+    {"income_group": "90000_to_100000",  "age_group": "50-64",  "race_eth": "Asian or Asian-American"},
+    {"income_group": "30000_to_40000",   "age_group": "65+",   "race_eth": "Other"},
+    {"income_group": "30000_to_40000",   "age_group": "18-29",  "race_eth": "Asian or Asian-American"},
+    {"income_group": "50000_to_60000",   "age_group": "30-49",  "race_eth": "Black or African-American"},
+    {"income_group": "70000_to_80000",   "age_group": "50-64",  "race_eth": "White"},
+    {"income_group": "70000_to_80000",   "age_group": "18-29",  "race_eth": "Black or African-American"},
+    {"income_group": "60000_to_70000",   "age_group": "65+",   "race_eth": "Asian or Asian-American"},
+    {"income_group": "50000_to_60000",   "age_group": "50-64",  "race_eth": "Other"},
+    {"income_group": "below_30000",      "age_group": "30-49",  "race_eth": "Asian or Asian-American"},
+]
+
+_SLICES_RACE_INCOME_REGION: list[dict[str, str]] = [
+    {"race_eth": "Other",                       "income_group": "above_100000",    "F_CREGION": "Northeast"},
+    {"race_eth": "Black or African-American",   "income_group": "below_30000",     "F_CREGION": "South"},
+    {"race_eth": "White",                       "income_group": "50000_to_60000",  "F_CREGION": "West"},
+    {"race_eth": "Asian or Asian-American",     "income_group": "40000_to_50000",  "F_CREGION": "Midwest"},
+    {"race_eth": "Other",                       "income_group": "60000_to_70000",  "F_CREGION": "South"},
+    {"race_eth": "Black or African-American",   "income_group": "80000_to_90000",  "F_CREGION": "Northeast"},
+    {"race_eth": "White",                       "income_group": "30000_to_40000",  "F_CREGION": "Midwest"},
+    {"race_eth": "Asian or Asian-American",     "income_group": "70000_to_80000",  "F_CREGION": "West"},
+    {"race_eth": "Other",                       "income_group": "below_30000",     "F_CREGION": "West"},
+    {"race_eth": "Black or African-American",   "income_group": "90000_to_100000", "F_CREGION": "Midwest"},
+    {"race_eth": "White",                       "income_group": "above_100000",    "F_CREGION": "South"},
+    {"race_eth": "Asian or Asian-American",     "income_group": "below_30000",     "F_CREGION": "Northeast"},
+    {"race_eth": "Other",                       "income_group": "40000_to_50000",  "F_CREGION": "Midwest"},
+    {"race_eth": "Black or African-American",   "income_group": "60000_to_70000",  "F_CREGION": "West"},
+    {"race_eth": "White",                       "income_group": "80000_to_90000",  "F_CREGION": "Northeast"},
+    {"race_eth": "Asian or Asian-American",     "income_group": "90000_to_100000", "F_CREGION": "South"},
+    {"race_eth": "Other",                       "income_group": "30000_to_40000",  "F_CREGION": "Northeast"},
+    {"race_eth": "Black or African-American",   "income_group": "40000_to_50000",  "F_CREGION": "Midwest"},
+    {"race_eth": "White",                       "income_group": "70000_to_80000",  "F_CREGION": "West"},
+    {"race_eth": "Asian or Asian-American",     "income_group": "50000_to_60000",  "F_CREGION": "South"},
+]
+
+_SLICES_INCOME_AGE_REGION: list[dict[str, str]] = [
+    {"income_group": "below_30000",      "age_group": "65+",   "F_CREGION": "West"},
+    {"income_group": "above_100000",     "age_group": "30-49",  "F_CREGION": "South"},
+    {"income_group": "40000_to_50000",   "age_group": "18-29",  "F_CREGION": "Northeast"},
+    {"income_group": "60000_to_70000",   "age_group": "50-64",  "F_CREGION": "Midwest"},
+    {"income_group": "80000_to_90000",   "age_group": "65+",   "F_CREGION": "South"},
+    {"income_group": "30000_to_40000",   "age_group": "30-49",  "F_CREGION": "West"},
+    {"income_group": "90000_to_100000",  "age_group": "18-29",  "F_CREGION": "Midwest"},
+    {"income_group": "50000_to_60000",   "age_group": "50-64",  "F_CREGION": "Northeast"},
+    {"income_group": "70000_to_80000",   "age_group": "65+",   "F_CREGION": "Northeast"},
+    {"income_group": "below_30000",      "age_group": "18-29",  "F_CREGION": "Midwest"},
+    {"income_group": "above_100000",     "age_group": "50-64",  "F_CREGION": "West"},
+    {"income_group": "40000_to_50000",   "age_group": "65+",   "F_CREGION": "Midwest"},
+    {"income_group": "60000_to_70000",   "age_group": "18-29",  "F_CREGION": "South"},
+    {"income_group": "80000_to_90000",   "age_group": "30-49",  "F_CREGION": "Northeast"},
+    {"income_group": "30000_to_40000",   "age_group": "50-64",  "F_CREGION": "South"},
+    {"income_group": "90000_to_100000",  "age_group": "65+",   "F_CREGION": "West"},
+    {"income_group": "50000_to_60000",   "age_group": "30-49",  "F_CREGION": "Midwest"},
+    {"income_group": "70000_to_80000",   "age_group": "18-29",  "F_CREGION": "West"},
+    {"income_group": "below_30000",      "age_group": "50-64",  "F_CREGION": "Northeast"},
+    {"income_group": "above_100000",     "age_group": "65+",   "F_CREGION": "South"},
+]
+
+_HARDCODED_SLICES: dict[frozenset, list[dict[str, str]]] = {
+    frozenset({"income_group", "age_group", "race_eth"}): _SLICES_INCOME_AGE_RACE,
+    frozenset({"race_eth", "income_group", "F_CREGION"}): _SLICES_RACE_INCOME_REGION,
+    frozenset({"income_group", "age_group", "F_CREGION"}): _SLICES_INCOME_AGE_REGION,
+}
+
+
 def find_diverse_slices(
     question_id: str,
     dims: list[str],
@@ -207,94 +285,10 @@ def find_diverse_slices(
     d: int = D_SLICES,
     seed: int = 42,
 ) -> list[dict[str, str]]:
-    """Return D intersectional demographic slices for this question.
-
-    Every slice uses ALL available dims simultaneously (e.g. race × income ×
-    region), never falling back to 1-dim or 2-dim marginals. Unique values for
-    each dim are read from the parquet marginal rows. Combinations are
-    generated by round-robin across dim values to maximise spread — ensuring
-    every income bracket, race group, and region appears before any is doubled.
-
-    The parquet is only used to discover valid dim values; the combinations
-    themselves need not exist as rows in the parquet. The prior lookup
-    (_compact_marginal_prior) and S3 ground truth both handle arbitrary
-    intersections gracefully.
-    """
-    import random as _random
-
-    rng = _random.Random(seed)
-
-    q_df = compact_df[compact_df["question_id"] == question_id]
-    if q_df.empty:
-        return []
-
-    available_dims = [dim for dim in dims if dim in q_df.columns]
-    if not available_dims:
-        return []
-
-    # Collect unique non-ALL values per dim from the parquet marginals.
-    dim_values: dict[str, list[str]] = {}
-    for dim in available_dims:
-        vals = sorted(q_df[q_df[dim] != "ALL"][dim].unique().tolist())
-        if vals:
-            dim_values[dim] = vals
-
-    if not dim_values:
-        return []
-
-    # Shuffle each dim's value list so the round-robin doesn't always start
-    # with the same value (e.g. always "above_100000" or "White").
-    for dim in dim_values:
-        rng.shuffle(dim_values[dim])
-
-    # Round-robin: at each round pick the next value for each dim and combine
-    # them into a full intersectional slice. This guarantees every value of
-    # every dim appears at least once before any value is reused.
-    selected: list[dict[str, str]] = []
-    selected_keys: set[tuple] = set()
-    max_rounds = max(len(v) for v in dim_values.values())
-
-    for round_i in range(max_rounds):
-        if len(selected) >= d:
-            break
-        # Build one slice: for each dim pick the value at this round index
-        # (wrapping around with modulo so shorter dims cycle).
-        slice_candidate = {
-            dim: dim_values[dim][round_i % len(dim_values[dim])]
-            for dim in dim_values
-        }
-        key = tuple(sorted(slice_candidate.items()))
-        if key not in selected_keys:
-            selected.append(slice_candidate)
-            selected_keys.add(key)
-
-    # If still under d, fill with additional combinations by shifting one dim
-    # at a time until we reach d or exhaust possibilities.
-    extra_round = 0
-    while len(selected) < d:
-        added_any = False
-        for shift_dim in dim_values:
-            if len(selected) >= d:
-                break
-            base_round = max_rounds + extra_round
-            slice_candidate = {
-                dim: dim_values[dim][
-                    (base_round + (1 if dim == shift_dim else 0)) % len(dim_values[dim])
-                ]
-                for dim in dim_values
-            }
-            key = tuple(sorted(slice_candidate.items()))
-            if key not in selected_keys:
-                selected.append(slice_candidate)
-                selected_keys.add(key)
-                added_any = True
-        if not added_any:
-            break  # all combinations exhausted
-        extra_round += 1
-        if extra_round > d * len(dim_values):
-            break  # safety: avoid infinite loop if combinations are exhausted
-
-    return selected[:d]
+    """Return up to d hardcoded intersectional demographic slices for the given dims pattern."""
+    key = frozenset(dim for dim in dims if dim in S3_DIM_VALUES)
+    slices = _HARDCODED_SLICES.get(key, [])
+    return slices[:d]
 
 
 def compact_parquet_ground_truth(
@@ -338,6 +332,28 @@ def compact_parquet_ground_truth(
 S3_AVAILABLE_DIMS = {
     "age_group", "income_group", "education_group", "urbanicity",
     "F_CREGION", "F_CDIVISION", "gender", "race_eth",
+}
+
+# Canonical dim values as they appear in the S3 ATP dataset.
+# Used by find_diverse_slices to generate slices that will match S3 ground truth.
+# income_group in S3 is fine-grained (10k buckets); compact parquet uses coarser buckets.
+S3_DIM_VALUES: dict[str, list[str]] = {
+    "age_group": ["18-29", "30-49", "50-64", "65+"],
+    "income_group": [
+        "below_30000", "30000_to_40000", "40000_to_50000",
+        "50000_to_60000", "60000_to_70000", "70000_to_80000",
+        "80000_to_90000", "90000_to_100000", "above_100000",
+    ],
+    "race_eth": ["White", "Black or African-American", "Asian or Asian-American", "Other"],
+    "F_CREGION": ["Northeast", "Midwest", "South", "West"],
+    "F_CDIVISION": [
+        "New England", "Middle Atlantic", "East North Central",
+        "West North Central", "South Atlantic", "East South Central",
+        "West South Central", "Mountain", "Pacific",
+    ],
+    "education_group": ["HS or less", "Some college", "College+"],
+    "urbanicity": ["Urban", "Suburban", "Rural"],
+    "gender": ["Man", "Woman"],
 }
 
 # S3 dataset and answer-label cache
@@ -1328,6 +1344,7 @@ async def main(args: argparse.Namespace) -> None:
         # Ground truth
         gt_dist: dict[str, float] | None = None
         gt_source = "parquet"
+        atp_df: pd.DataFrame | None = None
         if has_aws:
             if qid not in atp_cache:
                 atp_cache[qid] = load_s3_atp(qid)
@@ -1336,6 +1353,14 @@ async def main(args: argparse.Namespace) -> None:
                 gt_dist = s3_ground_truth(qid, slice_filter, atp_df)
                 if gt_dist:
                     gt_source = "s3"
+                    # Derive answer options and question label from S3 if not
+                    # available in the local compact parquet (different ID namespaces).
+                    if not answer_options and "answer_label" in atp_df.columns:
+                        answer_options = sorted(atp_df["answer_label"].dropna().unique().tolist())
+                    if qlabel == qid and "question_label" in atp_df.columns:
+                        labels = atp_df["question_label"].dropna()
+                        if not labels.empty:
+                            qlabel = str(labels.iloc[0])
 
         if not gt_dist:
             gt_dist = compact_parquet_ground_truth(qid, slice_filter, compact_df)
