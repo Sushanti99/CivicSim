@@ -2595,37 +2595,62 @@
   <!-- SLIDE 11  ·  1000-RUN BENCHMARK -->
   <!-- ============================================================ -->
   <section class="slide" data-slide="11">
-    <div class="eyebrow" style="color:var(--cyan-bright)">10 · Benchmark results · 1,000 runs</div>
+    <div class="eyebrow">10 · Benchmark results · 1,000 runs</div>
     <h2>CivicSim consistently outperforms<br>both <span class="serif-it">naive</span> baselines at scale.</h2>
 
-    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);gap:1.5rem;margin:2rem 0 1.5rem;">
-      <div class="stat-block cyan stagger-item" style="text-align:center;padding:1.5rem 1rem;">
-        <div style="font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan-bright);margin-bottom:.75rem;">CivicSim</div>
-        <div style="font-size:2.6rem;font-weight:800;line-height:1;color:#fff;">0.101</div>
-        <div style="font-size:.72rem;color:rgba(255,255,255,.55);margin:.3rem 0 1rem;">Mean TVD ↓</div>
-        <div style="font-size:2.6rem;font-weight:800;line-height:1;color:var(--cyan-bright);">0.058</div>
-        <div style="font-size:.72rem;color:rgba(255,255,255,.55);margin:.3rem 0 0;">Mean Wasserstein ↓</div>
-        <div style="margin-top:1rem;font-size:.75rem;font-weight:700;background:rgba(46,224,255,.15);color:var(--cyan-bright);border-radius:6px;padding:.3rem .6rem;">★ Best</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:1.5rem 0 1.25rem;">
+
+      <!-- CivicSim -->
+      <div class="stat-block conclusion stagger-item" style="background:linear-gradient(160deg,#dbeafe 0%,#eff6ff 100%);border:1.5px solid #93c5fd;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:.6rem;">★ CivicSim</div>
+        <div style="display:flex;justify-content:space-around;gap:.5rem;margin-bottom:.5rem;">
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:#1D4ED8;line-height:1;">0.101</div>
+            <div style="font-size:11px;color:var(--ink-dim);margin-top:.2rem;">Mean TVD ↓</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:#1D4ED8;line-height:1;">0.058</div>
+            <div style="font-size:11px;color:var(--ink-dim);margin-top:.2rem;">Mean Wass. ↓</div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:#1D4ED8;background:#dbeafe;border-radius:5px;padding:.25rem .6rem;display:inline-block;">Best on both metrics</div>
       </div>
-      <div class="stat-block stagger-item" style="text-align:center;padding:1.5rem 1rem;opacity:.85;">
-        <div style="font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.75rem;">Naive OpenAI</div>
-        <div style="font-size:2.6rem;font-weight:800;line-height:1;color:rgba(255,255,255,.8);">0.188</div>
-        <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin:.3rem 0 1rem;">Mean TVD ↓</div>
-        <div style="font-size:2.6rem;font-weight:800;line-height:1;color:rgba(255,255,255,.7);">0.108</div>
-        <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin:.3rem 0 0;">Mean Wasserstein ↓</div>
-        <div style="margin-top:1rem;font-size:.75rem;color:rgba(255,255,255,.4);background:rgba(255,255,255,.06);border-radius:6px;padding:.3rem .6rem;">1.86× worse TVD</div>
+
+      <!-- Naive OpenAI -->
+      <div class="stat-block stagger-item" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:18px 14px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:.6rem;">Naive OpenAI</div>
+        <div style="display:flex;justify-content:space-around;gap:.5rem;margin-bottom:.5rem;">
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:var(--ink-faint);line-height:1;">0.188</div>
+            <div style="font-size:11px;color:var(--ink-faint);margin-top:.2rem;">Mean TVD ↓</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:var(--ink-faint);line-height:1;">0.108</div>
+            <div style="font-size:11px;color:var(--ink-faint);margin-top:.2rem;">Mean Wass. ↓</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--ink-faint);background:#f1f5f9;border-radius:5px;padding:.25rem .6rem;display:inline-block;">1.86× worse TVD</div>
       </div>
-      <div class="stat-block stagger-item" style="text-align:center;padding:1.5rem 1rem;opacity:.75;">
-        <div style="font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.75rem;">Naive Anthropic</div>
-        <div style="font-size:2.6rem;font-weight:800;line-height:1;color:rgba(255,255,255,.65);">0.311</div>
-        <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin:.3rem 0 1rem;">Mean TVD ↓</div>
-        <div style="font-size:2.6rem;font-weight:800;line-height:1;color:rgba(255,255,255,.55);">0.215</div>
-        <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin:.3rem 0 0;">Mean Wasserstein ↓</div>
-        <div style="margin-top:1rem;font-size:.75rem;color:rgba(255,255,255,.35);background:rgba(255,255,255,.04);border-radius:6px;padding:.3rem .6rem;">3.08× worse TVD</div>
+
+      <!-- Naive Anthropic -->
+      <div class="stat-block stagger-item" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:18px 14px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:.6rem;">Naive Anthropic</div>
+        <div style="display:flex;justify-content:space-around;gap:.5rem;margin-bottom:.5rem;">
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:var(--ink-faint);line-height:1;">0.311</div>
+            <div style="font-size:11px;color:var(--ink-faint);margin-top:.2rem;">Mean TVD ↓</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:var(--ink-faint);line-height:1;">0.215</div>
+            <div style="font-size:11px;color:var(--ink-faint);margin-top:.2rem;">Mean Wass. ↓</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--ink-faint);background:#f1f5f9;border-radius:5px;padding:.25rem .6rem;display:inline-block;">3.08× worse TVD</div>
       </div>
+
     </div>
 
-    <div class="supp-line">20 policy questions · 50 demographic slices · 1,000 simulated runs. Lower TVD and Wasserstein = closer to real ATP survey distributions.</div>
+    <div class="supp-line">20 policy questions · 50 intersectional demographic slices · 1,000 simulated runs. Lower TVD &amp; Wasserstein = closer to real ATP survey distributions.</div>
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
