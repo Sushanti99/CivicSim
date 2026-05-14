@@ -33,15 +33,17 @@ if str(_BACKEND) not in sys.path:
     sys.path.insert(0, str(_BACKEND))
 
 from evals.metrics import (  # noqa: E402
+    answer_cis,
     expected_log_likelihood,
-    hellinger_distance,
     kl_divergence,
     modal_answer,
     prior_as_dict,
+    prior_in_ci_rate,
     prior_prob_of_stance,
     prior_rank_of_stance,
     stances_to_distribution,
     total_variation_distance,
+    wasserstein_distance,
 )
 
 
@@ -98,7 +100,7 @@ class DemographicGroupEval:
     simulated: dict[str, float]   # {answer_label: prob}
     prior: dict[str, float]       # {answer_label: prob}
     tvd: float = 0.0
-    hellinger: float = 0.0
+    wasserstein: float = 0.0
 
 
 @dataclass
@@ -129,18 +131,24 @@ class SimulationEval:
     simulated_aggregate: dict[str, float] = field(default_factory=dict)
     tvd_vs_national: float = 1.0
     kl_vs_national: float = float("inf")
-    hellinger_vs_national: float = 1.0
+    wasserstein_vs_national: float = float("nan")
 
     # ---- Answer coverage ----
     # Fraction of valid answer options chosen by at least one agent.
     answer_coverage: float = 0.0
 
+    # ---- Wilson 95% confidence intervals on simulated proportions ----
+    # {answer_label: (lower, upper)}  — how precisely we estimate each answer share
+    # given the finite number of agents.
+    confidence_intervals: dict[str, tuple[float, float]] = field(default_factory=dict)
+
+    # Fraction of answer options whose ATP national prior falls within the
+    # simulated 95% CI.  1.0 = all ATP priors are statistically consistent
+    # with the simulation; 0.0 = none are.
+    prior_in_ci_rate: float = float("nan")
+
     # ---- Demographic breakdown ----
     demographic_evals: list[DemographicGroupEval] = field(default_factory=list)
-
-    # ---- Overall trust score ----
-    # Composite [0, 100] summarizing key trustworthiness signals.
-    trust_score: float = 0.0
 
     def aggregate_summary(self) -> dict:
         return {
@@ -155,52 +163,27 @@ class SimulationEval:
             "expected_log_likelihood": round(self.expected_log_likelihood, 4),
             "tvd_vs_national": round(self.tvd_vs_national, 4),
             "kl_vs_national": round(self.kl_vs_national, 4),
-            "hellinger_vs_national": round(self.hellinger_vs_national, 4),
+            "wasserstein_vs_national": (
+                round(self.wasserstein_vs_national, 4)
+                if self.wasserstein_vs_national == self.wasserstein_vs_national
+                else None
+            ),
             "answer_coverage": round(self.answer_coverage, 4),
-            "trust_score": round(self.trust_score, 1),
+            "confidence_intervals": {
+                k: (round(lo, 4), round(hi, 4))
+                for k, (lo, hi) in self.confidence_intervals.items()
+            },
+            "prior_in_ci_rate": (
+                round(self.prior_in_ci_rate, 4)
+                if self.prior_in_ci_rate == self.prior_in_ci_rate  # not NaN
+                else None
+            ),
         }
 
 
 # ---------------------------------------------------------------------------
 # Core evaluation logic
 # ---------------------------------------------------------------------------
-
-def _compute_trust_score(ev: SimulationEval) -> float:
-    """Weighted composite score in [0, 100].
-
-    Components:
-      - Validity (15%): all stances are valid answer options.
-      - Prior adherence (40%): mean prior probability relative to the best achievable.
-      - Modal agreement (20%): fraction choosing the modal answer.
-      - Distribution match (25%): 1 - TVD vs. national prior (skipped if unavailable).
-    """
-    validity_score = ev.validity_rate * 100
-
-    # Normalise mean_prior_prob by the best achievable (always picking modal).
-    # If all priors are uniform, modal_prob ≈ 1/n_answers — this avoids
-    # penalising the LLM for genuinely uncertain questions.
-    modal_probs = [
-        prior_prob_of_stance(modal_answer(a.prior) or "", a.prior)
-        for a in ev.agent_evals
-        if a.prior
-    ]
-    best_mean = sum(modal_probs) / len(modal_probs) if modal_probs else 1.0
-    adherence_score = min(ev.mean_prior_prob / max(best_mean, 1e-6), 1.0) * 100
-    modal_score = ev.modal_agreement_rate * 100
-
-    tvd = ev.tvd_vs_national
-    if tvd != tvd or tvd == float("inf"):  # NaN or inf — national prior unavailable
-        # Compute score from the three prior-based components only, re-weighted.
-        return 0.20 * validity_score + 0.55 * adherence_score + 0.25 * modal_score
-
-    distribution_score = (1.0 - tvd) * 100
-    return (
-        0.15 * validity_score
-        + 0.40 * adherence_score
-        + 0.20 * modal_score
-        + 0.25 * distribution_score
-    )
-
 
 def evaluate_simulation(
     sim_data: dict,
@@ -288,22 +271,24 @@ def evaluate_simulation(
         ev.national_prior = prior_as_dict(national_prior)
         ev.tvd_vs_national = total_variation_distance(ev.national_prior, ev.simulated_aggregate)
         ev.kl_vs_national = kl_divergence(ev.national_prior, ev.simulated_aggregate)
-        ev.hellinger_vs_national = hellinger_distance(ev.national_prior, ev.simulated_aggregate)
+        ev.wasserstein_vs_national = wasserstein_distance(ev.national_prior, ev.simulated_aggregate)
     else:
         ev.national_prior = {}
         ev.tvd_vs_national = float("nan")
         ev.kl_vs_national = float("nan")
-        ev.hellinger_vs_national = float("nan")
+        ev.wasserstein_vs_national = float("nan")
 
     # ---- Answer coverage ----
     stances_used = {a.stance for a in ev.agent_evals if a.stance_valid}
     ev.answer_coverage = len(stances_used) / max(len(answer_options), 1)
 
+    # ---- Wilson 95% CIs on simulated proportions ----
+    ev.confidence_intervals = answer_cis(ev.simulated_aggregate, n)
+    if ev.national_prior:
+        ev.prior_in_ci_rate = prior_in_ci_rate(ev.national_prior, ev.confidence_intervals)
+
     # ---- Demographic breakdown ----
     ev.demographic_evals = _demographic_breakdown(ev.agent_evals, answer_options)
-
-    # ---- Trust score ----
-    ev.trust_score = _compute_trust_score(ev)
 
     return ev
 
@@ -343,7 +328,7 @@ def _demographic_breakdown(
                 prior_avg = {k: v / len(group_agents) for k, v in prior_avg.items()}
 
             tvd = total_variation_distance(prior_avg, simulated)
-            hell = hellinger_distance(prior_avg, simulated)
+            wass = wasserstein_distance(prior_avg, simulated)
 
             results.append(
                 DemographicGroupEval(
@@ -353,7 +338,7 @@ def _demographic_breakdown(
                     simulated=simulated,
                     prior=prior_avg,
                     tvd=tvd,
-                    hellinger=hell,
+                    wasserstein=wass,
                 )
             )
 

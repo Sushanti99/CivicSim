@@ -27,9 +27,9 @@ Metrics reported:
   expected_log_lik     Mean log P(stance | prior). Closer to 0 = better calibration.
   tvd_vs_national      Total Variation Distance vs. real ATP population distribution.
   kl_vs_national       KL(national || simulated). 0 = perfect match.
-  hellinger_vs_national Hellinger distance (bounded [0, 1]).
+  wasserstein_vs_national  Normalized 1-Wasserstein (NEMD) vs. ATP national prior (Suh et al., ACL 2025).
   answer_coverage      Fraction of answer options chosen by at least one agent.
-  trust_score          Composite [0, 100] trustworthiness score.
+  prior_in_ci_rate     Fraction of ATP prior probs inside the simulated 95% Wilson CI.
 """
 
 from __future__ import annotations
@@ -65,30 +65,16 @@ logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(mes
 # Formatting helpers
 # ---------------------------------------------------------------------------
 
-_TRUST_THRESHOLDS = [
-    (80, "EXCELLENT"),
-    (65, "GOOD"),
-    (50, "FAIR"),
-    (35, "POOR"),
-    (0,  "LOW"),
-]
-
 _METRIC_GUIDANCE = {
     "validity_rate":        ("== 1.00",  "All stances must be valid answer options."),
     "mean_prior_prob":      (">  0.30",  "Avg prior prob; low = LLM often chose unlikely answers."),
     "modal_agreement_rate": (">  0.35",  "Fraction choosing modal answer for their demographic."),
     "top2_rate":            (">  0.60",  "Fraction whose stance ranked top-2 in their prior."),
     "tvd_vs_national":      ("<  0.15",  "TVD vs. real ATP polling; 0 = perfect match."),
-    "hellinger_vs_national":("<  0.15",  "Hellinger distance (bounded); 0 = identical."),
+    "wasserstein_vs_national":("<  0.10",  "Normalized EMD vs. ATP prior; respects ordinal response order (Suh et al., ACL 2025)."),
     "answer_coverage":      (">  0.80",  "Fraction of answer options actually chosen."),
+    "prior_in_ci_rate":     ("== 1.00",  "Fraction of ATP priors inside the simulated 95% CI."),
 }
-
-
-def _trust_label(score: float) -> str:
-    for threshold, label in _TRUST_THRESHOLDS:
-        if score >= threshold:
-            return label
-    return "LOW"
 
 
 def _flag(metric: str, value: float) -> str:
@@ -99,8 +85,9 @@ def _flag(metric: str, value: float) -> str:
         "modal_agreement_rate":  (">=", 0.35),
         "top2_rate":             (">=", 0.60),
         "tvd_vs_national":       ("<=", 0.15),
-        "hellinger_vs_national": ("<=", 0.15),
+        "wasserstein_vs_national": ("<=", 0.10),
         "answer_coverage":       (">=", 0.80),
+        "prior_in_ci_rate":      (">=", 1.00),
     }
     if metric not in rules:
         return ""
@@ -136,8 +123,7 @@ def print_summary_table(evals: list[SimulationEval]) -> None:
         ("top2%",        6),
         ("TVD",          6),
         ("cover",        6),
-        ("score",        7),
-        ("grade",        10),
+        ("in_CI",        6),
     ]
     header = "  ".join(name.ljust(w) for name, w in cols)
     print(header)
@@ -145,6 +131,8 @@ def print_summary_table(evals: list[SimulationEval]) -> None:
 
     for ev in evals:
         s = ev.aggregate_summary()
+        in_ci = s["prior_in_ci_rate"]
+        in_ci_str = f"{in_ci:.2f}" if in_ci is not None else " N/A"
         row = [
             ev.sim_id[:30].ljust(30),
             ev.question_id[:16].ljust(16),
@@ -155,8 +143,7 @@ def print_summary_table(evals: list[SimulationEval]) -> None:
             _fmt(s["top2_rate"], 3).rjust(6),
             _fmt(s["tvd_vs_national"], 3).rjust(6),
             _fmt(s["answer_coverage"], 2).rjust(6),
-            _fmt(s["trust_score"], 1).rjust(7),
-            _trust_label(s["trust_score"]).ljust(10),
+            in_ci_str.rjust(6),
         ]
         print("  ".join(row))
 
@@ -182,37 +169,39 @@ def print_detail_report(ev: SimulationEval) -> None:
         ("expected_log_lik",      s["expected_log_likelihood"]),
         ("tvd_vs_national",       s["tvd_vs_national"]),
         ("kl_vs_national",        s["kl_vs_national"]),
-        ("hellinger_vs_national", s["hellinger_vs_national"]),
+        ("wasserstein_vs_national", s["wasserstein_vs_national"] if s["wasserstein_vs_national"] is not None else float("nan")),
         ("answer_coverage",       s["answer_coverage"]),
+        ("prior_in_ci_rate",      s["prior_in_ci_rate"] if s["prior_in_ci_rate"] is not None else float("nan")),
     ]
     for name, val in metric_rows:
         guidance = _METRIC_GUIDANCE.get(name, ("", ""))
         flag = _flag(name, val) if not isinstance(val, str) else ""
         print(f"  {name:<26} {_fmt(val, 4):<10} {flag:<8} {guidance[0]:<10} {guidance[1]}")
 
-    print(f"\n  Trust Score: {s['trust_score']:.1f} / 100  [{_trust_label(s['trust_score'])}]")
-
-    # ---- National prior vs. simulated distribution ----
+    # ---- National prior vs. simulated distribution with CIs ----
     if ev.national_prior:
-        print("\n--- Answer Distribution ---")
+        print("\n--- Answer Distribution (95% Wilson CI) ---")
+        cis = ev.confidence_intervals
         all_answers = sorted(set(ev.national_prior) | set(ev.simulated_aggregate))
-        print(f"  {'Answer':<40} {'ATP Prior':>10} {'Simulated':>10} {'Δ':>8}")
-        print("  " + "-" * 70)
+        print(f"  {'Answer':<40} {'ATP Prior':>9} {'Simulated':>10} {'95% CI':>20} {'In CI?':>7}")
+        print("  " + "-" * 90)
         for ans in all_answers:
             atp_p = ev.national_prior.get(ans, 0.0)
             sim_p = ev.simulated_aggregate.get(ans, 0.0)
-            delta = sim_p - atp_p
-            print(f"  {ans[:40]:<40} {atp_p:>10.3f} {sim_p:>10.3f} {delta:>+8.3f}")
+            lo, hi = cis.get(ans, (0.0, 1.0))
+            in_ci = "\u2713" if lo <= atp_p <= hi else "\u2717"
+            ci_str = f"[{lo:.3f}, {hi:.3f}]"
+            print(f"  {ans[:40]:<40} {atp_p:>9.3f} {sim_p:>10.3f} {ci_str:>20} {in_ci:>7}")
 
     # ---- Demographic breakdown ----
     if ev.demographic_evals:
         print("\n--- Demographic Group Breakdown (TVD vs. group prior) ---")
-        print(f"  {'dim':<16} {'value':<30} {'N':>4} {'TVD':>8} {'Hellinger':>10}")
-        print("  " + "-" * 72)
+        print(f"  {'dim':<16} {'value':<30} {'N':>4} {'TVD':>8} {'Wasserstein':>12}")
+        print("  " + "-" * 75)
         for de in sorted(ev.demographic_evals, key=lambda x: -x.tvd):
             print(
                 f"  {de.dim:<16} {de.value[:30]:<30} {de.n_agents:>4} "
-                f"{de.tvd:>8.4f} {de.hellinger:>10.4f}"
+                f"{de.tvd:>8.4f} {de.wasserstein:>12.4f}"
             )
 
     # ---- Per-agent detail ----
@@ -298,7 +287,7 @@ def main(argv: list[str] | None = None) -> int:
                     "value": de.value,
                     "n_agents": de.n_agents,
                     "tvd": round(de.tvd, 4),
-                    "hellinger": round(de.hellinger, 4),
+                    "wasserstein": round(de.wasserstein, 4),
                 }
                 for de in ev.demographic_evals
             ]
@@ -310,10 +299,9 @@ def main(argv: list[str] | None = None) -> int:
                 print_detail_report(ev)
         else:
             print_summary_table(evals)
-            # Print trust-score legend.
             print()
-            print("Grade: EXCELLENT≥80  GOOD≥65  FAIR≥50  POOR≥35  LOW<35")
-            print("TVD: Total Variation Distance vs. ATP national prior (lower = better)")
+            print("in_CI: fraction of ATP prior probabilities inside the simulated 95% Wilson CI (1.00 = all consistent)")
+            print("TVD:   Total Variation Distance vs. ATP national prior (lower = better)")
 
     return 0
 
