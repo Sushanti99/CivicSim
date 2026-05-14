@@ -29,13 +29,13 @@ def test_simulate_free_text_match(client):
             "location": "alameda_california",
             "n": 3,
             "seed": 1,
-            "free_text": "should we build more affordable housing in the neighborhood",
+            "free_text": "climate change affecting my local community",
         },
     )
     assert r.status_code == 200
     body = r.json()
     assert body["matched_from_free_text"] is True
-    assert body["question_id"] == "Q_HOUSING"
+    assert body["question_id"] == "CLIM9_W89"
 
 
 def test_simulate_free_text_unmatched(client):

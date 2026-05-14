@@ -35,7 +35,7 @@
     "id": "division_new_england",
     "label": "New England (division)",
     "kind": "division",
-    "region": null,
+    "region": "Northeast",
     "division": "New England",
     "population": 11685655
   },
@@ -43,7 +43,7 @@
     "id": "division_middle_atlantic",
     "label": "Middle Atlantic (division)",
     "kind": "division",
-    "region": null,
+    "region": "Northeast",
     "division": "Middle Atlantic",
     "population": 32143449
   },
@@ -51,7 +51,7 @@
     "id": "division_east_north_central",
     "label": "East North Central (division)",
     "kind": "division",
-    "region": null,
+    "region": "Midwest",
     "division": "East North Central",
     "population": 35701815
   },
@@ -59,7 +59,7 @@
     "id": "division_west_north_central",
     "label": "West North Central (division)",
     "kind": "division",
-    "region": null,
+    "region": "Midwest",
     "division": "West North Central",
     "population": 16099176
   },
@@ -67,7 +67,7 @@
     "id": "division_south_atlantic",
     "label": "South Atlantic (division)",
     "kind": "division",
-    "region": null,
+    "region": "South",
     "division": "South Atlantic",
     "population": 50932844
   },
@@ -75,7 +75,7 @@
     "id": "division_east_south_central",
     "label": "East South Central (division)",
     "kind": "division",
-    "region": null,
+    "region": "South",
     "division": "East South Central",
     "population": 14652316
   },
@@ -83,7 +83,7 @@
     "id": "division_west_south_central",
     "label": "West South Central (division)",
     "kind": "division",
-    "region": null,
+    "region": "South",
     "division": "West South Central",
     "population": 30127942
   },
@@ -91,7 +91,7 @@
     "id": "division_mountain",
     "label": "Mountain (division)",
     "kind": "division",
-    "region": null,
+    "region": "West",
     "division": "Mountain",
     "population": 19031137
   },
@@ -99,7 +99,7 @@
     "id": "division_pacific",
     "label": "Pacific (division)",
     "kind": "division",
-    "region": null,
+    "region": "West",
     "division": "Pacific",
     "population": 40536448
   }
