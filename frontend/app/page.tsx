@@ -40,8 +40,7 @@ function Nav() {
           <a href="#policymakers">Policymakers</a>
           <a href="#framework">Framework</a>
           <a href="#paper">Paper</a>
-          <Link href="/simulate">Simulator</Link>
-          <Link href="/simulations">Runs</Link>
+          <Link href="/simulations">Simulations</Link>
           <a
             href="https://github.com/Sushanti99/CivicSim"
             target="_blank"

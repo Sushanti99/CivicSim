@@ -74,12 +74,11 @@ export default function SimulatePage() {
             CivicSim
           </Link>
           <nav className="flex items-center gap-6 text-sm">
-            <span className="text-[color:var(--color-text)]">Simulate</span>
             <Link
               href="/simulations"
               className="text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)]"
             >
-              Simulations
+              ← Simulations
             </Link>
           </nav>
         </div>
