@@ -75,7 +75,7 @@ from evals.metrics import (
 
 # ── Configuration (env overrides respected) ──────────────────────────────────
 N_AGENTS = int(os.getenv("EVAL_N_AGENTS", "30"))
-D_SLICES = int(os.getenv("EVAL_D_SLICES", "3"))
+D_SLICES = int(os.getenv("EVAL_D_SLICES", "20"))
 Q_PER_DOMAIN = int(os.getenv("EVAL_Q_PER_DOMAIN", "2"))
 LLM_CONCURRENCY = 5      # max parallel LLM calls
 
@@ -200,19 +200,30 @@ def get_question_label(question_id: str, compact_df: pd.DataFrame) -> str:
     return rows.iloc[0] if len(rows) > 0 else question_id
 
 
-def find_top_slices(
+def find_diverse_slices(
     question_id: str,
     dims: list[str],
     compact_df: pd.DataFrame,
     d: int = D_SLICES,
+    seed: int = 42,
 ) -> list[dict[str, str]]:
-    """Return top D demographic slices for this question.
+    """Return D demographically diverse slices for this question.
 
-    Requires all selected dims to be non-ALL simultaneously. Tries progressively
-    fewer dims until populated cells are found (compact parquet only has marginals
-    for some questions at certain specificity levels).
+    Strategy (avoids the bias toward high-income / White that occurs when
+    picking by row-count descending):
+
+    1. 1-dim marginals first — one slice per unique value of each dim
+       (covers every income bracket, race group, and age group).
+    2. 2-dim cross-cuts — interleave across dim-value pairs to maximise spread.
+    3. 3-dim (or more) combos as fill if still under d.
+
+    This guarantees all income brackets and race groups appear before
+    any demographic is double-counted.
     """
     import itertools as _it
+    import random as _random
+
+    rng = _random.Random(seed)
 
     q_df = compact_df[compact_df["question_id"] == question_id]
     if q_df.empty:
@@ -222,28 +233,104 @@ def find_top_slices(
     if not available_dims:
         return []
 
-    for n_dims in range(len(available_dims), 0, -1):
-        for combo in _it.combinations(available_dims, n_dims):
-            sub_dims = list(combo)
+    selected: list[dict[str, str]] = []
+    selected_keys: set[tuple] = set()
+
+    def _key(s: dict) -> tuple:
+        return tuple(sorted(s.items()))
+
+    def _try_add(s: dict) -> bool:
+        k = _key(s)
+        if k in selected_keys:
+            return False
+        selected.append(s)
+        selected_keys.add(k)
+        return True
+
+    def _valid_marginal(dim: str, val: str) -> bool:
+        """True if the parquet has a non-ALL row for this dim=val."""
+        mask = q_df[dim] == val
+        for other in available_dims:
+            if other != dim:
+                mask &= q_df[other] == "ALL"
+        return mask.any()
+
+    # ── Phase 1: 1-dim marginals (one entry per unique value per dim) ─────────
+    for dim in available_dims:
+        unique_vals = q_df[q_df[dim] != "ALL"][dim].unique().tolist()
+        rng.shuffle(unique_vals)
+        for val in unique_vals:
+            if len(selected) >= d:
+                break
+            if _valid_marginal(dim, val):
+                _try_add({dim: val})
+
+    # ── Phase 2: 2-dim cross-cuts ─────────────────────────────────────────────
+    if len(selected) < d and len(available_dims) >= 2:
+        for combo in _it.combinations(available_dims, 2):
+            sub = list(combo)
             mask = pd.Series(True, index=q_df.index)
-            for dim in sub_dims:
+            for dim in sub:
+                mask &= q_df[dim] != "ALL"
+            # Require non-selected dims to be ALL so it's a clean 2-dim marginal
+            for dim in available_dims:
+                if dim not in sub:
+                    mask &= q_df[dim] == "ALL"
+            filtered = q_df[mask]
+            if filtered.empty:
+                continue
+            combos = (
+                filtered.groupby(sub)
+                .size()
+                .reset_index(name="_n")
+            )
+            # Shuffle so we don't always pick the same order within each combo
+            combos = combos.sample(frac=1, random_state=seed)
+            # Round-robin across values of each dim to stay diverse
+            dim_vals: dict[str, list] = {
+                dim: combos[dim].unique().tolist() for dim in sub
+            }
+            for dim in sub:
+                rng.shuffle(dim_vals[dim])
+            max_rounds = max(len(v) for v in dim_vals.values())
+            for round_i in range(max_rounds):
+                if len(selected) >= d:
+                    break
+                for dim in sub:
+                    vals = dim_vals[dim]
+                    if round_i >= len(vals):
+                        continue
+                    val = vals[round_i]
+                    candidates = combos[combos[dim] == val]
+                    for _, row in candidates.iterrows():
+                        s = {c: str(row[c]) for c in sub}
+                        if _try_add(s):
+                            break
+                    if len(selected) >= d:
+                        break
+
+    # ── Phase 3: 3-dim combos as fill ─────────────────────────────────────────
+    if len(selected) < d and len(available_dims) >= 3:
+        for combo in _it.combinations(available_dims, 3):
+            sub = list(combo)
+            mask = pd.Series(True, index=q_df.index)
+            for dim in sub:
                 mask &= q_df[dim] != "ALL"
             filtered = q_df[mask]
             if filtered.empty:
                 continue
-            # Group by selected dims; row count reflects data richness
-            grouped = (
-                filtered.groupby(sub_dims)
+            combos = (
+                filtered.groupby(sub)
                 .size()
                 .reset_index(name="_n")
-                .sort_values("_n", ascending=False)
+                .sample(frac=1, random_state=seed)
             )
-            return [
-                {dim: str(row[dim]) for dim in sub_dims}
-                for _, row in grouped.head(d).iterrows()
-            ]
+            for _, row in combos.iterrows():
+                if len(selected) >= d:
+                    break
+                _try_add({c: str(row[c]) for c in sub})
 
-    return []
+    return selected
 
 
 def compact_parquet_ground_truth(
@@ -1226,7 +1313,7 @@ async def main(args: argparse.Namespace) -> None:
     plan: list[dict] = []
     for domain, info in active_domains.items():
         for qid in info["question_ids"]:
-            slices = find_top_slices(qid, info["dims"], compact_df, D_SLICES)
+            slices = find_diverse_slices(qid, info["dims"], compact_df, D_SLICES)
             if not slices:
                 log.warning("No populated slices found for %s / %s — skipping", domain, qid)
                 continue

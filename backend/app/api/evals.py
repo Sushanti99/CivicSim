@@ -20,7 +20,7 @@ def _evaluator():
         from evals.evaluator import evaluate_sim_id, load_all_sim_ids  # type: ignore[import]
         return evaluate_sim_id, load_all_sim_ids
     except ImportError as exc:
-        raise HTTPException(status_code=503, detail=f"Eval module unavailable: {exc}")
+        raise HTTPException(status_code=503, detail=f"Eval module unavailable: {exc}") from exc
 
 
 def _format(ev) -> dict:
