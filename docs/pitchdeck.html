@@ -998,9 +998,10 @@
     padding: 40px 56px 50px;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   .demo-time-word {
-    font-size: 96px;
+    font-size: 86px;
     font-weight: 800;
     letter-spacing: -3px;
     line-height: 1;
@@ -1008,21 +1009,27 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
+    flex-shrink: 0;
   }
   .demo-shots {
     display: flex;
     gap: 12px;
     flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
   .demo-shots img {
     flex: 1;
     min-width: 0;
+    width: 0;
+    height: 100%;
     border-radius: 10px;
     object-fit: cover;
     object-position: top;
     border: 1px solid var(--border);
     box-shadow: var(--shadow-hero);
+    display: block;
   }
   .demo-frame {
     flex: 1;
