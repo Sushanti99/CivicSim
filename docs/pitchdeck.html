@@ -996,8 +996,34 @@
       radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.14), transparent 50%),
       linear-gradient(180deg, #F6F9FF 0%, #EEF5FF 100%);
     padding: 40px 56px 50px;
+    display: flex;
+    flex-direction: column;
   }
-  .s-demo h2 { font-size: 38px; margin-bottom: 18px; }
+  .demo-time-word {
+    font-size: 96px;
+    font-weight: 800;
+    letter-spacing: -3px;
+    line-height: 1;
+    background: linear-gradient(135deg, #2563eb 0%, #00d4ff 60%, #a855f7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 28px;
+  }
+  .demo-shots {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+  }
+  .demo-shots img {
+    flex: 1;
+    min-width: 0;
+    border-radius: 10px;
+    object-fit: cover;
+    object-position: top;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-hero);
+  }
   .demo-frame {
     flex: 1;
     background: white;
@@ -2444,10 +2470,13 @@
   <!-- ============================================================ -->
   <section class="slide s-demo" data-slide="8">
     <div class="eyebrow">07 · Live demo</div>
-    <h2>CivicSim in action.</h2>
 
-    <div class="demo-frame">
-      <img src="report-assets/screenshots/civicsim_simulator.png" alt="CivicSim simulator">
+    <div class="demo-time-word">Demo time.</div>
+
+    <div class="demo-shots">
+      <img src="../demo/1.png" alt="CivicSim screenshot 1">
+      <img src="../demo/2.png" alt="CivicSim screenshot 2">
+      <img src="../demo/3.png" alt="CivicSim screenshot 3">
     </div>
 
     <div class="slide-footer" style="bottom: 16px;">
