@@ -102,9 +102,10 @@ function Hero() {
               src="/assets/demo-simulator.gif"
               alt="CivicSim simulator demo"
               width={900}
-              height={562}
+              height={506}
               unoptimized
               priority
+              style={{ width: "100%", height: "auto" }}
             />
           </div>
         </div>

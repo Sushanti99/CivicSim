@@ -403,9 +403,9 @@ nav {
 
 .hero-demo-frame {
   border-radius: 16px;
-  overflow: hidden;
   border: 1px solid var(--color-border);
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+  line-height: 0;
 }
 
 .hero-demo-frame img {
