@@ -998,10 +998,10 @@
   }
   .demo-time-word {
     position: absolute;
-    top: 56px;
+    top: 48px;
     left: 64px;
     right: 64px;
-    font-size: 86px;
+    font-size: 72px;
     font-weight: 800;
     letter-spacing: -3px;
     line-height: 1;
@@ -1012,25 +1012,86 @@
   }
   .demo-shots {
     position: absolute;
-    top: 220px;
+    top: 184px;
     left: 64px;
     right: 64px;
-    bottom: 60px;
+    bottom: 52px;
     display: flex;
-    gap: 12px;
+    gap: 14px;
   }
-  .demo-shots img {
+  /* ---- reconstructed UI cards ---- */
+  .demo-card {
     flex: 1;
-    width: 0;
-    min-width: 0;
-    height: 100%;
-    border-radius: 10px;
-    object-fit: cover;
-    object-position: top;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-hero);
-    display: block;
+    background: white;
+    border-radius: 14px;
+    border: 1px solid rgba(37,99,235,0.13);
+    box-shadow: 0 4px 28px rgba(37,99,235,0.09);
+    padding: 22px 20px 18px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
+  .dc-tag {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    color: #2563eb;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .dc-big { flex: 0 0 auto; margin-bottom: 14px; }
+  .dc-pct {
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+    color: #00d4ff;
+  }
+  .dc-stance {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e3a5f;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+  }
+  .dc-pop {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+  .dc-stack {
+    display: flex;
+    height: 10px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 0 0 12px;
+    gap: 2px;
+  }
+  .dc-stack-seg { border-radius: 3px; }
+  .dc-legend { display: flex; flex-direction: column; gap: 5px; margin-top: auto; }
+  .dc-leg-row { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #334155; }
+  .dc-leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .dc-leg-pct { margin-left: auto; font-weight: 700; color: #1e3a5f; }
+  /* horizontal bar rows (card 2) */
+  .dc-hbars { display: flex; flex-direction: column; gap: 11px; flex: 1; justify-content: center; }
+  .dc-hrow { display: flex; align-items: center; gap: 8px; }
+  .dc-hlab { font-size: 11px; color: #475569; width: 58px; flex-shrink: 0; }
+  .dc-htrack { flex: 1; display: flex; height: 12px; border-radius: 6px; overflow: hidden; gap: 1.5px; }
+  .dc-hseg { border-radius: 3px; }
+  /* vertical bar chart (card 3) */
+  .dc-vbars { display: flex; gap: 10px; flex: 1; align-items: flex-end; padding-bottom: 24px; position: relative; }
+  .dc-vgroup { flex: 1; display: flex; gap: 3px; align-items: flex-end; flex-direction: row; position: relative; }
+  .dc-vgroup-label {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+  .dc-vbar { flex: 1; border-radius: 4px 4px 0 0; }
   .demo-frame {
     flex: 1;
     background: white;
@@ -2481,9 +2542,131 @@
     <div class="demo-time-word">Demo time.</div>
 
     <div class="demo-shots">
-      <img src="../demo/1.png" alt="CivicSim screenshot 1">
-      <img src="../demo/2.png" alt="CivicSim screenshot 2">
-      <img src="../demo/3.png" alt="CivicSim screenshot 3">
+
+      <!-- Card 1: Overall stance distribution -->
+      <div class="demo-card">
+        <div class="dc-tag">Overall Results · Min Wage $15/hr</div>
+        <div class="dc-big">
+          <div class="dc-pct">47%</div>
+          <div class="dc-stance">Strongly support</div>
+          <div class="dc-pop">of simulated population</div>
+        </div>
+        <div class="dc-stack">
+          <div class="dc-stack-seg" style="width:47%;background:#00d4ff"></div>
+          <div class="dc-stack-seg" style="width:27%;background:#a855f7"></div>
+          <div class="dc-stack-seg" style="width:13%;background:#f59e0b"></div>
+          <div class="dc-stack-seg" style="width:7%;background:#ef4444"></div>
+          <div class="dc-stack-seg" style="width:6%;background:#cbd5e1"></div>
+        </div>
+        <div class="dc-legend">
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#00d4ff"></span>Strongly support<span class="dc-leg-pct">47%</span></div>
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#a855f7"></span>Somewhat support<span class="dc-leg-pct">27%</span></div>
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#f59e0b"></span>Somewhat oppose<span class="dc-leg-pct">13%</span></div>
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#ef4444"></span>Strongly oppose<span class="dc-leg-pct">7%</span></div>
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#cbd5e1"></span>Unsure<span class="dc-leg-pct">6%</span></div>
+        </div>
+      </div>
+
+      <!-- Card 2: By race / ethnicity -->
+      <div class="demo-card">
+        <div class="dc-tag">Breakdown · By Race / Ethnicity</div>
+        <div class="dc-hbars">
+          <div class="dc-hrow">
+            <div class="dc-hlab">White</div>
+            <div class="dc-htrack">
+              <div class="dc-hseg" style="width:43%;background:#00d4ff"></div>
+              <div class="dc-hseg" style="width:43%;background:#a855f7"></div>
+              <div class="dc-hseg" style="width:8%;background:#f59e0b"></div>
+              <div class="dc-hseg" style="width:6%;background:#ef4444"></div>
+            </div>
+          </div>
+          <div class="dc-hrow">
+            <div class="dc-hlab">Hispanic</div>
+            <div class="dc-htrack">
+              <div class="dc-hseg" style="width:55%;background:#00d4ff"></div>
+              <div class="dc-hseg" style="width:30%;background:#a855f7"></div>
+              <div class="dc-hseg" style="width:10%;background:#f59e0b"></div>
+              <div class="dc-hseg" style="width:5%;background:#ef4444"></div>
+            </div>
+          </div>
+          <div class="dc-hrow">
+            <div class="dc-hlab">Black</div>
+            <div class="dc-htrack">
+              <div class="dc-hseg" style="width:62%;background:#00d4ff"></div>
+              <div class="dc-hseg" style="width:24%;background:#a855f7"></div>
+              <div class="dc-hseg" style="width:9%;background:#f59e0b"></div>
+              <div class="dc-hseg" style="width:5%;background:#ef4444"></div>
+            </div>
+          </div>
+          <div class="dc-hrow">
+            <div class="dc-hlab">Asian</div>
+            <div class="dc-htrack">
+              <div class="dc-hseg" style="width:38%;background:#00d4ff"></div>
+              <div class="dc-hseg" style="width:36%;background:#a855f7"></div>
+              <div class="dc-hseg" style="width:17%;background:#f59e0b"></div>
+              <div class="dc-hseg" style="width:9%;background:#ef4444"></div>
+            </div>
+          </div>
+          <div class="dc-hrow">
+            <div class="dc-hlab">Other</div>
+            <div class="dc-htrack">
+              <div class="dc-hseg" style="width:50%;background:#00d4ff"></div>
+              <div class="dc-hseg" style="width:29%;background:#a855f7"></div>
+              <div class="dc-hseg" style="width:13%;background:#f59e0b"></div>
+              <div class="dc-hseg" style="width:8%;background:#ef4444"></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#00d4ff"></span><span style="font-size:10px;color:#475569">Strongly support</span></div>
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#a855f7"></span><span style="font-size:10px;color:#475569">Somewhat support</span></div>
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#f59e0b"></span><span style="font-size:10px;color:#475569">Somewhat oppose</span></div>
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#ef4444"></span><span style="font-size:10px;color:#475569">Strongly oppose</span></div>
+        </div>
+      </div>
+
+      <!-- Card 3: By age group -->
+      <div class="demo-card">
+        <div class="dc-tag">Breakdown · By Age Group</div>
+        <div class="dc-vbars">
+          <div class="dc-vgroup">
+            <div class="dc-vbar" style="height:68%;background:#00d4ff"></div>
+            <div class="dc-vbar" style="height:18%;background:#a855f7"></div>
+            <div class="dc-vbar" style="height:9%;background:#f59e0b"></div>
+            <div class="dc-vbar" style="height:5%;background:#ef4444"></div>
+            <div class="dc-vgroup-label">18–29</div>
+          </div>
+          <div class="dc-vgroup">
+            <div class="dc-vbar" style="height:54%;background:#00d4ff"></div>
+            <div class="dc-vbar" style="height:28%;background:#a855f7"></div>
+            <div class="dc-vbar" style="height:12%;background:#f59e0b"></div>
+            <div class="dc-vbar" style="height:6%;background:#ef4444"></div>
+            <div class="dc-vgroup-label">30–44</div>
+          </div>
+          <div class="dc-vgroup">
+            <div class="dc-vbar" style="height:44%;background:#00d4ff"></div>
+            <div class="dc-vbar" style="height:32%;background:#a855f7"></div>
+            <div class="dc-vbar" style="height:15%;background:#f59e0b"></div>
+            <div class="dc-vbar" style="height:9%;background:#ef4444"></div>
+            <div class="dc-vgroup-label">45–64</div>
+          </div>
+          <div class="dc-vgroup">
+            <div class="dc-vbar" style="height:30%;background:#00d4ff"></div>
+            <div class="dc-vbar" style="height:25%;background:#a855f7"></div>
+            <div class="dc-vbar" style="height:25%;background:#f59e0b"></div>
+            <div class="dc-vbar" style="height:20%;background:#ef4444"></div>
+            <div class="dc-vgroup-label">65+</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:#94a3b8;margin-top:4px;">← younger cohorts skew strongly supportive</div>
+        <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#00d4ff"></span><span style="font-size:10px;color:#475569">Strongly support</span></div>
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#a855f7"></span><span style="font-size:10px;color:#475569">Somewhat support</span></div>
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#f59e0b"></span><span style="font-size:10px;color:#475569">Somewhat oppose</span></div>
+          <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#ef4444"></span><span style="font-size:10px;color:#475569">Strongly oppose</span></div>
+        </div>
+      </div>
+
     </div>
 
     <div class="slide-footer" style="bottom: 16px;">
