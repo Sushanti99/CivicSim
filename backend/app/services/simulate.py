@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
@@ -32,16 +33,13 @@ from app.services.simulation_store import SimulationStore, make_sim_id
 logger = logging.getLogger(__name__)
 
 
-def _resolve_question(req: SimulateRequest) -> tuple[str, str, bool]:
-    """Return (question_id, question_label, matched_from_free_text)."""
-    if req.question_id:
-        return req.question_id, question_label(req.question_id), False
-    matched = match_free_text(req.free_text or "")
-    if not matched:
-        raise QuestionNotFoundError(
-            "Could not match free_text to any known ATP question. Pass a question_id."
-        )
-    return matched, question_label(matched), True
+_DEFAULT_ANSWER_OPTIONS = [
+    "Strongly support",
+    "Somewhat support",
+    "Neither support nor oppose",
+    "Somewhat oppose",
+    "Strongly oppose",
+]
 
 
 def _answer_options_for(question_id: str) -> list[str]:
@@ -51,6 +49,43 @@ def _answer_options_for(question_id: str) -> list[str]:
     raise QuestionNotFoundError(f"Unknown question_id: {question_id}")
 
 
+def _resolve_question(
+    req: SimulateRequest,
+) -> tuple[str | None, str, list[str], str | None]:
+    """Return (prior_question_id, question_label, answer_options, prior_source_label).
+
+    prior_question_id:  ATP question used for demographic prior lookup (may be None).
+    question_label:     The actual question shown to agents and stored in the run.
+    answer_options:     Choices agents pick from.
+    prior_source_label: Human-readable label of the ATP source question, if different
+                        from question_label (shown in UI for transparency).
+    """
+    if req.question_id:
+        # Curated question — full grounding, behaviour unchanged.
+        qlabel = question_label(req.question_id)
+        options = _answer_options_for(req.question_id)
+        return req.question_id, qlabel, options, None
+
+    # Free-text path: the user's words ARE the question.
+    user_q = (req.free_text or "").strip()
+
+    # Best-effort: try to find an ATP question for a demographic prior.
+    prior_qid, _ = match_free_text(user_q)
+    if prior_qid:
+        try:
+            options = _answer_options_for(prior_qid)
+            prior_label = question_label(prior_qid)
+        except QuestionNotFoundError:
+            prior_qid = None
+            options = req.custom_answer_options or _DEFAULT_ANSWER_OPTIONS
+            prior_label = None
+    else:
+        options = req.custom_answer_options or _DEFAULT_ANSWER_OPTIONS
+        prior_label = None
+
+    return prior_qid, user_q, options, prior_label
+
+
 async def run_simulation_stream(
     req: SimulateRequest,
     *,
@@ -58,8 +93,8 @@ async def run_simulation_stream(
 ) -> AsyncIterator[SimulateEvent]:
     llm = llm or build_llm_client()
 
-    qid, qlabel, matched = _resolve_question(req)
-    answer_options = _answer_options_for(qid)
+    prior_qid, qlabel, answer_options, prior_source_label = _resolve_question(req)
+    has_prior = prior_qid is not None
 
     # Resolve domain metadata (optional — won't fail if domain unknown)
     domain_meta = get_domain(req.domain) if req.domain else None
@@ -72,12 +107,13 @@ async def run_simulation_stream(
         "location": req.location,
         "domain": req.domain,
         "domain_label": domain_meta["label"] if domain_meta else None,
-        "question_id": qid,
+        "question_id": prior_qid,
         "question_label": qlabel,
         "n": req.n,
         "selected_dims": req.selected_dims,
         "model": req.model,
-        "matched_from_free_text": matched,
+        "has_prior": has_prior,
+        "prior_source_label": prior_source_label,
     }
     store = SimulationStore.create(sim_id, meta_payload)
 
@@ -85,9 +121,10 @@ async def run_simulation_stream(
         event="meta",
         data={
             "sim_id": sim_id,
-            "question_id": qid,
+            "question_id": prior_qid,
             "question_label": qlabel,
-            "matched_from_free_text": matched,
+            "has_prior": has_prior,
+            "prior_source_label": prior_source_label,
             "answer_options": answer_options,
             "domain": req.domain,
             "domain_label": domain_meta["label"] if domain_meta else None,
@@ -99,19 +136,25 @@ async def run_simulation_stream(
     )
     for a in agents:
         yield SimulateEvent(event="agent_sampled", data=a.model_dump())
+        await asyncio.sleep(0)  # yield control so the event flushes immediately
 
     geo = geo_for(req.location)
 
     priors_per_agent: list[list[AnswerProb]] = []
     prior_details: list[dict] = []
     for a in agents:
-        cell = map_agent_to_filter(
-            a.model_dump(), geo=geo, selected_dims=req.selected_dims
-        )
-        try:
-            dist, used, dropped = lookup_distribution(question_id=qid, demographic_filter=cell)
-        except QuestionNotFoundError:
-            dist, used, dropped = [], cell, ["question_missing"]
+        if has_prior:
+            cell = map_agent_to_filter(
+                a.model_dump(), geo=geo, selected_dims=req.selected_dims
+            )
+            try:
+                dist, used, dropped = lookup_distribution(
+                    question_id=prior_qid, demographic_filter=cell  # type: ignore[arg-type]
+                )
+            except QuestionNotFoundError:
+                dist, used, dropped = [], cell, ["question_missing"]
+        else:
+            dist, used, dropped = [], {}, []
         priors_per_agent.append(dist)
         prior_details.append({"used_filter": used, "backoff_steps": dropped})
         yield SimulateEvent(
@@ -163,7 +206,7 @@ async def run_simulation_stream(
     # Persist summary
     summary_data = {
         "sim_id": sim_id,
-        "question_id": qid,
+        "question_id": prior_qid,
         "question_label": qlabel,
         "n": len(responses),
         "distribution": [a.model_dump() for a in aggregate],
@@ -181,9 +224,9 @@ async def collect_simulation(req: SimulateRequest, *, llm: LLMClient | None = No
     """Run the stream to completion and assemble a single JSON response."""
     qid: str | None = None
     qlabel: str = ""
-    matched = False
+    has_prior = False
+    prior_source_label: str | None = None
     agents_seen: list[AgentOut] = []
-    priors_by_agent: dict[int, list[AnswerProb]] = {}
     responses: list[AgentResponse] = []
     aggregate: list[AnswerProb] = []
 
@@ -191,20 +234,20 @@ async def collect_simulation(req: SimulateRequest, *, llm: LLMClient | None = No
         if ev.event == "meta":
             qid = ev.data["question_id"]
             qlabel = ev.data["question_label"]
-            matched = ev.data["matched_from_free_text"]
+            has_prior = ev.data["has_prior"]
+            prior_source_label = ev.data["prior_source_label"]
         elif ev.event == "agent_sampled":
             agents_seen.append(AgentOut(**ev.data))
-        elif ev.event == "prior_attached":
-            priors_by_agent[ev.data["agent_id"]] = [AnswerProb(**p) for p in ev.data["prior"]]
         elif ev.event == "agent_responded":
             responses.append(AgentResponse(**ev.data))
         elif ev.event == "aggregate":
             aggregate = [AnswerProb(**p) for p in ev.data["distribution"]]
 
     return SimulateResponse(
-        question_id=qid or "",
+        question_id=qid,
         question_label=qlabel,
-        matched_from_free_text=matched,
+        has_prior=has_prior,
+        prior_source_label=prior_source_label,
         n=len(agents_seen),
         agents=agents_seen,
         responses=responses,

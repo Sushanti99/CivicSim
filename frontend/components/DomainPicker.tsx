@@ -19,7 +19,7 @@ export function DomainPicker({ domains, value, onChange }: Props) {
         onChange={(e) => onChange(e.target.value)}
         className="mt-2 w-full rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-4 py-2.5 text-sm focus:border-[color:var(--color-cyan)] focus:outline-none"
       >
-        <option value="">— select a domain —</option>
+        <option value="">Select a domain</option>
         {domains.map((d) => (
           <option key={d.id} value={d.id}>
             {d.label}

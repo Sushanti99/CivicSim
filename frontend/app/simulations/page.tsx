@@ -20,42 +20,19 @@ type SimRun = {
   summary?: { distribution: AnswerProb[]; n: number };
 };
 
-// ── static example runs (shown when no live simulations exist) ────────────────
+// ── base example runs (always shown, never deletable) ─────────────────────────
 
 const EXAMPLE_SIMS: SimRun[] = [
-  {
-    sim_id: "3__region_west__economy",
-    serial: 3,
-    location: "region_west",
-    domain: "economy",
-    domain_label: "Economy & Jobs",
-    question_label: "Do you think the federal government should raise the federal minimum wage to $15 per hour?",
-    n: 25,
-    n_agents: 25,
-    selected_dims: ["age_group", "income_group", "educ_group"],
-    timestamp: "2026-05-10T14:32:00Z",
-    complete: true,
-    summary: {
-      n: 25,
-      distribution: [
-        { answer_label: "Strongly favor", prob: 0.44 },
-        { answer_label: "Somewhat favor", prob: 0.28 },
-        { answer_label: "Neither", prob: 0.08 },
-        { answer_label: "Somewhat oppose", prob: 0.12 },
-        { answer_label: "Strongly oppose", prob: 0.08 },
-      ],
-    },
-  },
   {
     sim_id: "2__region_south__healthcare",
     serial: 2,
     location: "region_south",
-    domain: "healthcare",
+    domain: "health",
     domain_label: "Healthcare",
     question_label: "Should the federal government provide health insurance to all Americans, even if it means raising taxes?",
     n: 20,
     n_agents: 20,
-    selected_dims: ["age_group", "race", "income_group"],
+    selected_dims: ["age_group", "race_eth", "income_group"],
     timestamp: "2026-05-09T09:15:00Z",
     complete: true,
     summary: {
@@ -63,9 +40,9 @@ const EXAMPLE_SIMS: SimRun[] = [
       distribution: [
         { answer_label: "Strongly support", prob: 0.35 },
         { answer_label: "Somewhat support", prob: 0.25 },
-        { answer_label: "Neither", prob: 0.10 },
-        { answer_label: "Somewhat oppose", prob: 0.18 },
-        { answer_label: "Strongly oppose", prob: 0.12 },
+        { answer_label: "Neither",          prob: 0.10 },
+        { answer_label: "Somewhat oppose",  prob: 0.18 },
+        { answer_label: "Strongly oppose",  prob: 0.12 },
       ],
     },
   },
@@ -84,15 +61,66 @@ const EXAMPLE_SIMS: SimRun[] = [
     summary: {
       n: 30,
       distribution: [
-        { answer_label: "A lot more", prob: 0.20 },
-        { answer_label: "Some more", prob: 0.30 },
-        { answer_label: "Same as now", prob: 0.22 },
-        { answer_label: "Fewer", prob: 0.18 },
-        { answer_label: "A lot fewer", prob: 0.10 },
+        { answer_label: "A lot more",   prob: 0.20 },
+        { answer_label: "Some more",    prob: 0.30 },
+        { answer_label: "Same as now",  prob: 0.22 },
+        { answer_label: "Fewer",        prob: 0.18 },
+        { answer_label: "A lot fewer",  prob: 0.10 },
       ],
     },
   },
 ];
+
+// ── demo runs (appear after user runs the demo from /simulate) ─────────────────
+
+const DEMO_RUNS: Record<string, SimRun> = {
+  "demo__h1b_wage_policy__region_west": {
+    sim_id: "demo__h1b_wage_policy__region_west",
+    serial: 4,
+    location: "region_west",
+    domain: "immigration",
+    domain_label: "Immigration",
+    question_label: "Should H-1B be a wage-based policy?",
+    n: 15,
+    n_agents: 15,
+    selected_dims: ["age_group", "race_eth", "income_group"],
+    timestamp: new Date().toISOString(),
+    complete: true,
+    summary: {
+      n: 15,
+      distribution: [
+        { answer_label: "Strongly support",           prob: 0.47 },
+        { answer_label: "Somewhat support",           prob: 0.27 },
+        { answer_label: "Somewhat oppose",            prob: 0.13 },
+        { answer_label: "Strongly oppose",            prob: 0.07 },
+        { answer_label: "Neither support nor oppose", prob: 0.07 },
+      ],
+    },
+  },
+  "demo__minwage__region_west": {
+    sim_id: "demo__minwage__region_west",
+    serial: 3,
+    location: "region_west",
+    domain: "economy",
+    domain_label: "Economy & Jobs",
+    question_label: "Should the federal minimum wage be raised to $15/hour?",
+    n: 15,
+    n_agents: 15,
+    selected_dims: ["age_group", "income_group", "race_eth"],
+    timestamp: new Date().toISOString(),
+    complete: true,
+    summary: {
+      n: 15,
+      distribution: [
+        { answer_label: "Strongly favor",  prob: 0.33 },
+        { answer_label: "Somewhat favor",  prob: 0.27 },
+        { answer_label: "Neither",         prob: 0.07 },
+        { answer_label: "Somewhat oppose", prob: 0.20 },
+        { answer_label: "Strongly oppose", prob: 0.13 },
+      ],
+    },
+  },
+};
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -159,10 +187,12 @@ function SimCard({ sim, onDeleted }: { sim: SimRun; onDeleted: (id: string) => v
   async function handleDelete(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (!confirm(`Delete simulation #${sim.serial ?? sim.sim_id}? This cannot be undone.`)) return;
+    if (!confirm(`Delete this simulation? This cannot be undone.`)) return;
     setDeleting(true);
     try {
-      await api.deleteSimulation(sim.sim_id);
+      // Demo and example sims don't exist in the backend — skip the API call
+      const isDemo = sim.sim_id.startsWith("demo__") || /^\d+__/.test(sim.sim_id);
+      if (!isDemo) await api.deleteSimulation(sim.sim_id);
       onDeleted(sim.sim_id);
     } catch {
       alert("Failed to delete simulation. Check that the backend is running.");
@@ -280,8 +310,20 @@ function Stat({ label, value }: { label: string; value: string | number }) {
 
 // ── page ──────────────────────────────────────────────────────────────────────
 
+function getRunDemos(): string[] {
+  try { return JSON.parse(localStorage.getItem("civicsim_run_demos") ?? "[]"); } catch { return []; }
+}
+function removeRunDemo(sim_id: string) {
+  try {
+    const cur = getRunDemos().filter((id) => id !== sim_id);
+    localStorage.setItem("civicsim_run_demos", JSON.stringify(cur));
+  } catch {}
+}
+
 export default function SimulationsPage() {
   const [liveSims, setLiveSims] = useState<SimRun[]>([]);
+  const [runDemoIds, setRunDemoIds] = useState<string[]>([]);
+  const [deletedExamples, setDeletedExamples] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   function load() {
@@ -299,20 +341,39 @@ export default function SimulationsPage() {
       .finally(() => setLoading(false));
   }
 
-  function handleDeleted(sim_id: string) {
-    setLiveSims((prev) => prev.filter((s) => s.sim_id !== sim_id));
-  }
-
   useEffect(() => {
+    setRunDemoIds(getRunDemos());
     load();
     const id = setInterval(load, 5000);
     return () => clearInterval(id);
   }, []);
 
-  const liveIds = new Set(liveSims.map((s) => s.sim_id));
-  const supplemental = EXAMPLE_SIMS.filter((e) => !liveIds.has(e.sim_id));
-  const sims = [...liveSims, ...supplemental];
-  const isShowingExamples = !loading && liveSims.length === 0;
+  function handleDeleted(sim_id: string) {
+    // Live sim from backend
+    setLiveSims((prev) => prev.filter((s) => s.sim_id !== sim_id));
+    // Demo run
+    if (sim_id in DEMO_RUNS) {
+      removeRunDemo(sim_id);
+      setRunDemoIds((prev) => prev.filter((id) => id !== sim_id));
+    }
+    // Base example
+    setDeletedExamples((prev) => new Set([...prev, sim_id]));
+  }
+
+  const allIds = new Set([
+    ...liveSims.map((s) => s.sim_id),
+    ...runDemoIds,
+  ]);
+  const runDemos = runDemoIds
+    .map((id) => DEMO_RUNS[id])
+    .filter((s): s is SimRun => !!s && !liveSims.some((l) => l.sim_id === s.sim_id));
+  const examples = EXAMPLE_SIMS.filter(
+    (e) => !allIds.has(e.sim_id) && !deletedExamples.has(e.sim_id),
+  );
+
+  const sims = [...liveSims, ...runDemos, ...examples];
+  const hasRealRuns = liveSims.length > 0 || runDemos.length > 0;
+  const isShowingExamples = !loading && !hasRealRuns;
 
   const totalAgents = sims.reduce((s, r) => s + r.n_agents, 0);
   const complete = sims.filter((r) => r.complete).length;
@@ -386,7 +447,7 @@ export default function SimulationsPage() {
                 <SimCard
                   key={sim.sim_id}
                   sim={sim}
-                  onDeleted={isShowingExamples ? () => {} : handleDeleted}
+                  onDeleted={handleDeleted}
                 />
               ))}
             </div>

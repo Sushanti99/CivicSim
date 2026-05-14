@@ -257,6 +257,16 @@ nav {
   50% { opacity: 0.6; transform: scale(0.85); }
 }
 
+@keyframes agentSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.live-agent-row {
+  animation: agentSlideIn 0.28s ease forwards;
+  opacity: 0;
+}
+
 .hero-title {
   font-size: clamp(2.5rem, 6.5vw, 5rem);
   font-weight: 700;

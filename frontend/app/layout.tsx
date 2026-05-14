@@ -17,7 +17,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CivicSim — Demographically Grounded LLM Opinion Simulation",
+  title: "CivicSim: Demographically Grounded LLM Opinion Simulation",
   description:
     "Pick a U.S. location, ask a policy question, and watch a synthetic electorate respond.",
 };

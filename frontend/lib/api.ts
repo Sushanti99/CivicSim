@@ -131,6 +131,18 @@ export type SimulationDetail = {
   summary: { distribution: AnswerProb[]; n: number } | null;
 };
 
+export type MatchQuestionResult = {
+  question_id: string | null;
+  question_label: string | null;
+  score: number;
+  match_level: "close" | "weak" | "none";
+};
+
+export type ValidateQuestionResult = {
+  is_policy: boolean;
+  reason: string;
+};
+
 export type SimulateRequest = {
   location: string;
   n: number;
@@ -140,10 +152,11 @@ export type SimulateRequest = {
   selected_dims?: string[];
   seed?: number;
   model?: string;
+  custom_answer_options?: string[];
 };
 
 export type SimulateEvent =
-  | { event: "meta"; data: { sim_id: string; question_id: string; question_label: string; matched_from_free_text: boolean; answer_options: string[]; domain: string | null; domain_label: string | null } }
+  | { event: "meta"; data: { sim_id: string; question_id: string | null; question_label: string; has_prior: boolean; prior_source_label: string | null; answer_options: string[]; domain: string | null; domain_label: string | null } }
   | { event: "agent_sampled"; data: Agent }
   | { event: "prior_attached"; data: { agent_id: number; prior: AnswerProb[]; used_filter: Record<string, string>; backoff_steps: string[] } }
   | { event: "agent_responded"; data: AgentResponse }
@@ -152,6 +165,12 @@ export type SimulateEvent =
   | { event: "error"; data: { message: string } };
 
 const API_BASE = "/api";
+
+// Next.js rewrites buffer the full response before forwarding, which breaks SSE.
+// For streaming endpoints we hit the backend directly.
+const STREAM_BASE =
+  (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_BASE_URL) ||
+  "http://localhost:8000";
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -192,6 +211,10 @@ export const api = {
       "/poll",
       { method: "POST", body: JSON.stringify(body) },
     ),
+  matchQuestion: (q: string) =>
+    http<MatchQuestionResult>(`/match-question?q=${encodeURIComponent(q)}`),
+  validateQuestion: (q: string) =>
+    http<ValidateQuestionResult>(`/validate-question?q=${encodeURIComponent(q)}`),
   deleteSimulation: async (sim_id: string): Promise<void> => {
     const res = await fetch(`${API_BASE}/simulations/${encodeURIComponent(sim_id)}`, {
       method: "DELETE",
@@ -210,7 +233,7 @@ export async function* simulateStream(
   body: SimulateRequest,
   signal?: AbortSignal,
 ): AsyncGenerator<SimulateEvent, void, unknown> {
-  const res = await fetch(`${API_BASE}/simulate`, {
+  const res = await fetch(`${STREAM_BASE}/api/simulate`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

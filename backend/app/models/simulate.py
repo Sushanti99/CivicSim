@@ -14,8 +14,9 @@ class SimulateRequest(BaseModel):
     question_id: str | None = Field(None, description="Curated ATP question ID.")
     free_text: str | None = Field(
         None,
-        description="Free-text policy question. If set without question_id, "
-        "the backend matches it to the nearest known question.",
+        description="Free-text policy question. Used verbatim as the question asked to agents. "
+        "The backend will attempt to find a relevant ATP question to supply a demographic prior, "
+        "but the simulation proceeds with or without one.",
     )
     domain: str | None = Field(
         None,
@@ -31,6 +32,11 @@ class SimulateRequest(BaseModel):
     model: str | None = Field(
         None,
         description="Override the default LLM model for this request.",
+    )
+    custom_answer_options: list[str] | None = Field(
+        None,
+        description="Custom response scale labels for free-text questions with no ATP prior match. "
+        "Ignored when a prior match is found.",
     )
 
     @model_validator(mode="after")
@@ -48,9 +54,10 @@ class AgentResponse(BaseModel):
 
 
 class SimulateResponse(BaseModel):
-    question_id: str
+    question_id: str | None
     question_label: str
-    matched_from_free_text: bool = False
+    has_prior: bool = False
+    prior_source_label: str | None = None
     n: int
     agents: list[AgentOut]
     responses: list[AgentResponse]

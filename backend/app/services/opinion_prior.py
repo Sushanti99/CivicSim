@@ -167,23 +167,28 @@ def question_label(question_id: str) -> str:
     return str(rows[0][0])
 
 
-def match_free_text(query: str) -> str | None:
-    """Cheap nearest-question matcher: token-overlap over question_label."""
-    q_tokens = {t.lower() for t in _tokenize(query) if len(t) > 2}
-    if not q_tokens:
-        return None
+def match_free_text(query: str) -> tuple[str | None, float]:
+    """Semantic nearest-question matcher using embedding cosine similarity.
+
+    Returns (question_id, score) where score is cosine similarity [0, 1]
+    when embeddings are available, or Jaccard similarity [0, 1] as fallback.
+    Use semantic_match.match_level(score, using_embeddings=...) to classify.
+    """
+    from app.services.semantic_match import _client_available, semantic_match
+
     try:
         rows = _safe_query("SELECT DISTINCT question_id, question_label FROM priors", [])
     except PriorsUnavailableError:
-        return None
+        return None, 0.0
 
-    best_id, best_score = None, 0
-    for qid, lbl in rows:
-        tokens = {t.lower() for t in _tokenize(lbl) if len(t) > 2}
-        score = len(q_tokens & tokens)
-        if score > best_score:
-            best_id, best_score = qid, score
-    return best_id
+    questions = [(qid, lbl) for qid, lbl in rows]
+    qid, score = semantic_match(query, questions)
+
+    # Only return a match if it clears the weak threshold.
+    from app.services.semantic_match import match_level
+    if match_level(score, using_embeddings=_client_available()) == "none":
+        return None, score
+    return qid, score
 
 
 def _tokenize(s: str) -> list[str]:
