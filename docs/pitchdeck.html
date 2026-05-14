@@ -1080,18 +1080,16 @@
   .dc-htrack { flex: 1; display: flex; height: 12px; border-radius: 6px; overflow: hidden; gap: 1.5px; }
   .dc-hseg { border-radius: 3px; }
   /* vertical bar chart (card 3) */
-  .dc-vbars { display: flex; gap: 10px; height: 160px; align-items: flex-end; padding-bottom: 24px; position: relative; flex-shrink: 0; }
-  .dc-vgroup { flex: 1; display: flex; gap: 3px; align-items: flex-end; flex-direction: row; position: relative; }
-  .dc-vgroup-label {
-    position: absolute;
-    bottom: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 10px;
-    color: #94a3b8;
-    white-space: nowrap;
-  }
-  .dc-vbar { flex: 1; border-radius: 4px 4px 0 0; }
+  /* dc-vbars: fills remaining card height via flex:1 */
+  .dc-vbars { display: flex; gap: 8px; flex: 1; min-height: 0; }
+  /* each age group = column: bars row on top, label on bottom */
+  .dc-vgroup { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .dc-vgroup-bars { flex: 1; display: flex; gap: 3px; min-height: 0; }
+  /* each bar slot = column flex: spacer (pushes bar down) + colored bar */
+  .dc-vbar-slot { flex: 1; display: flex; flex-direction: column; }
+  .dc-vbar-spacer { flex: var(--sp); }
+  .dc-vbar { flex: var(--h); border-radius: 3px 3px 0 0; }
+  .dc-vgroup-label { font-size: 10px; color: #94a3b8; text-align: center; flex-shrink: 0; }
   .demo-frame {
     flex: 1;
     background: white;
@@ -2625,41 +2623,58 @@
         </div>
       </div>
 
-      <!-- Card 3: By age group -->
+      <!-- Card 3: By age group — flex-ratio spacer trick, no fixed heights -->
       <div class="demo-card">
         <div class="dc-tag">Breakdown · By Age Group</div>
         <div class="dc-vbars">
+
+          <!-- 18–29 -->
           <div class="dc-vgroup">
-            <div class="dc-vbar" style="height:68%;background:#00d4ff"></div>
-            <div class="dc-vbar" style="height:18%;background:#a855f7"></div>
-            <div class="dc-vbar" style="height:9%;background:#f59e0b"></div>
-            <div class="dc-vbar" style="height:5%;background:#ef4444"></div>
+            <div class="dc-vgroup-bars">
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:32"></div><div class="dc-vbar" style="--h:68;background:#00d4ff"></div></div>
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:82"></div><div class="dc-vbar" style="--h:18;background:#a855f7"></div></div>
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:91"></div><div class="dc-vbar" style="--h:9;background:#f59e0b"></div></div>
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:95"></div><div class="dc-vbar" style="--h:5;background:#ef4444"></div></div>
+            </div>
             <div class="dc-vgroup-label">18–29</div>
           </div>
+
+          <!-- 30–44 -->
           <div class="dc-vgroup">
-            <div class="dc-vbar" style="height:54%;background:#00d4ff"></div>
-            <div class="dc-vbar" style="height:28%;background:#a855f7"></div>
-            <div class="dc-vbar" style="height:12%;background:#f59e0b"></div>
-            <div class="dc-vbar" style="height:6%;background:#ef4444"></div>
+            <div class="dc-vgroup-bars">
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:46"></div><div class="dc-vbar" style="--h:54;background:#00d4ff"></div></div>
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:72"></div><div class="dc-vbar" style="--h:28;background:#a855f7"></div></div>
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:88"></div><div class="dc-vbar" style="--h:12;background:#f59e0b"></div></div>
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:94"></div><div class="dc-vbar" style="--h:6;background:#ef4444"></div></div>
+            </div>
             <div class="dc-vgroup-label">30–44</div>
           </div>
+
+          <!-- 45–64 -->
           <div class="dc-vgroup">
-            <div class="dc-vbar" style="height:44%;background:#00d4ff"></div>
-            <div class="dc-vbar" style="height:32%;background:#a855f7"></div>
-            <div class="dc-vbar" style="height:15%;background:#f59e0b"></div>
-            <div class="dc-vbar" style="height:9%;background:#ef4444"></div>
+            <div class="dc-vgroup-bars">
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:56"></div><div class="dc-vbar" style="--h:44;background:#00d4ff"></div></div>
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:68"></div><div class="dc-vbar" style="--h:32;background:#a855f7"></div></div>
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:85"></div><div class="dc-vbar" style="--h:15;background:#f59e0b"></div></div>
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:91"></div><div class="dc-vbar" style="--h:9;background:#ef4444"></div></div>
+            </div>
             <div class="dc-vgroup-label">45–64</div>
           </div>
+
+          <!-- 65+ -->
           <div class="dc-vgroup">
-            <div class="dc-vbar" style="height:30%;background:#00d4ff"></div>
-            <div class="dc-vbar" style="height:25%;background:#a855f7"></div>
-            <div class="dc-vbar" style="height:25%;background:#f59e0b"></div>
-            <div class="dc-vbar" style="height:20%;background:#ef4444"></div>
+            <div class="dc-vgroup-bars">
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:70"></div><div class="dc-vbar" style="--h:30;background:#00d4ff"></div></div>
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:75"></div><div class="dc-vbar" style="--h:25;background:#a855f7"></div></div>
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:75"></div><div class="dc-vbar" style="--h:25;background:#f59e0b"></div></div>
+              <div class="dc-vbar-slot"><div class="dc-vbar-spacer" style="--sp:80"></div><div class="dc-vbar" style="--h:20;background:#ef4444"></div></div>
+            </div>
             <div class="dc-vgroup-label">65+</div>
           </div>
+
         </div>
-        <div style="font-size:10px;color:#94a3b8;margin-top:4px;">← younger cohorts skew strongly supportive</div>
-        <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+        <div style="font-size:10px;color:#94a3b8;margin-top:6px;">← younger cohorts skew strongly supportive</div>
+        <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;">
           <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#00d4ff"></span><span style="font-size:10px;color:#475569">Strongly support</span></div>
           <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#a855f7"></span><span style="font-size:10px;color:#475569">Somewhat support</span></div>
           <div class="dc-leg-row"><span class="dc-leg-dot" style="background:#f59e0b"></span><span style="font-size:10px;color:#475569">Somewhat oppose</span></div>
