@@ -20,6 +20,19 @@ export const metadata: Metadata = {
   title: "CivicSim — Demographically Grounded LLM Opinion Simulation",
   description:
     "Pick a U.S. location, ask a policy question, and watch a synthetic electorate respond.",
+  openGraph: {
+    title: "CivicSim — Demographically Grounded LLM Opinion Simulation",
+    description:
+      "Pick a U.S. location, ask a policy question, and watch a synthetic electorate respond.",
+    images: [{ url: "/assets/og-image.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CivicSim — Demographically Grounded LLM Opinion Simulation",
+    description:
+      "Pick a U.S. location, ask a policy question, and watch a synthetic electorate respond.",
+    images: ["/assets/og-image.png"],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
