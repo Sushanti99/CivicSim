@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CivicSim — MIMS 2026 Poster</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ══════════════════════════════════════════════════════════════
+   CIVICSIM DESIGN TOKENS — single source of truth
+   All font sizes, line-heights, gaps, and colours live here.
+   Change a token here and it propagates everywhere.
+   ══════════════════════════════════════════════════════════════
+
+   Brand palette (from design/tokens.json + palette.md):
+     --blue   #1D4ED8   CTAs, links, numbers, accents
+     --navy   #1E3A8A   dark blue, trust banner start
+     --line   rgba(37,99,235,0.14)   default border
+     --line-hi rgba(37,99,235,0.26)  emphasized border
+
+   Type scale:
+     L1  --fs-eyebrow  0.15in   JetBrains Mono, UPPERCASE, tracked
+     L2  --fs-heading  0.38in   Inter 700, section title
+     L3  --fs-subhead  0.22in   Inter 700, named sub-items
+     L4  --fs-body     0.19in   Inter 400, prose
+     L5  --fs-caption  0.16in   Inter 400 italic, footnotes / labels
+         --fs-mono-sm  0.14in   JetBrains Mono, inline data labels
+
+   Line-heights:
+     --lh-body     1.65   all prose
+     --lh-caption  1.50   all captions / small text
+
+   Card rhythm:
+     --gap-card    0.14in   between major elements inside a card
+     --gap-group   0.10in   between items inside a group
+     --pad-card    0.22in 0.26in
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Palette */
+  --ink:     #0B1F4D;
+  --muted:   #486381;
+  --faint:   #7B8EA8;
+  --blue:    #1D4ED8;
+  --navy:    #1E3A8A;
+  --bg-page: #F6F9FF;
+  --bg-alt:  #EEF5FF;
+  --bg-hi:   #EAF2FF;
+  --line:    rgba(37,99,235,0.14);
+  --line-hi: rgba(37,99,235,0.26);
+
+  /* Type scale */
+  --fs-eyebrow: 0.15in;
+  --fs-heading: 0.38in;
+  --fs-subhead: 0.22in;
+  --fs-body:    0.19in;
+  --fs-caption: 0.16in;
+  --fs-mono-sm: 0.14in;
+
+  /* Line heights */
+  --lh-body:    1.65;
+  --lh-caption: 1.50;
+
+  /* Spacing */
+  --gap-card:  0.14in;
+  --gap-group: 0.10in;
+}
+
+@page { size: 24in 30in; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  width: 24in; height: 30in; overflow: hidden;
+}
+
+/* ── POSTER layout ── */
+.poster {
+  width: 24in; height: 30in;
+  padding: 1.4in;
+  display: flex; flex-direction: column; gap: 0.16in;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(37,99,235,0.10), transparent 8in),
+    radial-gradient(circle at 86% 8%,  rgba(14,165,233,0.08), transparent 9in),
+    linear-gradient(180deg, var(--bg-page) 0%, var(--bg-alt) 100%);
+}
+
+.row { display: flex; gap: 0.13in; min-height: 0; }
+
+/* ── CARDS ── */
+.blk {
+  background: #FFFFFF;
+  border: 0.012in solid var(--line);
+  border-left: 0.05in solid var(--blue);
+  border-radius: 0.146in;
+  padding: var(--pad-card, 0.22in 0.26in);
+  display: flex; flex-direction: column;
+  gap: var(--gap-card);
+  overflow: hidden;
+  box-shadow: 0 0.08in 0.33in rgba(0,0,0,0.06), 0 0.16in 0.54in rgba(37,99,235,0.07);
+}
+
+/* ── INLINE HIGHLIGHTS ── */
+.hl       { background: var(--bg-hi); color: var(--blue); border-radius: 0.04in; padding: 0 0.06in; font-weight: 600; }
+.hl-strong { background: #DBEAFE; color: var(--navy); border-radius: 0.04in; padding: 0 0.06in; font-weight: 700; }
+
+/* ── EYEBROW (L1) ── */
+.sec-num {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: var(--fs-eyebrow); font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--blue); margin: 0; flex-shrink: 0;
+}
+
+/* ── SECTION HEADING (L2) ── */
+.sec-title {
+  font-size: var(--fs-heading); font-weight: 700;
+  color: var(--ink); line-height: 1.15;
+  letter-spacing: -0.025em; margin: 0; flex-shrink: 0;
+}
+
+/* ── HEADER ── */
+.hdr {
+  background: linear-gradient(135deg, var(--navy) 0%, #2563EB 100%);
+  border-radius: 0.187in;
+  padding: 0.28in 0.40in; flex-shrink: 0;
+  box-shadow: 0 0.21in 0.63in rgba(37,99,235,0.35);
+}
+.hdr-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.11in; }
+.logo-chip { display: flex; align-items: center; }
+.logo-chip img {
+  height: 0.42in; width: auto; display: block;
+  filter: drop-shadow(0 0.02in 0.04in rgba(0,0,0,0.25));
+}
+.hdr-conf {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--fs-eyebrow); color: rgba(255,255,255,0.5);
+  font-weight: 400; letter-spacing: 0.04em;
+}
+.hdr-title  { font-size: 1.00in; font-weight: 900; color: #FFFFFF; line-height: 1.0; letter-spacing: -0.035em; }
+.hdr-sub    { font-size: 0.28in; font-weight: 500; color: rgba(199,210,254,0.92); margin-top: 0.07in; letter-spacing: -0.01em; }
+.hdr-authors { font-size: 0.18in; font-weight: 400; color: rgba(255,255,255,0.48); margin-top: 0.12in; }
+
+/* ── 01 BACKGROUND ── */
+.bg-body  { font-size: var(--fs-body); color: var(--muted); line-height: var(--lh-body); }
+.miss-strip {
+  background: var(--bg-alt);
+  border-left: 0.06in solid var(--blue);
+  border-radius: 0.06in;
+  padding: 0.14in 0.20in; margin-top: 0.18in; flex-shrink: 0;
+}
+.miss-year {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.50in; font-weight: 700; color: var(--blue);
+  line-height: 1; display: block; margin-bottom: 0.07in; letter-spacing: -0.03em;
+}
+.miss-body { font-size: var(--fs-body); color: var(--navy); line-height: var(--lh-body); }
+.bg-image {
+  flex: 0.85; border-radius: 0.10in; overflow: hidden;
+  border: 0.012in solid var(--line);
+  box-shadow: 0 0.08in 0.33in rgba(0,0,0,0.10); flex-shrink: 0;
+}
+.bg-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── 02 THE PROBLEM ── */
+.cause-group { display: flex; flex-direction: column; gap: var(--gap-group); flex-shrink: 0; }
+
+/* Sub-head (L3) — shared with sol-point-label and res-label */
+.cause-label { font-size: var(--fs-subhead); font-weight: 700; color: var(--ink); margin: 0; flex-shrink: 0; }
+
+.rca-stat { display: flex; align-items: center; gap: 0.14in; flex-shrink: 0; }
+.rca-stat-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52in; font-weight: 700; color: var(--blue);
+  line-height: 1; letter-spacing: -0.03em; flex-shrink: 0;
+}
+.rca-stat-desc { font-size: var(--fs-body); color: var(--muted); line-height: var(--lh-body); flex: 1; }
+
+/* Separator between cause-groups */
+.cause-group + .cause-group {
+  margin-top: 0.12in;
+  padding-top: 0.12in;
+  border-top: 0.008in solid var(--line);
+}
+
+.chip-row { display: flex; align-items: center; gap: var(--gap-group); flex-shrink: 0; }
+.margin-chip {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--bg-hi); border: 0.012in solid var(--line-hi);
+  border-radius: 0.06in; padding: 0.04in 0.14in;
+  font-size: var(--fs-body); font-weight: 600; color: var(--navy);
+}
+.chip-or      { font-size: var(--fs-caption); color: #94A3B8; }
+.chip-caption { font-size: var(--fs-caption); color: var(--muted); font-style: italic; line-height: var(--lh-caption); flex-shrink: 0; }
+
+/* Chart — framed infographic box */
+.tvd-chart {
+  display: flex; flex-direction: column; gap: 0.07in; flex-shrink: 0;
+  border: 0.012in solid var(--line-hi);
+  border-radius: 0.10in;
+  background: var(--bg-alt);
+  padding: 0.14in 0.18in;
+}
+.tvd-chart-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.12in; font-weight: 600; letter-spacing: 0.10em;
+  text-transform: uppercase; color: var(--faint);
+}
+.tvd-row   { display: flex; align-items: flex-start; gap: var(--gap-group); }
+.tvd-label { font-size: var(--fs-caption); font-weight: 600; color: var(--ink); width: 1.9in; flex-shrink: 0; line-height: 1.25; white-space: normal; }
+.tvd-bar-track { flex: 1; height: 0.15in; background: rgba(37,99,235,0.08); border-radius: 0.10in; overflow: hidden; }
+.tvd-bar-fill  { height: 100%; border-radius: 0.10in; background: var(--blue); }
+.tvd-bar-fill.dim { background: #93C5FD; }
+.tvd-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--fs-mono-sm); font-weight: 600; color: var(--ink);
+  width: 0.38in; text-align: right; flex-shrink: 0;
+}
+
+/* ── 03 OUR SOLUTION ── */
+.sol-row { display: flex; gap: 0.16in; flex-shrink: 0; margin-bottom: var(--gap-card); }
+.sol-point {
+  flex: 1; background: var(--bg-hi);
+  border: 0.012in solid rgba(37,99,235,0.20);
+  border-top: 0.03in solid var(--blue);
+  border-radius: 0.10in; padding: 0.16in 0.20in;
+}
+.sol-point-label { font-size: var(--fs-subhead); font-weight: 700; color: var(--ink); margin-bottom: 0.08in; }
+.sol-point-body  { font-size: var(--fs-body); color: var(--muted); line-height: var(--lh-body); }
+.arch-fig {
+  flex: 1; border-radius: 0.10in; overflow: hidden;
+  border: 0.012in solid var(--line); background: var(--bg-page);
+  display: flex; align-items: center; justify-content: center;
+}
+.arch-fig img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* ── 04 THE PRODUCT ── */
+.screenshot-row { display: flex; gap: 0.18in; flex: 1; min-height: 0; }
+.screenshot-frame { flex: 1; display: flex; flex-direction: column; border-radius: 0.10in; overflow: hidden; border: 0.012in solid var(--line-hi); background: var(--bg-page); box-shadow: 0 0.08in 0.33in rgba(0,0,0,0.06); }
+.screenshot-img   { flex: 1; min-height: 0; overflow: hidden; }
+.screenshot-img img { width: 100%; height: 100%; object-fit: contain; object-position: top; display: block; }
+
+/* ── 05 RESULTS — vertical stat cards ── */
+.stat-row { display: flex; flex-direction: column; gap: 0.14in; flex-shrink: 0; }
+.stat-card {
+  background: #FFFFFF;
+  border: 0.012in solid var(--line);
+  border-top: 0.05in solid var(--blue);
+  border-radius: 0.10in; padding: 0.16in 0.22in;
+  box-shadow: 0 0.08in 0.28in rgba(37,99,235,0.10);
+  display: flex; align-items: flex-start; gap: 0.20in;
+}
+.stat-card-num-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; min-width: 0.9in; }
+.stat-card-body    { flex: 1; min-width: 0; }
+.stat-q  { font-family: 'JetBrains Mono', monospace; font-size: var(--fs-caption); font-weight: 600;
+           color: var(--blue); letter-spacing: 0.04em; margin-bottom: 0.04in; }
+.stat-a  { font-size: var(--fs-subhead); font-weight: 700; color: var(--ink); line-height: 1.25; margin-bottom: 0.06in; }
+.res-num   { font-family: 'JetBrains Mono', monospace; font-size: 0.56in; font-weight: 700; line-height: 1; letter-spacing: -0.03em; flex-shrink: 0; }
+.res-label { font-size: var(--fs-subhead); font-weight: 700; color: var(--ink); line-height: 1.3; }
+.res-desc  { font-size: var(--fs-body); line-height: var(--lh-body); color: var(--muted); margin-top: 0.04in; }
+.res-plain { font-size: var(--fs-caption); color: var(--muted); font-style: italic; line-height: var(--lh-caption); margin-top: 0.03in; }
+
+/* Ablation chart */
+.ablation-chart { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 0.06in;
+  border: 0.012in solid var(--line-hi); border-radius: 0.10in;
+  background: linear-gradient(160deg, var(--bg-alt) 70%, #E0ECFF 100%);
+  padding: 0.16in 0.20in;
+  box-shadow: 0 0.08in 0.28in rgba(37,99,235,0.08);
+}
+.ac-chart-title { font-family: 'Inter', sans-serif; font-size: var(--fs-caption); font-weight: 700; color: var(--ink); letter-spacing: 0; text-transform: none; flex-shrink: 0; margin-bottom: 0.02in; }
+.ac-svg { width: 100%; height: 100%; flex: 1; min-height: 0; }
+.ac-grid-line { stroke: rgba(37,99,235,0.12); stroke-width: 1; }
+.ac-axis-text { font-family: 'JetBrains Mono', monospace; font-size: 9px; fill: var(--faint); }
+.ac-line { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.ac-line-good { stroke: #1D4ED8; }
+.ac-line-bad  { stroke: #93C5FD; stroke-dasharray: 5 3; }
+.ac-dot-good  { fill: #1D4ED8; }
+.ac-dot-bad   { fill: #93C5FD; }
+.ac-pt-label  { font-family: 'Inter', sans-serif; font-size: 8px; font-weight: 600; }
+.ac-pt-good   { fill: #1E3A8A; }
+.ac-pt-bad    { fill: #7B8EA8; }
+.ac-legend    { display: flex; gap: 0.16in; font-size: var(--fs-mono-sm); color: var(--muted); flex-shrink: 0; }
+.ac-legend span { display: flex; align-items: center; gap: 0.06in; }
+.dot { display: inline-block; width: 0.10in; height: 0.10in; border-radius: 50%; flex-shrink: 0; }
+.dot-good { background: #1D4ED8; }
+.dot-bad  { background: #93C5FD; }
+
+/* ── FOOTER ── */
+
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-top-row">
+      <div class="logo-chip"><img src="assets/ischool-logo-white.svg" alt="UC Berkeley School of Information"></div>
+      <div class="hdr-conf">MIMS FINAL PROJECT · 2026</div>
+    </div>
+    <div class="hdr-title">CivicSim</div>
+    <div class="hdr-sub">Demographically Grounded Large Language Model (LLM) Simulation of Public Opinion</div>
+    <div class="hdr-authors">Anagha Ananth &nbsp;·&nbsp; Sushanti Kerani &nbsp;·&nbsp; Vikramsingh Rathod &nbsp;·&nbsp; Minkush Jain &nbsp;·&nbsp; Aratrik Paul</div>
+  </div>
+
+  <!-- ROW 1 — Background + Root Causes -->
+  <div class="row" style="flex:2.2;">
+
+    <!-- 01 Background -->
+    <div class="blk" style="flex:1;">
+      <div class="sec-num">01 · Background</div>
+      <div class="sec-title">Who uses population models?</div>
+      <div style="display:flex; gap:0.20in; flex:1; min-height:0;">
+        <div style="flex:1.1; display:flex; flex-direction:column;">
+          <div class="bg-body">
+            <strong style="color:#0B1F4D;">Policymakers, election forecasters, and researchers</strong>
+            rely on statistical approximations to predict how populations will respond —
+            before any vote is cast or dollar is spent.
+            These models do not always produce accurate results.
+          </div>
+          <div class="miss-strip">
+            <span class="miss-year">2024 Elections</span>
+            <div class="miss-body" style="display:flex; flex-direction:column; gap:0.07in;">
+             Standard polls failed to capture a major Hispanic voting shift because these communities were chronically under-sampled.
+
+            </div>
+          </div>
+        </div>
+        <div class="bg-image">
+          <img src="assets/customer-engagement.png" alt="Policymakers and researchers using population data">
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 Root Causes -->
+    <div class="blk" style="flex:1;">
+      <div class="sec-num">02 · Experimental Findings</div>
+      <div class="sec-title">Where do current models fall short? </div>
+
+      <div class="cause-group">
+        <div class="cause-label">① Polls survey from the wrong neighborhoods</div>
+        <div class="rca-stat">
+          <span class="rca-stat-num">30×</span>
+          <span class="rca-stat-desc">
+            Error rate in representation of rural Black Americans across different Regions.
+          </span>
+        </div>
+        <!-- Error spikes chart — simplified visual -->
+        <div class="tvd-chart">
+          <div class="tvd-chart-eyebrow">Where the error grows — poll sample vs. census population</div>
+          <div class="tvd-row">
+            <div class="tvd-label">All respondents</div>
+            <div class="tvd-bar-track"><div class="tvd-bar-fill dim" style="width:3%;"></div></div>
+            <span class="tvd-val">small</span>
+          </div>
+          <div class="tvd-row">
+            <div class="tvd-label">Rural residents</div>
+            <div class="tvd-bar-track"><div class="tvd-bar-fill" style="width:34%;"></div></div>
+            <span class="tvd-val">10×</span>
+          </div>
+          <!-- <div class="tvd-row">
+            <div class="tvd-label">Rural + Black</div>
+            <div class="tvd-bar-track"><div class="tvd-bar-fill" style="width:90%;"></div></div>
+            <span class="tvd-val">30×</span>
+          </div> -->
+          <div class="tvd-row">
+            <div class="tvd-label">Rural + Black + Low Income</div>
+            <div class="tvd-bar-track"><div class="tvd-bar-fill" style="width:94%;"></div></div>
+            <span class="tvd-val">30×</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cause-group">
+        <div class="cause-label">② Current models primarily focus on marginals, not intersections</div>
+        <div class="chip-row">
+          <span class="margin-chip">age</span>
+          <span class="chip-or">or</span>
+          <span class="margin-chip">income</span>
+          <span class="chip-or">or</span>
+          <span class="margin-chip">location</span>
+          <span class="chip-or">or</span>
+          <span class="margin-chip">race</span>
+          <br>
+        </div>
+          <div class="bg-body">
+          Current research focuses on opinions of marginals, e.g., "What do Black individuals think?"
+          They rarely focus on demographic intersections, "What do young, low income, Black, rural voters from the Midwest think?"
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 2 — Our Solution -->
+  <div class="row" style="flex:2.1;">
+    <div class="blk" style="flex:1;">
+      <div class="sec-num">03 · Our Solution</div>
+
+      <!-- Two-column: diagram left, content right -->
+      <div style="display:flex; gap:0.20in; flex:1; min-height:0;">
+
+        <!-- Left: architecture diagram -->
+        <div style="flex:1.1; display:flex; flex-direction:column; gap:0.08in; min-height:0;">
+          <div class="arch-fig" style="flex:1;">
+            <img src="assets/architecture.png" alt="CivicSim pipeline architecture">
+          </div>
+          <div class="chip-caption" style="text-align:center;">Fig. 1: CivicSim pipeline Architecture</div>
+        </div>
+
+        <!-- Right: solution points -->
+        <div style="flex:1; display:flex; flex-direction:column; gap:0.12in; min-height:0;">
+          <div class="sol-point">
+            <div class="sol-point-label">① Who people are</div>
+            <div class="sol-point-body">
+              We use U.S. Census <span class="hl">ACS (American Community Survey)</span> microdata — <strong style="color:var(--ink);">3.5M+ respondents</strong> — vs. Pew ATP (American Trends Panel, ~38K) or GSS (General Social Survey, ~3K/yr) that current models rely on.
+            </div>
+          </div>
+          <div class="sol-point">
+            <div class="sol-point-label">② What people believe</div>
+            <div class="sol-point-body">
+              Opinion priors come from <span class="hl">79 waves of Pew ATP (2021–2024)</span> · 7,728 items across 10 domains — health, immigration, economy, environment, technology &amp; more. 
+              <br>Current models filter out demographic groups or cover only one domain.
+            </div>
+          </div>
+          <div class="sol-point">
+            <div class="sol-point-label">③ How they respond</div>
+            <div class="sol-point-body">
+              Each synthetic agent is prompted with their full demographic profile + calibrated opinion priors, then queried via an LLM to simulate a realistic, intersectional survey response.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3 — The Product -->
+  <div class="row" style="flex:2.2;">
+    <div class="blk" style="flex:1; display:flex; flex-direction:column;">
+      <div class="sec-num">04 · The Product</div>
+      <div class="screenshot-row" style="flex:1; min-height:0;">
+        <div class="screenshot-frame">
+          <div class="screenshot-img">
+            <img src="assets/website1.png" alt="CivicSim app — view 1">
+          </div>
+        </div>
+        <div class="screenshot-frame">
+          <div class="screenshot-img">
+            <img src="assets/website2.png" alt="CivicSim app — view 2">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 4 — Results -->
+  <div class="row" style="flex:2.0;">
+    <div class="blk" style="flex:1; display:flex; flex-direction:row; gap:0.18in;">
+
+      <!-- Stat cards stacked vertically -->
+      <div class="stat-row" style="flex:1; min-width:0;">
+        <div class="sec-num" style="margin-bottom:0.06in;">05 · Results</div>
+
+        <div class="stat-card">
+          <div class="stat-card-num-col">
+            <div class="res-num" style="background:linear-gradient(160deg,#1D4ED8,#2563EB);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">~2×</div>
+          </div>
+          <div class="stat-card-body">
+            <div class="stat-q">Which 3 facts best predict someone’s politics?</div>
+            <div class="stat-a">Race, location, and age - not the usual suspects</div>
+            <div class="res-desc">Standard models default to age, income, and education. We found <strong style="color:var(--ink);">race + location + age</strong> explains roughly twice as much opinion variance - at the exact same 3-variable cost.</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-num-col">
+            <div class="res-num" style="color:#1D4ED8;">47%</div>
+          </div>
+          <div class="stat-card-body">
+            <div class="stat-q">How much does geography actually matter?</div>
+            <div class="stat-a">More than income and education combined</div>
+            <div class="res-desc">Removing census region alone accounts for a 47% drop in predictive signal. <strong style="color:var(--ink);">Where someone lives</strong> is one of the strongest predictors in the dataset.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ablation chart -->
+      <div class="ablation-chart" style="flex:1; min-height:0;">
+        <div class="ac-chart-title">How much does each variable help predict someone's political opinion?</div>
+        <svg viewBox="0 0 360 240" class="ac-svg" role="img" aria-label="Ablation curve"><text transform="translate(8,114) rotate(-90)" text-anchor="middle" class="ac-axis-text">Variance explained</text><g><line x1="36" x2="344" y1="204" y2="204" class="ac-grid-line"></line><text x="28" y="207" text-anchor="end" class="ac-axis-text">0%</text></g><g><line x1="36" x2="344" y1="144" y2="144" class="ac-grid-line"></line><text x="28" y="147" text-anchor="end" class="ac-axis-text">10%</text></g><g><line x1="36" x2="344" y1="84" y2="84" class="ac-grid-line"></line><text x="28" y="87" text-anchor="end" class="ac-axis-text">20%</text></g><g><line x1="36" x2="344" y1="24" y2="24" class="ac-grid-line"></line><text x="28" y="27" text-anchor="end" class="ac-axis-text">30%</text></g><polyline points="36,204 97.6,171 159.2,153.6 220.8,140.4 282.4,140.4 344,140.4" class="ac-line ac-line-bad"></polyline><polyline points="36,204 97.6,132 159.2,90 220.8,66 282.4,54 344,52.8" class="ac-line ac-line-good"></polyline><g><circle cx="36" cy="204" r="3.5" class="ac-dot-good"></circle></g><g><circle cx="97.6" cy="132" r="3.5" class="ac-dot-good"></circle><text x="97.6" y="122" text-anchor="middle" class="ac-pt-label ac-pt-good">+race</text></g><g><circle cx="159.2" cy="90" r="3.5" class="ac-dot-good"></circle><text x="159.2" y="80" text-anchor="middle" class="ac-pt-label ac-pt-good">+location</text></g><g><circle cx="220.8" cy="66" r="3.5" class="ac-dot-good"></circle><text x="220.8" y="56" text-anchor="middle" class="ac-pt-label ac-pt-good">+age</text></g><g><circle cx="282.4" cy="54" r="3.5" class="ac-dot-good"></circle><text x="282.4" y="44" text-anchor="middle" class="ac-pt-label ac-pt-good">+income</text></g><g><circle cx="344" cy="52.8" r="3.5" class="ac-dot-good"></circle><text x="344" y="42.8" text-anchor="middle" class="ac-pt-label ac-pt-good">+education</text></g><g><circle cx="36" cy="204" r="3.5" class="ac-dot-bad"></circle></g><g><circle cx="97.6" cy="171" r="3.5" class="ac-dot-bad"></circle><text x="97.6" y="185" text-anchor="middle" class="ac-pt-label ac-pt-bad">+age</text></g><g><circle cx="159.2" cy="153.6" r="3.5" class="ac-dot-bad"></circle><text x="159.2" y="167.6" text-anchor="middle" class="ac-pt-label ac-pt-bad">+income</text></g><g><circle cx="220.8" cy="140.4" r="3.5" class="ac-dot-bad"></circle><text x="220.8" y="154.4" text-anchor="middle" class="ac-pt-label ac-pt-bad">+education</text></g><g><circle cx="282.4" cy="140.4" r="3.5" class="ac-dot-bad"></circle><text x="282.4" y="154.4" text-anchor="middle" class="ac-pt-label ac-pt-bad">+gender</text></g><g><circle cx="344" cy="140.4" r="3.5" class="ac-dot-bad"></circle><text x="344" y="154.4" text-anchor="middle" class="ac-pt-label ac-pt-bad">+religion</text></g><text x="190" y="234" text-anchor="middle" class="ac-axis-text">Variables added →</text></svg>
+        <div class="ac-legend"><span><i class="dot dot-good"></i> CivicSim's best order (race → location → age)</span><span><i class="dot dot-bad"></i> Standard textbook order (age → income → education)</span></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

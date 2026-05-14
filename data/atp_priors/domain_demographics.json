@@ -9,50 +9,50 @@
       {
         "key": "income_group",
         "label": "Income",
-        "kl": 0.024051,
+        "kl": 0.024,
         "auto_selected": true
       },
       {
         "key": "age_group",
         "label": "Age",
-        "kl": 0.017283,
+        "kl": 0.017,
         "auto_selected": true
       },
       {
         "key": "race_eth",
         "label": "Race / Ethnicity",
-        "kl": 0.015849,
+        "kl": 0.016,
         "auto_selected": true
       },
       {
         "key": "F_CREGION",
         "label": "Region",
-        "kl": 0.01428,
+        "kl": 0.014,
         "auto_selected": false
       },
       {
         "key": "education_group",
         "label": "Education",
-        "kl": 0.012109,
+        "kl": 0.012,
         "auto_selected": false
       },
       {
         "key": "gender",
         "label": "Gender",
-        "kl": 0.005774,
+        "kl": 0.006,
         "auto_selected": false
       },
       {
         "key": "urbanicity",
         "label": "Urbanicity",
-        "kl": 0.002755,
+        "kl": 0.003,
         "auto_selected": false
       }
     ],
     "question_ids": [
-      "Q_HOUSING",
-      "Q_TRANSIT",
-      "Q_MINWAGE"
+      "MINWAGE_W87",
+      "INFRASTRUC21A_W95",
+      "ECON1_W84"
     ]
   },
   "environment_climate": {
@@ -65,48 +65,48 @@
       {
         "key": "race_eth",
         "label": "Race / Ethnicity",
-        "kl": 0.013944,
-        "auto_selected": true
-      },
-      {
-        "key": "F_CREGION",
-        "label": "Region",
-        "kl": 0.012095,
+        "kl": 0.014,
         "auto_selected": true
       },
       {
         "key": "income_group",
         "label": "Income",
-        "kl": 0.011657,
+        "kl": 0.012,
+        "auto_selected": true
+      },
+      {
+        "key": "F_CREGION",
+        "label": "Region",
+        "kl": 0.012,
         "auto_selected": true
       },
       {
         "key": "age_group",
         "label": "Age",
-        "kl": 0.010644,
+        "kl": 0.011,
         "auto_selected": false
       },
       {
         "key": "education_group",
         "label": "Education",
-        "kl": 0.00804,
+        "kl": 0.008,
         "auto_selected": false
       },
       {
         "key": "gender",
         "label": "Gender",
-        "kl": 0.006605,
+        "kl": 0.007,
         "auto_selected": false
       },
       {
         "key": "urbanicity",
         "label": "Urbanicity",
-        "kl": 0.003552,
+        "kl": 0.004,
         "auto_selected": false
       }
     ],
     "question_ids": [
-      "Q_CLIMATE"
+      "CLIM9_W89"
     ]
   },
   "family_society": {
@@ -119,48 +119,48 @@
       {
         "key": "income_group",
         "label": "Income",
-        "kl": 0.020595,
+        "kl": 0.021,
         "auto_selected": true
       },
       {
         "key": "age_group",
         "label": "Age",
-        "kl": 0.018428,
+        "kl": 0.018,
         "auto_selected": true
       },
       {
         "key": "F_CREGION",
         "label": "Region",
-        "kl": 0.016289,
+        "kl": 0.016,
         "auto_selected": true
       },
       {
         "key": "education_group",
         "label": "Education",
-        "kl": 0.015151,
+        "kl": 0.015,
         "auto_selected": false
       },
       {
         "key": "race_eth",
         "label": "Race / Ethnicity",
-        "kl": 0.01372,
+        "kl": 0.014,
         "auto_selected": false
       },
       {
         "key": "gender",
         "label": "Gender",
-        "kl": 0.00852,
+        "kl": 0.009,
         "auto_selected": false
       },
       {
         "key": "urbanicity",
         "label": "Urbanicity",
-        "kl": 0.003201,
+        "kl": 0.003,
         "auto_selected": false
       }
     ],
     "question_ids": [
-      "Q_EDUCATION"
+      "ABORTLGL_W87"
     ]
   },
   "health": {
@@ -173,49 +173,47 @@
       {
         "key": "income_group",
         "label": "Income",
-        "kl": 0.018217,
+        "kl": 0.018,
         "auto_selected": true
       },
       {
         "key": "race_eth",
         "label": "Race / Ethnicity",
-        "kl": 0.014994,
-        "auto_selected": true
-      },
-      {
-        "key": "F_CREGION",
-        "label": "Region",
-        "kl": 0.012031,
+        "kl": 0.015,
         "auto_selected": true
       },
       {
         "key": "age_group",
         "label": "Age",
-        "kl": 0.011858,
+        "kl": 0.012,
+        "auto_selected": true
+      },
+      {
+        "key": "F_CREGION",
+        "label": "Region",
+        "kl": 0.012,
         "auto_selected": false
       },
       {
         "key": "education_group",
         "label": "Education",
-        "kl": 0.010434,
+        "kl": 0.01,
         "auto_selected": false
       },
       {
         "key": "gender",
         "label": "Gender",
-        "kl": 0.004371,
+        "kl": 0.004,
         "auto_selected": false
       },
       {
         "key": "urbanicity",
         "label": "Urbanicity",
-        "kl": 0.002734,
+        "kl": 0.003,
         "auto_selected": false
       }
     ],
-    "question_ids": [
-      "Q_HEALTHCARE"
-    ]
+    "question_ids": []
   },
   "immigration": {
     "label": "Immigration",
@@ -227,48 +225,48 @@
       {
         "key": "age_group",
         "label": "Age",
-        "kl": 0.022638,
+        "kl": 0.023,
         "auto_selected": true
       },
       {
         "key": "race_eth",
         "label": "Race / Ethnicity",
-        "kl": 0.018899,
+        "kl": 0.019,
         "auto_selected": true
       },
       {
         "key": "income_group",
         "label": "Income",
-        "kl": 0.013609,
+        "kl": 0.014,
         "auto_selected": true
       },
       {
         "key": "F_CREGION",
         "label": "Region",
-        "kl": 0.011496,
+        "kl": 0.011,
         "auto_selected": false
       },
       {
         "key": "education_group",
         "label": "Education",
-        "kl": 0.009906,
+        "kl": 0.01,
         "auto_selected": false
       },
       {
         "key": "gender",
         "label": "Gender",
-        "kl": 0.005036,
+        "kl": 0.005,
         "auto_selected": false
       },
       {
         "key": "urbanicity",
         "label": "Urbanicity",
-        "kl": 0.003323,
+        "kl": 0.003,
         "auto_selected": false
       }
     ],
     "question_ids": [
-      "Q_IMMIGRATION"
+      "AFG21_2_W95"
     ]
   },
   "international": {
@@ -281,43 +279,43 @@
       {
         "key": "age_group",
         "label": "Age",
-        "kl": 0.022913,
+        "kl": 0.023,
         "auto_selected": true
       },
       {
         "key": "income_group",
         "label": "Income",
-        "kl": 0.020492,
+        "kl": 0.02,
         "auto_selected": true
       },
       {
         "key": "race_eth",
         "label": "Race / Ethnicity",
-        "kl": 0.015858,
+        "kl": 0.016,
         "auto_selected": true
       },
       {
         "key": "F_CREGION",
         "label": "Region",
-        "kl": 0.012571,
+        "kl": 0.013,
         "auto_selected": false
       },
       {
         "key": "education_group",
         "label": "Education",
-        "kl": 0.012251,
+        "kl": 0.012,
         "auto_selected": false
       },
       {
         "key": "gender",
         "label": "Gender",
-        "kl": 0.01184,
+        "kl": 0.012,
         "auto_selected": false
       },
       {
         "key": "urbanicity",
         "label": "Urbanicity",
-        "kl": 0.00258,
+        "kl": 0.003,
         "auto_selected": false
       }
     ],
@@ -333,48 +331,51 @@
       {
         "key": "race_eth",
         "label": "Race / Ethnicity",
-        "kl": 0.019956,
+        "kl": 0.02,
         "auto_selected": true
       },
       {
         "key": "age_group",
         "label": "Age",
-        "kl": 0.016703,
+        "kl": 0.017,
         "auto_selected": true
       },
       {
         "key": "income_group",
         "label": "Income",
-        "kl": 0.015937,
+        "kl": 0.016,
         "auto_selected": true
       },
       {
         "key": "F_CREGION",
         "label": "Region",
-        "kl": 0.012963,
+        "kl": 0.013,
         "auto_selected": false
       },
       {
         "key": "education_group",
         "label": "Education",
-        "kl": 0.010875,
+        "kl": 0.011,
         "auto_selected": false
       },
       {
         "key": "gender",
         "label": "Gender",
-        "kl": 0.005771,
+        "kl": 0.006,
         "auto_selected": false
       },
       {
         "key": "urbanicity",
         "label": "Urbanicity",
-        "kl": 0.003358,
+        "kl": 0.003,
         "auto_selected": false
       }
     ],
     "question_ids": [
-      "Q_GUNS"
+      "GUNPRIORITY1_c_W87",
+      "POL1JB_W92",
+      "SATIS_W95",
+      "GAP21Q3_W82"
     ]
   },
   "race_inequality": {
@@ -387,43 +388,43 @@
       {
         "key": "race_eth",
         "label": "Race / Ethnicity",
-        "kl": 0.017587,
+        "kl": 0.018,
         "auto_selected": true
       },
       {
         "key": "income_group",
         "label": "Income",
-        "kl": 0.016521,
+        "kl": 0.017,
         "auto_selected": true
       },
       {
         "key": "F_CREGION",
         "label": "Region",
-        "kl": 0.013405,
+        "kl": 0.013,
         "auto_selected": true
       },
       {
         "key": "age_group",
         "label": "Age",
-        "kl": 0.011144,
+        "kl": 0.011,
         "auto_selected": false
       },
       {
         "key": "education_group",
         "label": "Education",
-        "kl": 0.010407,
+        "kl": 0.01,
         "auto_selected": false
       },
       {
         "key": "gender",
         "label": "Gender",
-        "kl": 0.005898,
+        "kl": 0.006,
         "auto_selected": false
       },
       {
         "key": "urbanicity",
         "label": "Urbanicity",
-        "kl": 0.002952,
+        "kl": 0.003,
         "auto_selected": false
       }
     ],
@@ -437,45 +438,45 @@
     "geo_note": "Geography adds modest signal; included if user selects a region.",
     "dimensions": [
       {
-        "key": "income_group",
-        "label": "Income",
-        "kl": 0.013286,
+        "key": "age_group",
+        "label": "Age",
+        "kl": 0.013,
         "auto_selected": true
       },
       {
-        "key": "age_group",
-        "label": "Age",
-        "kl": 0.012703,
+        "key": "income_group",
+        "label": "Income",
+        "kl": 0.013,
         "auto_selected": true
       },
       {
         "key": "F_CREGION",
         "label": "Region",
-        "kl": 0.012377,
+        "kl": 0.012,
         "auto_selected": true
       },
       {
         "key": "race_eth",
         "label": "Race / Ethnicity",
-        "kl": 0.011641,
+        "kl": 0.012,
         "auto_selected": false
       },
       {
         "key": "education_group",
         "label": "Education",
-        "kl": 0.008742,
+        "kl": 0.009,
         "auto_selected": false
       },
       {
         "key": "gender",
         "label": "Gender",
-        "kl": 0.004558,
+        "kl": 0.005,
         "auto_selected": false
       },
       {
         "key": "urbanicity",
         "label": "Urbanicity",
-        "kl": 0.002592,
+        "kl": 0.003,
         "auto_selected": false
       }
     ],
@@ -491,43 +492,43 @@
       {
         "key": "age_group",
         "label": "Age",
-        "kl": 0.018978,
+        "kl": 0.019,
         "auto_selected": true
       },
       {
         "key": "income_group",
         "label": "Income",
-        "kl": 0.018202,
+        "kl": 0.018,
         "auto_selected": true
       },
       {
         "key": "race_eth",
         "label": "Race / Ethnicity",
-        "kl": 0.013637,
+        "kl": 0.014,
         "auto_selected": true
       },
       {
         "key": "F_CREGION",
         "label": "Region",
-        "kl": 0.013252,
+        "kl": 0.013,
         "auto_selected": false
       },
       {
         "key": "education_group",
         "label": "Education",
-        "kl": 0.010815,
+        "kl": 0.011,
         "auto_selected": false
       },
       {
         "key": "gender",
         "label": "Gender",
-        "kl": 0.006109,
+        "kl": 0.006,
         "auto_selected": false
       },
       {
         "key": "urbanicity",
         "label": "Urbanicity",
-        "kl": 0.002307,
+        "kl": 0.002,
         "auto_selected": false
       }
     ],

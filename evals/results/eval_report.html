@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CivicSim Evaluation Report</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #1e293b;
+         margin: 0; padding: 0; }
+  .page { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem; }
+  header { background: linear-gradient(135deg,#1e3a5f 0%,#1e40af 100%);
+            color: #fff; border-radius: 16px; padding: 2rem 2.5rem; margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(30,58,95,.25); }
+  header h1 { margin: 0 0 .25rem; font-size: 1.9rem; letter-spacing: -.5px; }
+  header p { margin: .25rem 0 0; opacity: .75; font-size: .9rem; }
+  .cards { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+  .card-group { display: flex; flex-wrap: wrap; gap: .75rem; }
+  .card-group-label { font-size: .75rem; font-weight: 600; color: #64748b;
+                       text-transform: uppercase; letter-spacing: .05em; margin-bottom: .4rem; }
+  .legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: .8rem;
+             background: #fff; border-radius: 10px; padding: .75rem 1rem;
+             margin-bottom: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .legend-item { display: flex; align-items: center; gap: .4rem; }
+  .legend-swatch { width: 14px; height: 14px; border-radius: 3px; }
+  section { background: #fff; border-radius: 14px; padding: 1.5rem 2rem;
+             margin-bottom: 1.5rem; box-shadow: 0 1px 6px rgba(0,0,0,.07); }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary::before { content: "▶ "; font-size: .7rem; color: #94a3b8; }
+  details[open] > summary::before { content: "▼ "; }
+  table { border-collapse: collapse; width: 100%; }
+  th { background: #1e3a5f; color: #fff; padding: .5rem .75rem; text-align: left; font-size: .82rem; }
+  td { padding: .45rem .7rem; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  .summary-table th { background: #334155; }
+  code { background: #f1f5f9; padding: .15rem .4rem; border-radius: 4px; font-size: .82rem; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <h1>CivicSim Evaluation Report</h1>
+  <p>2 comparisons &nbsp;·&nbsp; 56s &nbsp;·&nbsp; Generated 2026-05-14 01:15</p>
+</header>
+
+<div class="cards">
+  <div>
+    <div class="card-group-label">Avg TVD vs. Ground Truth (lower = better)</div>
+    <div class="card-group"><div style="background:#fef08a;border-radius:12px;padding:1.25rem 1.5rem;text-align:center;min-width:140px;box-shadow:0 1px 4px rgba(0,0,0,.08)"><div style="font-size:1.8rem;font-weight:700;color:#1e3a5f">0.245</div><div style="font-size:0.8rem;color:#374151;margin-top:2px">CivicSim</div><div style="font-size:0.72rem;color:#6b7280">avg TVD</div></div><div style="background:#e5e7eb;border-radius:12px;padding:1.25rem 1.5rem;text-align:center;min-width:140px;box-shadow:0 1px 4px rgba(0,0,0,.08)"><div style="font-size:1.8rem;font-weight:700;color:#1e3a5f">—</div><div style="font-size:0.8rem;color:#374151;margin-top:2px">Naive Anthropic</div><div style="font-size:0.72rem;color:#6b7280">avg TVD</div></div><div style="background:#e5e7eb;border-radius:12px;padding:1.25rem 1.5rem;text-align:center;min-width:140px;box-shadow:0 1px 4px rgba(0,0,0,.08)"><div style="font-size:1.8rem;font-weight:700;color:#1e3a5f">—</div><div style="font-size:0.8rem;color:#374151;margin-top:2px">Naive OpenAI</div><div style="font-size:0.72rem;color:#6b7280">avg TVD</div></div><div style="background:#fef08a;border-radius:12px;padding:1.25rem 1.5rem;text-align:center;min-width:140px;box-shadow:0 1px 4px rgba(0,0,0,.08)"><div style="font-size:1.8rem;font-weight:700;color:#1e3a5f">0.219</div><div style="font-size:0.8rem;color:#374151;margin-top:2px">CivicSim</div><div style="font-size:0.72rem;color:#6b7280">avg Wasserstein</div></div><div style="background:#e5e7eb;border-radius:12px;padding:1.25rem 1.5rem;text-align:center;min-width:140px;box-shadow:0 1px 4px rgba(0,0,0,.08)"><div style="font-size:1.8rem;font-weight:700;color:#1e3a5f">—</div><div style="font-size:0.8rem;color:#374151;margin-top:2px">Naive Anthropic</div><div style="font-size:0.72rem;color:#6b7280">avg Wasserstein</div></div><div style="background:#e5e7eb;border-radius:12px;padding:1.25rem 1.5rem;text-align:center;min-width:140px;box-shadow:0 1px 4px rgba(0,0,0,.08)"><div style="font-size:1.8rem;font-weight:700;color:#1e3a5f">—</div><div style="font-size:0.8rem;color:#374151;margin-top:2px">Naive OpenAI</div><div style="font-size:0.72rem;color:#6b7280">avg Wasserstein</div></div></div>
+  </div>
+  <div>
+    <div class="card-group-label">Win count (lowest TVD per slice)</div>
+    <div class="card-group"><div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:1.25rem 1.5rem;text-align:center;min-width:140px"><div style="font-size:1.8rem;font-weight:700;color:#0369a1">2 / 2</div><div style="font-size:0.8rem;color:#374151;margin-top:2px">CivicSim</div><div style="font-size:0.72rem;color:#6b7280">wins (TVD / Wasserstein)</div></div><div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:1.25rem 1.5rem;text-align:center;min-width:140px"><div style="font-size:1.8rem;font-weight:700;color:#0369a1">0 / 0</div><div style="font-size:0.8rem;color:#374151;margin-top:2px">Naive Anthropic</div><div style="font-size:0.72rem;color:#6b7280">wins (TVD / Wasserstein)</div></div><div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:1.25rem 1.5rem;text-align:center;min-width:140px"><div style="font-size:1.8rem;font-weight:700;color:#0369a1">0 / 0</div><div style="font-size:0.8rem;color:#374151;margin-top:2px">Naive OpenAI</div><div style="font-size:0.72rem;color:#6b7280">wins (TVD / Wasserstein)</div></div></div>
+  </div>
+</div>
+
+<div class="legend">
+  <strong style="color:#374151">TVD color scale:</strong>
+  <span class="legend-item"><span class="legend-swatch" style="background:#bbf7d0"></span>&lt; 0.15 (good)</span>
+  <span class="legend-item"><span class="legend-swatch" style="background:#fef08a"></span>0.15 – 0.30 (moderate)</span>
+  <span class="legend-item"><span class="legend-swatch" style="background:#fecaca"></span>≥ 0.30 (high)</span>
+</div>
+
+<section style="margin-bottom:2.5rem"><h2 style="color:#1e3a5f;border-bottom:3px solid #3b82f6;padding-bottom:.4rem;margin-bottom:1rem">Economy</h2><details open style="margin-bottom:1.25rem"><summary style="cursor:pointer;font-size:1rem;font-weight:600;color:#1e40af;padding:.5rem 0"><code style="background:#dbeafe;color:#1e3a5f;padding:.2rem .5rem;border-radius:4px;font-size:.85rem">MINWAGE_W87</code> &nbsp; Should the federal minimum wage be raised to $15/hour?</summary><div style="margin:.75rem 0 1rem 0"><div style="font-size:.82rem;color:#6b7280;margin-bottom:.4rem">Slice: <strong style="color:#374151">income_group=below_30000, age_group=65+, race_eth=White</strong></div><table style="border-collapse:collapse;width:100%;font-size:.85rem"><thead><tr style="background:#1e3a5f;color:#fff"><th style="padding:.5rem .75rem">Condition</th><th style="padding:.5rem .75rem">Distribution</th><th style="padding:.5rem .75rem;text-align:center">TVD ↓</th><th style="padding:.5rem .75rem;text-align:center">KL ↓</th><th style="padding:.5rem .75rem;text-align:center">Hellinger ↓</th><th style="padding:.5rem .75rem;text-align:center">Wasserstein ↓</th></tr></thead><tbody><tr style="background:#ffffff"><td style="padding:.5rem .75rem;white-space:nowrap;font-weight:600">🏛 ATP parquet <span style='font-size:.75rem;background:#d1fae5;color:#065f46;border-radius:4px;padding:.1rem .4rem'>ground truth</span></td><td style="padding:.5rem .75rem"><div style="display:flex;align-items:center;gap:4px;margin:1px 0"><div style="width:12px;height:10px;background:#3b82f6;border-radius:2px;flex-shrink:0"></div><span style="font-size:0.75rem;color:#374151">Somewhat favor 10%</span></div><div style="display:flex;align-items:center;gap:4px;margin:1px 0"><div style="width:40px;height:10px;background:#8b5cf6;border-radius:2px;flex-shrink:0"></div><span style="font-size:0.75rem;color:#374151">Somewhat oppose 33%</span></div><div style="display:flex;align-items:center;gap:4px;margin:1px 0"><div style="width:41px;height:10px;background:#06b6d4;border-radius:2px;flex-shrink:0"></div><span style="font-size:0.75rem;color:#374151">Strongly favor 34%</span></div><div style="display:flex;align-items:center;gap:4px;margin:1px 0"><div style="width:27px;height:10px;background:#f59e0b;border-radius:2px;flex-shrink:0"></div><span style="font-size:0.75rem;color:#374151">Strongly oppose 22%</span></div></td><td colspan="4" style="text-align:center;color:#9ca3af;font-style:italic;font-size:.8rem">reference</td></tr><tr style="background:#f8fafc"><td style="padding:.5rem .75rem;white-space:nowrap;font-weight:400">🤖 CivicSim</td><td style="padding:.5rem .75rem"><div style="display:flex;align-items:center;gap:4px;margin:1px 0"><div style="width:28px;height:10px;background:#3b82f6;border-radius:2px;flex-shrink:0"></div><span style="font-size:0.75rem;color:#374151">Somewhat favor 23%</span></div><div style="display:flex;align-items:center;gap:4px;margin:1px 0"><div style="width:12px;height:10px;background:#8b5cf6;border-radius:2px;flex-shrink:0"></div><span style="font-size:0.75rem;color:#374151">Somewhat oppose 10%</span></div><div style="display:flex;align-items:center;gap:4px;margin:1px 0"><div style="width:56px;height:10px;background:#06b6d4;border-radius:2px;flex-shrink:0"></div><span style="font-size:0.75rem;color:#374151">Strongly favor 47%</span></div><div style="display:flex;align-items:center;gap:4px;margin:1px 0"><div style="width:24px;height:10px;background:#f59e0b;border-radius:2px;flex-shrink:0"></div><span style="font-size:0.75rem;color:#374151">Strongly oppose 20%</span></div></td><td style="background:#fef08a;text-align:center;font-variant-numeric:tabular-nums">0.257</td><td style="background:transparent;text-align:center;font-variant-numeric:tabular-nums">0.196</td><td style="background:transparent;text-align:center;font-variant-numeric:tabular-nums">0.229</td><td style="background:#fef08a;text-align:center;font-variant-numeric:tabular-nums">0.204</td></tr><tr style="background:#ffffff"><td style="padding:.5rem .75rem;white-space:nowrap;font-weight:400">🔵 Naive Anthropic</td><td style="padding:.5rem .75rem"><em style='color:#999'>—</em></td><td style='color:#aaa'>—</td><td style='color:#aaa'>—</td><td style='color:#aaa'>—</td><td style='color:#aaa'>—</td></tr><tr style="background:#f8fafc"><td style="padding:.5rem .75rem;white-space:nowrap;font-weight:400">🟢 Naive OpenAI</td><td style="padding:.5rem .75rem"><em style='color:#999'>—</em></td><td style='color:#aaa'>—</td><td style='color:#aaa'>—</td><td style='color:#aaa'>—</td><td style='color:#aaa'>—</td></tr></tbody></table></div></details></section><section style="margin-bottom:2.5rem"><h2 style="color:#1e3a5f;border-bottom:3px solid #3b82f6;padding-bottom:.4rem;margin-bottom:1rem">Politics &amp; Government</h2><details open style="margin-bottom:1.25rem"><summary style="cursor:pointer;font-size:1rem;font-weight:600;color:#1e40af;padding:.5rem 0"><code style="background:#dbeafe;color:#1e3a5f;padding:.2rem .5rem;border-radius:4px;font-size:.85rem">POL1JB_W92</code> &nbsp; Do you approve of the job President Biden is doing?</summary><div style="margin:.75rem 0 1rem 0"><div style="font-size:.82rem;color:#6b7280;margin-bottom:.4rem">Slice: <strong style="color:#374151">race_eth=White, age_group=18-29, income_group=50000_to_60000</strong></div><table style="border-collapse:collapse;width:100%;font-size:.85rem"><thead><tr style="background:#1e3a5f;color:#fff"><th style="padding:.5rem .75rem">Condition</th><th style="padding:.5rem .75rem">Distribution</th><th style="padding:.5rem .75rem;text-align:center">TVD ↓</th><th style="padding:.5rem .75rem;text-align:center">KL ↓</th><th style="padding:.5rem .75rem;text-align:center">Hellinger ↓</th><th style="padding:.5rem .75rem;text-align:center">Wasserstein ↓</th></tr></thead><tbody><tr style="background:#ffffff"><td style="padding:.5rem .75rem;white-space:nowrap;font-weight:600">🏛 ATP parquet <span style='font-size:.75rem;background:#d1fae5;color:#065f46;border-radius:4px;padding:.1rem .4rem'>ground truth</span></td><td style="padding:.5rem .75rem"><div style="display:flex;align-items:center;gap:4px;margin:1px 0"><div style="width:48px;height:10px;background:#3b82f6;border-radius:2px;flex-shrink:0"></div><span style="font-size:0.75rem;color:#374151">Approve 40%</span></div><div style="display:flex;align-items:center;gap:4px;margin:1px 0"><div style="width:72px;height:10px;background:#8b5cf6;border-radius:2px;flex-shrink:0"></div><span style="font-size:0.75rem;color:#374151">Disapprove 60%</span></div></td><td colspan="4" style="text-align:center;color:#9ca3af;font-style:italic;font-size:.8rem">reference</td></tr><tr style="background:#f8fafc"><td style="padding:.5rem .75rem;white-space:nowrap;font-weight:400">🤖 CivicSim</td><td style="padding:.5rem .75rem"><div style="display:flex;align-items:center;gap:4px;margin:1px 0"><div style="width:76px;height:10px;background:#3b82f6;border-radius:2px;flex-shrink:0"></div><span style="font-size:0.75rem;color:#374151">Approve 63%</span></div><div style="display:flex;align-items:center;gap:4px;margin:1px 0"><div style="width:44px;height:10px;background:#8b5cf6;border-radius:2px;flex-shrink:0"></div><span style="font-size:0.75rem;color:#374151">Disapprove 37%</span></div></td><td style="background:#fef08a;text-align:center;font-variant-numeric:tabular-nums">0.234</td><td style="background:transparent;text-align:center;font-variant-numeric:tabular-nums">0.111</td><td style="background:transparent;text-align:center;font-variant-numeric:tabular-nums">0.167</td><td style="background:#fef08a;text-align:center;font-variant-numeric:tabular-nums">0.234</td></tr><tr style="background:#ffffff"><td style="padding:.5rem .75rem;white-space:nowrap;font-weight:400">🔵 Naive Anthropic</td><td style="padding:.5rem .75rem"><em style='color:#999'>—</em></td><td style='color:#aaa'>—</td><td style='color:#aaa'>—</td><td style='color:#aaa'>—</td><td style='color:#aaa'>—</td></tr><tr style="background:#f8fafc"><td style="padding:.5rem .75rem;white-space:nowrap;font-weight:400">🟢 Naive OpenAI</td><td style="padding:.5rem .75rem"><em style='color:#999'>—</em></td><td style='color:#aaa'>—</td><td style='color:#aaa'>—</td><td style='color:#aaa'>—</td><td style='color:#aaa'>—</td></tr></tbody></table></div></details></section>
+
+<section>
+<h2 style="color:#1e3a5f;border-bottom:3px solid #3b82f6;padding-bottom:.4rem;margin-bottom:1rem">Summary Scorecard</h2>
+<table class="summary-table">
+<thead><tr>
+  <th>Domain</th><th>Question</th><th>Slice</th>
+  <th style="text-align:center">CivicSim TVD</th>
+  <th style="text-align:center">Naive Anthropic TVD</th>
+  <th style="text-align:center">Naive OpenAI TVD</th>
+  <th style="text-align:center">TVD Winner</th>
+  <th style="text-align:center">CivicSim Wass</th>
+  <th style="text-align:center">Naive Anthropic Wass</th>
+  <th style="text-align:center">Naive OpenAI Wass</th>
+  <th style="text-align:center">Wass Winner</th>
+</tr></thead>
+<tbody><tr><td style="padding:.4rem .6rem">Economy</td><td style="padding:.4rem .6rem"><code style="background:#f1f5f9;padding:.1rem .3rem;border-radius:3px">MINWAGE_W87</code></td><td style="padding:.4rem .6rem;font-size:.82rem;color:#6b7280">income_group=below_30000, age_group=65+, race_eth=White</td><td style="padding:.4rem .6rem;text-align:center;background:#fef08a">0.257</td><td style="padding:.4rem .6rem;text-align:center;background:#e5e7eb">—</td><td style="padding:.4rem .6rem;text-align:center;background:#e5e7eb">—</td><td style="padding:.4rem .6rem;text-align:center;font-weight:700;color:#7c3aed">CivicSim</td><td style="padding:.4rem .6rem;text-align:center;background:#fef08a">0.204</td><td style="padding:.4rem .6rem;text-align:center;background:#e5e7eb">—</td><td style="padding:.4rem .6rem;text-align:center;background:#e5e7eb">—</td><td style="padding:.4rem .6rem;text-align:center;font-weight:700;color:#7c3aed">CivicSim</td></tr><tr><td style="padding:.4rem .6rem">Politics &amp; Government</td><td style="padding:.4rem .6rem"><code style="background:#f1f5f9;padding:.1rem .3rem;border-radius:3px">POL1JB_W92</code></td><td style="padding:.4rem .6rem;font-size:.82rem;color:#6b7280">race_eth=White, age_group=18-29, income_group=50000_to_60000</td><td style="padding:.4rem .6rem;text-align:center;background:#fef08a">0.234</td><td style="padding:.4rem .6rem;text-align:center;background:#e5e7eb">—</td><td style="padding:.4rem .6rem;text-align:center;background:#e5e7eb">—</td><td style="padding:.4rem .6rem;text-align:center;font-weight:700;color:#7c3aed">CivicSim</td><td style="padding:.4rem .6rem;text-align:center;background:#fef08a">0.234</td><td style="padding:.4rem .6rem;text-align:center;background:#e5e7eb">—</td><td style="padding:.4rem .6rem;text-align:center;background:#e5e7eb">—</td><td style="padding:.4rem .6rem;text-align:center;font-weight:700;color:#7c3aed">CivicSim</td></tr></tbody>
+</table>
+</section>
+
+</div>
+</body>
+</html>

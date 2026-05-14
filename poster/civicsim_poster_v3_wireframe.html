@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: #f0f4f8; padding: 20px; }
+
+.poster-wrap {
+  background: white;
+  border: 2px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  width: 360px;
+}
+.poster-label {
+  font-size: 8px; color: #94a3b8; text-align: center;
+  margin-bottom: 5px; font-weight: 600; letter-spacing: 0.08em;
+}
+.poster {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 24/30;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px;
+  overflow: hidden;
+}
+.poster::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url('assets/customer-engagement.png') center / cover no-repeat;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+.poster > * { position: relative; z-index: 1; }
+
+/* HEADER */
+.hdr {
+  background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+  border-radius: 3px; padding: 6px 9px; flex-shrink: 0;
+}
+.hdr-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+.logo-chip { background: rgba(255,255,255,0.2); border-radius: 2px; padding: 2px 5px; font-size: 6px; color: white; font-weight: 700; }
+.hdr-meta { font-size: 5.5px; color: rgba(255,255,255,0.8); }
+.hdr-title { font-size: 9px; font-weight: 800; color: white; line-height: 1.2; letter-spacing: -0.02em; }
+.hdr-sub { font-size: 6px; color: rgba(255,255,255,0.85); margin-top: 1px; }
+.hdr-authors { font-size: 5px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+
+/* ROWS */
+.row { display: flex; gap: 3px; overflow: hidden; }
+
+/* BLOCKS */
+.blk {
+  border-radius: 3px;
+  padding: 5px 6px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.blk.blue   { background: #F6F9FF; border: 1.5px solid #93c5fd; border-top: 3px solid #2563EB; }
+.blk.navy   { background: #EEF5FF; border: 1.5px solid #93c5fd; border-top: 3px solid #1E3A8A; }
+.blk.violet { background: #F5F0FF; border: 1.5px solid #c4b5fd; border-top: 3px solid #7C3AED; }
+.blk.green  { background: #F0FFF8; border: 1.5px solid #6ee7b7; border-top: 3px solid #059669; }
+
+.sec-num {
+  font-size: 5px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 2px; flex-shrink: 0;
+}
+.blue .sec-num   { color: #2563EB; }
+.navy .sec-num   { color: #1E3A8A; }
+.violet .sec-num { color: #7C3AED; }
+.green .sec-num  { color: #059669; }
+
+.sec-title { font-size: 6.5px; font-weight: 700; color: #0B1F4D; margin-bottom: 3px; line-height: 1.3; flex-shrink: 0; }
+
+/* HIGHLIGHTS */
+.hl-gold   { background: #fef9c3; color: #713f12; border-radius: 2px; padding: 0 2px; font-weight: 700; }
+.hl-red    { background: #fee2e2; color: #991b1b; border-radius: 2px; padding: 0 2px; font-weight: 700; }
+.hl-blue   { background: #dbeafe; color: #1e3a8a; border-radius: 2px; padding: 0 2px; font-weight: 700; }
+.hl-violet { background: #ede9fe; color: #4c1d95; border-radius: 2px; padding: 0 2px; font-weight: 700; }
+
+/* 2024 STRIP */
+.miss-strip {
+  background: #fff5f5;
+  border-left: 2.5px solid #DC2626;
+  border-radius: 2px;
+  padding: 3px 5px;
+  margin-top: 4px;
+  font-size: 5px;
+  color: #7F1D1D;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+.miss-year { font-size: 7px; font-weight: 800; color: #DC2626; line-height: 1; display: block; margin-bottom: 1px; }
+
+/* RCA */
+.cause-label { font-size: 5.5px; font-weight: 700; color: #0B1F4D; margin-bottom: 2px; flex-shrink: 0; }
+.rca-stat { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; flex-shrink: 0; }
+.rca-stat-num { font-size: 20px; font-weight: 800; color: #DC2626; line-height: 1; }
+.rca-stat-desc { font-size: 5px; color: #7F1D1D; line-height: 1.5; }
+
+/* MARGIN CHIPS */
+.margin-chip {
+  display: inline-block;
+  background: #fef9c3; border: 1px solid #fde047;
+  border-radius: 2px; padding: 1px 5px;
+  font-size: 5px; font-weight: 700; color: #713f12;
+}
+.chip-row { display: flex; align-items: center; gap: 3px; margin-top: 2px; }
+.chip-or { font-size: 4.5px; color: #94a3b8; }
+.chip-caption { font-size: 4.5px; color: #486381; margin-top: 3px; font-style: italic; }
+
+/* SOLUTION POINTS */
+.sol-row { display: flex; gap: 4px; flex-shrink: 0; }
+.sol-point {
+  flex: 1;
+  background: rgba(255,255,255,0.82);
+  border-left: 2px solid #7C3AED;
+  border-radius: 2px;
+  padding: 4px 5px;
+}
+.sol-point-label { font-size: 5.5px; font-weight: 700; color: #4C1D95; margin-bottom: 2px; }
+.sol-point-body  { font-size: 4.5px; color: #486381; line-height: 1.55; }
+
+/* FIG BOXES */
+.fig-box {
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 5px; font-weight: 600;
+  border: 1px dashed; overflow: hidden;
+}
+.fig-box.arch   { background: linear-gradient(135deg,#EEF5FF,#F5F0FF); border-color: #a78bfa; color: #7C3AED; }
+.fig-box.violet { background: #F0EBFF; border-color: #c4b5fd; color: #7C3AED; }
+.fig-box.blue   { background: #EEF5FF; border-color: #93c5fd; color: #2563EB; }
+.fig-box img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* STAT CARDS */
+.stat-card {
+  background: white; border-radius: 2px;
+  padding: 4px 5px; flex: 1;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+.res-num   { font-size: 13px; font-weight: 800; line-height: 1; }
+.res-label { font-size: 5px; font-weight: 700; color: #0B1F4D; margin-top: 1px; }
+.res-plain { font-size: 4px; color: #486381; font-style: italic; line-height: 1.4; margin-top: 1px; }
+
+/* FOOTER */
+.ftr {
+  background: #F6F9FF; border: 1px solid #e2e8f0; border-radius: 2px;
+  padding: 3px 6px; display: flex; justify-content: space-between;
+  align-items: center; flex-shrink: 0;
+}
+.ftr-txt { font-size: 5px; color: #486381; }
+.qr { width: 13px; height: 13px; background: #0B1F4D; border-radius: 1px; }
+</style>
+</head>
+<body>
+<div class="poster-wrap">
+  <div class="poster-label">WIREFRAME v6 — 24" × 30" · ¼" border</div>
+  <div class="poster">
+
+    <!-- HEADER -->
+    <div class="hdr">
+      <div class="hdr-row">
+        <div class="logo-chip">UC BERKELEY · I SCHOOL</div>
+        <div class="hdr-meta">MIMS Final Project · 2026</div>
+      </div>
+      <div class="hdr-title">CivicSim</div>
+      <div class="hdr-sub">Demographically Grounded LLM Simulation of Public Opinion</div>
+      <div class="hdr-authors">Anagha Ananth · Sushanti Kerani · Vikramsingh Rathod · Minkush Jain · Aratrik Paul</div>
+    </div>
+
+    <!-- ROW 1 — Background  +  Root Causes (equal columns) -->
+    <div class="row" style="flex: 2;">
+
+      <!-- 01 Background -->
+      <div class="blk blue" style="flex:1;">
+        <div class="sec-num">01 · Background</div>
+        <div class="sec-title">Who uses population models?</div>
+        <div style="font-size:5px; color:#486381; line-height:1.6;">
+          <strong style="color:#0B1F4D;">Policymakers, forecasters, and researchers</strong>
+          rely on statistical approximations to predict how populations will respond —
+          before any vote is cast or dollar is spent.
+        </div>
+        <div class="miss-strip">
+          <span class="miss-year">2024</span>
+          Polls failed to detect major shifts: specifically
+          <span class="hl-red">under-sampled Hispanic communities</span> —
+          missing the largest swing in Hispanic voting in modern U.S. history.
+        </div>
+      </div>
+
+      <!-- 02 Experiments: Root Causes -->
+      <div class="blk navy" style="flex:1;">
+        <div class="sec-num">02 · Experiments: Root Causes</div>
+        <div class="sec-title">Why do these models fail?</div>
+
+        <!-- ① -->
+        <div style="flex-shrink:0;">
+          <div class="cause-label">① Unreliable data source</div>
+          <div class="rca-stat">
+            <span class="rca-stat-num">43%</span>
+            <span class="rca-stat-desc">
+              <strong>under-represented</strong><br>
+              Black · rural · income &lt;$30k<br>
+              Pew ATP vs. U.S. Census
+            </span>
+          </div>
+        </div>
+
+        <!-- ② -->
+        <div style="flex-shrink:0; margin-top:5px;">
+          <div class="cause-label">② Single-margin focus</div>
+          <div class="chip-row">
+            <span class="margin-chip">age</span>
+            <span class="chip-or">or</span>
+            <span class="margin-chip">education</span>
+            <span class="chip-or">or</span>
+            <span class="margin-chip">income</span>
+          </div>
+          <div class="chip-caption">Studied in isolation — joint effects often ignored</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 2 — Our Solution (two text points side-by-side, arch diagram below) -->
+    <div class="row" style="flex: 2.2;">
+      <div class="blk violet" style="flex:1; gap:4px;">
+        <div class="sec-num">03 · Our Solution</div>
+
+        <div class="sol-row">
+          <div class="sol-point">
+            <div class="sol-point-label">① Who people are</div>
+            <div class="sol-point-body">
+              U.S. Census <span class="hl-blue">ACS microdata</span> —
+              <span class="hl-violet">3.5M+ respondents</span><br>
+              vs. Pew ATP (~38K) or GSS (~3K/yr).<br>
+              Most accurate population sample available.
+            </div>
+          </div>
+          <div class="sol-point">
+            <div class="sol-point-label">② What they're saying</div>
+            <div class="sol-point-body">
+              <span class="hl-violet">Pew ATP · 79 waves</span><br>
+              7,728 opinion items across 10 domains —<br>
+              intl. affairs, health, immigration,<br>
+              technology, economy &amp; more.
+            </div>
+          </div>
+        </div>
+
+        <div class="fig-box arch" style="flex:1;">
+          <img src="assets/architecture.png" alt="CivicSim pipeline">
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3 — Results  +  Live Demo -->
+    <div class="row" style="flex: 1.5;">
+
+      <!-- 04 Results -->
+      <div class="blk green" style="flex:1.1; gap:3px;">
+        <div class="sec-num">04 · Results</div>
+        <div style="display:flex; gap:3px; flex-shrink:0;">
+          <div class="stat-card" style="border-left:2px solid #059669;">
+            <div class="res-num" style="color:#059669;">~2×</div>
+            <div class="res-label">More signal, same budget</div>
+            <div class="res-plain">Optimal {income+location+age} vs. conventional {age+income+education}</div>
+          </div>
+          <div class="stat-card" style="border-left:2px solid #7C3AED;">
+            <div class="res-num" style="color:#7C3AED;">47%</div>
+            <div class="res-label">Signal lost without geography</div>
+            <div class="res-plain">Drop census division → lose nearly half the predictive power</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:3px; flex:1; min-height:0;">
+          <div class="fig-box violet" style="flex:1;"><img src="assets/fig_ablation.png" alt="ablation"></div>
+          <div class="fig-box blue"   style="flex:1;"><img src="assets/fig_loo.png" alt="LOO"></div>
+        </div>
+      </div>
+
+      <!-- 05 Live Demo -->
+      <div class="blk navy" style="flex:0.9;">
+        <div class="sec-num">05 · Live Demo</div>
+        <div class="fig-box arch" style="flex:1; border-color:rgba(37,99,235,0.35); color:#1E3A8A; background:#EEF5FF;">
+          App screenshot<br>(you'll provide)
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="ftr">
+      <div class="ftr-txt">UC Berkeley · School of Information · anagha_ananth@berkeley.edu</div>
+      <div class="qr"></div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

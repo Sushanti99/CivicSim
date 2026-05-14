@@ -7,7 +7,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import agents, domains, locations, poll, simulate, simulations
+from app.api import agents, domains, evals, locations, poll, simulate, simulations
 from app.core.config import get_settings
 from app.core.errors import install_error_handlers
 from app.core.logging import configure_logging
@@ -51,6 +51,7 @@ def create_app() -> FastAPI:
     app.include_router(simulate.router, prefix="/api", tags=["simulate"])
     app.include_router(domains.router, prefix="/api", tags=["domains"])
     app.include_router(simulations.router, prefix="/api", tags=["simulations"])
+    app.include_router(evals.router, prefix="/api", tags=["evals"])
 
     logger.info("CivicSim API ready", extra={"llm_provider": settings.llm_provider})
     return app

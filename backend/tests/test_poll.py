@@ -23,12 +23,12 @@ def test_poll_with_filter_and_no_backoff_when_present(client):
         "/api/poll",
         json={
             "question_id": qid,
-            "demographic_filter": {"age_group": "30-49"},
+            "demographic_filter": {"F_CREGION": "Midwest"},
         },
     )
     assert r.status_code == 200
     body = r.json()
-    assert body["used_filter"]["age_group"] == "30-49"
+    assert body["used_filter"]["F_CREGION"] == "Midwest"
     assert body["backoff_steps"] == []
 
 

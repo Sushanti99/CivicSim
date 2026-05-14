@@ -78,6 +78,44 @@ export type AgentRecord = {
   rationale: string;
 };
 
+export type AgentEvalResult = {
+  agent_id: number;
+  stance: string;
+  stance_valid: boolean;
+  prior_prob: number;
+  prior_rank: number;
+  modal_agreement: boolean;
+  backoff_steps: string[];
+};
+
+export type DemographicGroupEval = {
+  dim: string;
+  value: string;
+  n_agents: number;
+  tvd: number;
+  hellinger: number;
+};
+
+export type SimEvalSummary = {
+  sim_id: string;
+  question_id: string;
+  question_label: string;
+  location: string;
+  n_agents: number;
+  validity_rate: number;
+  mean_prior_prob: number;
+  modal_agreement_rate: number;
+  top2_rate: number;
+  expected_log_likelihood: number;
+  tvd_vs_national: number;
+  kl_vs_national: number;
+  hellinger_vs_national: number;
+  answer_coverage: number;
+  trust_score: number;
+  demographic_evals: DemographicGroupEval[];
+  agent_evals?: AgentEvalResult[];
+};
+
 export type SimulationDetail = {
   sim_id: string;
   timestamp: string;
@@ -160,6 +198,9 @@ export const api = {
     http<SimulationMeta[]>(`/simulations${limit ? `?limit=${limit}` : ""}`),
   simulationDetail: (sim_id: string) =>
     http<SimulationDetail>(`/simulations/${encodeURIComponent(sim_id)}`),
+  evals: () => http<SimEvalSummary[]>("/evals"),
+  evalDetail: (sim_id: string) =>
+    http<SimEvalSummary>(`/evals/${encodeURIComponent(sim_id)}`),
   agents: (body: { location: string; n: number; seed?: number }) =>
     http<{ location: string; n: number; agents: Agent[] }>("/agents", {
       method: "POST",

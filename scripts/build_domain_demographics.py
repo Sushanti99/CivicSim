@@ -57,15 +57,15 @@ _DOMAIN_META: dict[str, dict] = {
     "technology":          {"label": "Technology & Media",     "description": "Technology, social media, news media, AI, internet, online platforms."},
 }
 
-# Which curated ATP questions map to each domain
+# Which curated ATP questions map to each domain (codes match atp_2021_final.parquet)
 _DOMAIN_QUESTIONS: dict[str, list[str]] = {
-    "economy":             ["Q_HOUSING", "Q_TRANSIT", "Q_MINWAGE"],
-    "environment_climate": ["Q_CLIMATE"],
-    "family_society":      ["Q_EDUCATION"],
-    "health":              ["Q_HEALTHCARE"],
-    "immigration":         ["Q_IMMIGRATION"],
+    "economy":             ["MINWAGE_W87", "INFRASTRUC21A_W95", "ECON1_W84"],
+    "environment_climate": ["CLIM9_W89"],
+    "family_society":      ["ABORTLGL_W87"],
+    "health":              [],
+    "immigration":         ["AFG21_2_W95"],
     "international":       [],
-    "politics_gov":        ["Q_GUNS"],
+    "politics_gov":        ["GUNPRIORITY1_c_W87", "POL1JB_W92", "SATIS_W95", "GAP21Q3_W82"],
     "race_inequality":     [],
     "religion":            [],
     "technology":          [],

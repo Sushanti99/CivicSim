@@ -302,11 +302,12 @@ def build_from_acs(source_uri: str, repo_root: Path) -> list[dict]:
             occ = _scale_to_population(template["occupation"], "totalestimate", pop // 2)
             _round(occ, "totalestimate").to_csv(out_dir / "occupation.csv", index=False)
 
+            _div_to_region = {d: r for d, r in DIVISIONS}
             catalog.append({
                 "id": loc_id,
                 "label": f"{name} ({'region' if kind == 'region' else 'division'})",
                 "kind": kind,
-                "region": name if kind == "region" else None,
+                "region": name if kind == "region" else _div_to_region.get(name),
                 "division": name if kind == "division" else None,
                 "population": pop,
             })

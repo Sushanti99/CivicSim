@@ -20,6 +20,80 @@ type SimRun = {
   summary?: { distribution: AnswerProb[]; n: number };
 };
 
+// ── static example runs (shown when no live simulations exist) ────────────────
+
+const EXAMPLE_SIMS: SimRun[] = [
+  {
+    sim_id: "3__region_west__economy",
+    serial: 3,
+    location: "region_west",
+    domain: "economy",
+    domain_label: "Economy & Jobs",
+    question_label: "Do you think the federal government should raise the federal minimum wage to $15 per hour?",
+    n: 25,
+    n_agents: 25,
+    selected_dims: ["age_group", "income_group", "educ_group"],
+    timestamp: "2026-05-10T14:32:00Z",
+    complete: true,
+    summary: {
+      n: 25,
+      distribution: [
+        { answer_label: "Strongly favor", prob: 0.44 },
+        { answer_label: "Somewhat favor", prob: 0.28 },
+        { answer_label: "Neither", prob: 0.08 },
+        { answer_label: "Somewhat oppose", prob: 0.12 },
+        { answer_label: "Strongly oppose", prob: 0.08 },
+      ],
+    },
+  },
+  {
+    sim_id: "2__region_south__healthcare",
+    serial: 2,
+    location: "region_south",
+    domain: "healthcare",
+    domain_label: "Healthcare",
+    question_label: "Should the federal government provide health insurance to all Americans, even if it means raising taxes?",
+    n: 20,
+    n_agents: 20,
+    selected_dims: ["age_group", "race", "income_group"],
+    timestamp: "2026-05-09T09:15:00Z",
+    complete: true,
+    summary: {
+      n: 20,
+      distribution: [
+        { answer_label: "Strongly support", prob: 0.35 },
+        { answer_label: "Somewhat support", prob: 0.25 },
+        { answer_label: "Neither", prob: 0.10 },
+        { answer_label: "Somewhat oppose", prob: 0.18 },
+        { answer_label: "Strongly oppose", prob: 0.12 },
+      ],
+    },
+  },
+  {
+    sim_id: "1__region_northeast__immigration",
+    serial: 1,
+    location: "region_northeast",
+    domain: "immigration",
+    domain_label: "Immigration",
+    question_label: "Should the U.S. allow more immigrants to enter the country legally than it currently does?",
+    n: 30,
+    n_agents: 30,
+    selected_dims: ["age_group", "educ_group"],
+    timestamp: "2026-05-08T18:47:00Z",
+    complete: true,
+    summary: {
+      n: 30,
+      distribution: [
+        { answer_label: "A lot more", prob: 0.20 },
+        { answer_label: "Some more", prob: 0.30 },
+        { answer_label: "Same as now", prob: 0.22 },
+        { answer_label: "Fewer", prob: 0.18 },
+        { answer_label: "A lot fewer", prob: 0.10 },
+      ],
+    },
+  },
+];
+
 // ── helpers ───────────────────────────────────────────────────────────────────
 
 function parseSerial(sim_id: string): number | undefined {
@@ -207,7 +281,7 @@ function Stat({ label, value }: { label: string; value: string | number }) {
 // ── page ──────────────────────────────────────────────────────────────────────
 
 export default function SimulationsPage() {
-  const [sims, setSims] = useState<SimRun[]>([]);
+  const [liveSims, setLiveSims] = useState<SimRun[]>([]);
   const [loading, setLoading] = useState(true);
 
   function load() {
@@ -219,14 +293,14 @@ export default function SimulationsPage() {
           serial: parseSerial(r.sim_id),
         }));
         runs.sort((a, b) => (b.serial ?? 0) - (a.serial ?? 0));
-        setSims(runs);
+        setLiveSims(runs);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }
 
   function handleDeleted(sim_id: string) {
-    setSims((prev) => prev.filter((s) => s.sim_id !== sim_id));
+    setLiveSims((prev) => prev.filter((s) => s.sim_id !== sim_id));
   }
 
   useEffect(() => {
@@ -234,6 +308,11 @@ export default function SimulationsPage() {
     const id = setInterval(load, 5000);
     return () => clearInterval(id);
   }, []);
+
+  const liveIds = new Set(liveSims.map((s) => s.sim_id));
+  const supplemental = EXAMPLE_SIMS.filter((e) => !liveIds.has(e.sim_id));
+  const sims = [...liveSims, ...supplemental];
+  const isShowingExamples = !loading && liveSims.length === 0;
 
   const totalAgents = sims.reduce((s, r) => s + r.n_agents, 0);
   const complete = sims.filter((r) => r.complete).length;
@@ -253,6 +332,9 @@ export default function SimulationsPage() {
               Simulate
             </Link>
             <span className="text-[color:var(--color-text)]">Simulations</span>
+            <Link href="/simulations/evals" className="text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)]">
+              Evals
+            </Link>
           </nav>
         </div>
       </header>
@@ -287,27 +369,28 @@ export default function SimulationsPage() {
         )}
 
         {/* ── grid ── */}
-        {loading && sims.length === 0 ? (
+        {loading ? (
           <div className="py-32 text-center text-sm text-[color:var(--color-text-dim)]">
             Loading…
           </div>
-        ) : sims.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[color:var(--color-border)] py-32">
-            <div className="text-4xl">◇</div>
-            <p className="mt-4 text-[color:var(--color-text-dim)]">No simulations yet.</p>
-            <Link
-              href="/simulate"
-              className="mt-5 rounded-full bg-[color:var(--color-cyan)] px-6 py-2.5 text-sm font-semibold text-[color:var(--color-on-accent)] hover:opacity-90"
-            >
-              Run your first simulation
-            </Link>
-          </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {sims.map((sim) => (
-              <SimCard key={sim.sim_id} sim={sim} onDeleted={handleDeleted} />
-            ))}
-          </div>
+          <>
+            {isShowingExamples && (
+              <div className="mb-6 rounded-2xl border border-[color:var(--color-cyan)]/20 bg-[color:var(--color-cyan)]/5 px-5 py-3 text-sm text-[color:var(--color-text-dim)]">
+                <span className="font-medium text-[color:var(--color-cyan)]">Example runs</span>
+                {" "}— these are pre-loaded samples. Run your own simulation to see live results here.
+              </div>
+            )}
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {sims.map((sim) => (
+                <SimCard
+                  key={sim.sim_id}
+                  sim={sim}
+                  onDeleted={isShowingExamples ? () => {} : handleDeleted}
+                />
+              ))}
+            </div>
+          </>
         )}
       </main>
     </div>

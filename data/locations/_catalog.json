@@ -5,7 +5,7 @@
     "kind": "region",
     "region": "Northeast",
     "division": null,
-    "population": 55700000
+    "population": 43829104
   },
   {
     "id": "region_midwest",
@@ -13,7 +13,7 @@
     "kind": "region",
     "region": "Midwest",
     "division": null,
-    "population": 68900000
+    "population": 51800991
   },
   {
     "id": "region_south",
@@ -21,7 +21,7 @@
     "kind": "region",
     "region": "South",
     "division": null,
-    "population": 128700000
+    "population": 95713102
   },
   {
     "id": "region_west",
@@ -29,78 +29,78 @@
     "kind": "region",
     "region": "West",
     "division": null,
-    "population": 78900000
+    "population": 59567585
   },
   {
     "id": "division_new_england",
-    "label": "New England (Northeast)",
+    "label": "New England (division)",
     "kind": "division",
     "region": "Northeast",
     "division": "New England",
-    "population": 15100000
+    "population": 11685655
   },
   {
     "id": "division_middle_atlantic",
-    "label": "Middle Atlantic (Northeast)",
+    "label": "Middle Atlantic (division)",
     "kind": "division",
     "region": "Northeast",
     "division": "Middle Atlantic",
-    "population": 40600000
+    "population": 32143449
   },
   {
     "id": "division_east_north_central",
-    "label": "East North Central (Midwest)",
+    "label": "East North Central (division)",
     "kind": "division",
     "region": "Midwest",
     "division": "East North Central",
-    "population": 46900000
+    "population": 35701815
   },
   {
     "id": "division_west_north_central",
-    "label": "West North Central (Midwest)",
+    "label": "West North Central (division)",
     "kind": "division",
     "region": "Midwest",
     "division": "West North Central",
-    "population": 22000000
+    "population": 16099176
   },
   {
     "id": "division_south_atlantic",
-    "label": "South Atlantic (South)",
+    "label": "South Atlantic (division)",
     "kind": "division",
     "region": "South",
     "division": "South Atlantic",
-    "population": 67800000
+    "population": 50932844
   },
   {
     "id": "division_east_south_central",
-    "label": "East South Central (South)",
+    "label": "East South Central (division)",
     "kind": "division",
     "region": "South",
     "division": "East South Central",
-    "population": 19300000
+    "population": 14652316
   },
   {
     "id": "division_west_south_central",
-    "label": "West South Central (South)",
+    "label": "West South Central (division)",
     "kind": "division",
     "region": "South",
     "division": "West South Central",
-    "population": 41600000
+    "population": 30127942
   },
   {
     "id": "division_mountain",
-    "label": "Mountain (West)",
+    "label": "Mountain (division)",
     "kind": "division",
     "region": "West",
     "division": "Mountain",
-    "population": 25000000
+    "population": 19031137
   },
   {
     "id": "division_pacific",
-    "label": "Pacific (West)",
+    "label": "Pacific (division)",
     "kind": "division",
     "region": "West",
     "division": "Pacific",
-    "population": 53900000
+    "population": 40536448
   }
 ]

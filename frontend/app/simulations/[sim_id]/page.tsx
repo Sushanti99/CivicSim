@@ -27,10 +27,16 @@ function answerColor(index: number) {
 
 function binAge(label: string): string {
   const l = label.toLowerCase();
+  // Pre-bucketed CSV slugs (e.g. "18-29", "30-49")
+  if (l === "18-29") return "18\u201329";
+  if (l === "30-49") return "30\u201349";
+  if (l === "50-64") return "50\u201364";
+  if (l === "65+") return "65+";
+  // Raw ACS label formats
   if (l.includes("under") || /\b[5-9] to/.test(l) || /1[0-9] to/.test(l)) return "Under 18";
-  if (l.includes("20 to") || l.includes("25 to")) return "18–29";
-  if (l.includes("30 to") || l.includes("35 to") || l.includes("40 to") || l.includes("45 to")) return "30–49";
-  if (l.includes("50 to") || l.includes("55 to") || l.includes("60 to")) return "50–64";
+  if (l.includes("20 to") || l.includes("25 to")) return "18\u201329";
+  if (l.includes("30 to") || l.includes("35 to") || l.includes("40 to") || l.includes("45 to")) return "30\u201349";
+  if (l.includes("50 to") || l.includes("55 to") || l.includes("60 to")) return "50\u201364";
   return "65+";
 }
 
@@ -45,9 +51,23 @@ function binRace(label: string): string {
 
 function binIncome(label: string): string {
   const l = label.toLowerCase();
+  // Pre-bucketed CSV slugs
+  if (l === "below_30000") return "<$30k";
+  if (l === "30000_to_40000") return "$30\u201340k";
+  if (l === "40000_to_50000") return "$40\u201350k";
+  if (l === "50000_to_60000") return "$50\u201360k";
+  if (l === "60000_to_70000") return "$60\u201370k";
+  if (l === "70000_to_80000") return "$70\u201380k";
+  if (l === "80000_to_90000") return "$80\u201390k";
+  if (l === "90000_to_100000") return "$90\u2013100k";
+  if (l === "above_100000") return ">$100k";
+  // Raw ACS label formats
   if (l.includes("less than") || l.includes("10,000") || l.includes("15,000") || l.includes("25,000")) return "<$30k";
-  if (l.includes("30,000") || l.includes("35,000") || l.includes("49,999")) return "$30–60k";
-  if (l.includes("50,000") || l.includes("75,000") || l.includes("99,999")) return "$60–100k";
+  if (l.includes("30,000")) return "$30\u201340k";
+  if (l.includes("35,000") || l.includes("49,999")) return "$40\u201350k";
+  if (l.includes("50,000")) return "$50\u201360k";
+  if (l.includes("75,000")) return "$60\u201370k";
+  if (l.includes("99,999")) return "$90\u2013100k";
   return ">$100k";
 }
 
@@ -117,7 +137,7 @@ function generateInsights(
   }
 
   // Income trend
-  const incomeOrder = ["<$30k", "$30–60k", "$60–100k", ">$100k"];
+  const incomeOrder = ["<$30k", "$30–40k", "$40–50k", "$50–60k", "$60–70k", "$70–80k", "$80–90k", "$90–100k", ">$100k"];
   const incomePresent = incomeOrder.filter((g) => incomeRows.find((r) => r.group === g));
   if (incomePresent.length >= 2) {
     const vals = incomePresent.map((g) => {
@@ -260,7 +280,7 @@ export default function SimulationDetailPage({
   const raceRows = computeBreakdown(agents, binRace, "race",
     ["White", "Black", "Hispanic", "Asian", "Other"], answers);
   const incomeRows = computeBreakdown(agents, binIncome, "income",
-    ["<$30k", "$30–60k", "$60–100k", ">$100k"], answers);
+    ["<$30k", "$30–40k", "$40–50k", "$50–60k", "$60–70k", "$70–80k", "$80–90k", "$90–100k", ">$100k"], answers);
 
   const insights = generateInsights(agents, topAnswer, ageRows, raceRows, incomeRows);
 
@@ -554,6 +574,9 @@ function Shell({ children }: { children: React.ReactNode }) {
             </Link>
             <Link href="/simulations" className="text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)]">
               Simulations
+            </Link>
+            <Link href="/simulations/evals" className="text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)]">
+              Evals
             </Link>
           </nav>
         </div>

@@ -49,3 +49,5 @@ data/simulations/
 !data/atp_priors/domain_demographics.json
 !data/locations/*.json
 !data/locations/*.csv
+Walkthrough.md
+.claude/
