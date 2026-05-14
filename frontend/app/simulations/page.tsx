@@ -309,8 +309,10 @@ export default function SimulationsPage() {
     return () => clearInterval(id);
   }, []);
 
+  const liveIds = new Set(liveSims.map((s) => s.sim_id));
+  const supplemental = EXAMPLE_SIMS.filter((e) => !liveIds.has(e.sim_id));
+  const sims = [...liveSims, ...supplemental];
   const isShowingExamples = !loading && liveSims.length === 0;
-  const sims = isShowingExamples ? EXAMPLE_SIMS : liveSims;
 
   const totalAgents = sims.reduce((s, r) => s + r.n_agents, 0);
   const complete = sims.filter((r) => r.complete).length;
