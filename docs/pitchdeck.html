@@ -1923,9 +1923,8 @@
 
     <aside class="notes" data-notes>
       <div class="time">~30 SEC · OPENING</div>
-      <p>Hi everyone, thanks for having us. We're team CivicSim. I'm <b>[your name]</b>, and that's Anagha, Aratrik, Sushanti, and Vikram. We're all MIMS students at the Berkeley School of Information.</p>
-      <p>What you see on this slide is our logo, the team, and a dotted map of the United States. That map is going to be relevant in about thirty seconds, because what we've been working on for the last year is essentially one question. How do you build something that simulates an entire country's worth of opinions, without flattening the people who live there?</p>
-      <p>Our project is called CivicSim. The tagline up there is <b>"ground it before you simulate it."</b> That phrase has basically become our religion at this point. Because the more we looked at AI-based policy simulation, the more we kept finding the same problem. Most of these systems are failing in a way that isn't obvious. They're failing before they generate a single word. And we want to walk you through why, and what we built to fix it.</p>
+      <p>Hi everyone. We're team CivicSim. I'm <b>[your name]</b>, and with me are Anagha, Aratrik, Sushanti, and Vikram. We're all MIMS students at the School of Information.</p>
+      <p>For the last year, we've been working on one question: how do you simulate an entire population's opinions without flattening the people who live there? That tagline up there, <b>"ground it before you simulate it,"</b> is what we kept coming back to. Most AI simulations fail before they generate a single word. We're going to show you why, what we built to fix it, and what the data says.</p>
     </aside>
   </section>
 
@@ -2002,16 +2001,15 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>02 / 15</span>
+      <span>02 / 16</span>
     </div>
     <div class="progress" style="width: 14.28%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~60 SEC · OPPORTUNITY</div>
-      <p>So let's start with where we are right now. If you've been paying attention to AI in the last couple of years, you've probably noticed that AI simulation is becoming kind of a thing. It's actually everywhere now.</p>
-      <p>If you're designing a product, you can test it on synthetic users before you ever ship to a real customer. Market research firms are running surveys with synthetic respondents instead of paying for real survey panels. That alone saves them weeks and tens of thousands of dollars per study. Pharma companies are doing virtual stress tests of compounds before clinical trials. Ad agencies are A/B testing creative against simulated demographics. Even finance, which has been doing scenario simulation for decades, is now getting an AI layer added on top.</p>
-      <p>So the right side of this slide is the basic point. Public policy is conspicuously missing from that list. We still pass laws the old way. We rely on slow, narrow, expensive survey panels. It's basically the same playbook from the 1980s. Important legislation goes from draft to law without ever being tested against a synthetic version of the population it's going to affect. And we usually only find out whether a policy actually worked after it's already in effect. That's a really backward way to build something as consequential as public policy.</p>
-      <p>We think public policy is actually the natural next frontier for this technology. But here's why nobody's done it well yet. It's also the hardest frontier. Because in public policy, you can't just be roughly right. <b>Representation isn't optional.</b> If your simulation misses a community, you've just automated a bias and called it data. That's the bar CivicSim was built for.</p>
+      <div class="time">~50 SEC · OPPORTUNITY</div>
+      <p>AI simulation is already standard practice across industries. Product teams test on synthetic users before launch. Market researchers run synthetic survey panels instead of real ones, saving weeks and thousands of dollars. Pharma, finance, advertising are all stress-testing with simulated populations.</p>
+      <p>But look at public policy. We still pass laws the old way. Important legislation ships without ever being tested against a synthetic version of the people it affects. We only find out whether it worked after it's already law.</p>
+      <p>Policy is the natural next frontier for this technology, and also the hardest, because <b>representation isn't optional</b>. If your simulation misses a community, you've automated a bias and called it data. That's the bar we built for.</p>
     </aside>
   </section>
 
@@ -2058,17 +2056,17 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>03 / 15</span>
+      <span>03 / 16</span>
     </div>
     <div class="progress" style="width: 21.42%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~70 SEC · PROBLEM</div>
-      <p>So we asked ourselves the obvious question. If AI simulation is everywhere else, why hasn't it worked for policy? And what we found, when we dug into it, was that there are three specific failure modes. And they all happen before the AI even starts generating responses. The failure isn't in the model. It's in how the model is being set up.</p>
-      <p>The first failure is on the left of the slide. Most simulations start with a prompt that says something like "simulate a 35-year-old voter from Texas." If you've ever tried that, you know what happens. The model returns this average of every Texan stereotype it has ever scraped off the internet. Cowboy hats, pickup trucks, the works. There's no real distribution of Texans behind that agent. It's a caricature. And caricatures are fine if you're writing ad copy. They're a disaster if you're advising someone on real policy.</p>
-      <p>The second failure, in the middle, is more subtle. When researchers do use real data, they usually sample from existing survey panels. The problem is that those panels weren't designed to be representative populations. They were designed to answer specific research questions. So when you sample agents from them, you inherit all their gaps. We actually measured this. For young Black Americans, survey panels misplace <b>32 percent</b> of them into the wrong income bracket. A full third of a community ends up in the wrong slot.</p>
-      <p>The third failure is the one we found most interesting. The variables researchers typically pick to ground their simulations are often the wrong variables. Age, income, education. They sound important. But for something like tech policy, geography turns out to matter more than age. And almost everyone skips geography.</p>
-      <p>The takeaway on this slide is the line at the bottom. <b>The model isn't the problem. The "who" being simulated is.</b></p>
+      <div class="time">~60 SEC · PROBLEM</div>
+      <p>There are three failure modes, and all three happen before the LLM generates a single word.</p>
+      <p><b>First: stereotype, not population.</b> Prompting "simulate a 35-year-old voter" gives you the model's average caricature with no real demographic distribution behind it. Fine for ad copy, disqualifying for policy.</p>
+      <p><b>Second: survey panels aren't populations.</b> They weren't designed to be representative. They were designed to answer specific research questions. We measured this: for young Black Americans, panels misplace <b>32 percent</b> into the wrong income bracket.</p>
+      <p><b>Third: the wrong variables, confidently.</b> Age, income, education sound important. But geography often explains more. Almost everyone skips it.</p>
+      <p>The bottom line on this slide: <b>the model isn't the problem. The "who" is.</b></p>
     </aside>
   </section>
 
@@ -2133,19 +2131,16 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>04 / 15</span>
+      <span>04 / 16</span>
     </div>
     <div class="progress" style="width: 28.57%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~65 SEC · LANDSCAPE</div>
-      <p>Now we should be honest. We're not the first team to think about this. The synthetic persona space actually has some pretty serious players. There are three companies in particular that you've probably seen if you've been watching this space. <b>Simile, Ditto, and Aaru.</b> Between them, they've raised over <b>50 million dollars.</b> Real engineers, real investors, real momentum.</p>
-      <p>So why isn't one of them doing what we're doing? The answer is that they're not actually trying to. Each of these companies was built for commerce. Simile is mostly for product and market research teams. Ditto does qualitative AI research personas. Aaru is for business and government messaging. All useful, all well-funded, all completely different beasts from what policy actually demands.</p>
-      <p>When you look at these tools through a policy lens, three structural gaps show up consistently. Those are the three boxes at the bottom of the slide.</p>
-      <p>The first gap is that their <b>demographic grounding is shallow.</b> They're synthesizing personas from generic priors, not from real census data.</p>
-      <p>The second gap is that they're <b>built for research workflows</b>, not for decision-making. If you're a city council member who has to defend a policy choice in a hearing, you can't really cite "an AI persona told me" as your reasoning.</p>
-      <p>The third gap is that the <b>methodology is closed.</b> You can't audit how a persona was built, or why it reasoned a certain way. For policy work, that's a non-starter.</p>
-      <p>So none of these competitors are bad products. They're just optimized for a totally different problem. We saw the policy-specific gap. That's what CivicSim is built to close.</p>
+      <div class="time">~50 SEC · LANDSCAPE</div>
+      <p>We're not the first to think about this. Simile, Ditto, and Aaru are serious players. Between them, over <b>50 million dollars raised</b>. Real products, real momentum.</p>
+      <p>But none of them are actually trying to do what we're doing. They were built for commerce: product research, qualitative personas, business messaging. Useful tools for those use cases, just optimized for a completely different problem.</p>
+      <p>Through a policy lens, three gaps show up consistently. <b>Shallow demographic grounding</b>: personas synthesized from model priors, not census data. <b>Built for research, not decisions</b>: you can't cite an AI persona in a policy hearing. And <b>closed methodology</b>: no auditability of how a persona was built or why it reasoned a certain way. For policy work, that's a non-starter.</p>
+      <p>We saw that gap. That's what CivicSim is built to close.</p>
     </aside>
   </section>
 
@@ -2184,18 +2179,17 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>05 / 15</span>
+      <span>05 / 16</span>
     </div>
     <div class="progress" style="width: 35.71%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~55 SEC · INTRODUCING CIVICSIM</div>
-      <p>That brings us to what we actually built. CivicSim, at its core, is pretty simple to describe. You pick a U.S. location. Could be a county, eventually any state or city. You pick a policy question. And we run a synthetic electorate that actually looks like the place you picked. Same demographics, same intersectional structure, same opinion patterns you'd find if you really polled there.</p>
-      <p>There are three pillars holding the whole thing up. They map one-to-one with the three problems I just walked through. So I'll just call out what each one does.</p>
-      <p><b>Pillar one, on the left, is representative population.</b> Every single agent we generate is sampled from real U.S. Census microdata. We're working with 2.5 million records. And the distributions we sample match the actual demographics of wherever you picked.</p>
-      <p><b>Pillar two, in the middle, is policy-specific grounding.</b> Every agent doesn't just have demographics. It carries an empirical opinion prior built from 38,449 real Pew survey respondents. So when an agent reasons about a policy, it's not the LLM guessing what a 30-year-old Black woman from Oakland might think. It's the LLM conditioned on what people like that have actually said in real surveys.</p>
-      <p><b>Pillar three is that every persona is fully inspectable.</b> You can drill into any agent and see its demographics, its prior, its stance, and its reasoning chain. All of that is saved per simulation run.</p>
-      <p>One thing I want to emphasize on this slide. We're not promising perfect prediction. We can't tell you who's going to win an election. The goal is representative, transparent simulation. So policymakers can stress-test their ideas before they ship to the real world.</p>
+      <div class="time">~40 SEC · INTRODUCING CIVICSIM</div>
+      <p>Three pillars, each a direct fix for one of the three problems I just walked through.</p>
+      <p><b>Pillar one: representative population.</b> Every agent sampled from ACS Census microdata, 2.5 million records. The distributions match the actual demographics of wherever you picked.</p>
+      <p><b>Pillar two: policy-specific grounding.</b> Every agent carries an empirical opinion prior from 38,449 real Pew respondents. The LLM isn't guessing. It's conditioned on what people like that have actually said.</p>
+      <p><b>Pillar three: fully inspectable.</b> Every persona's demographics, prior, stance, and reasoning saved per run. Nothing is a black box.</p>
+      <p>We're not promising perfect prediction. The goal is representative, transparent simulation before real-world rollout.</p>
     </aside>
   </section>
 
@@ -2350,20 +2344,15 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>06 / 15</span>
+      <span>06 / 16</span>
     </div>
     <div class="progress" style="width: 42.85%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~65 SEC · ARCHITECTURE</div>
-      <p>Quick technical detour for the engineers in the room. This is roughly how the system is built. Walking through the diagram from top to bottom.</p>
-      <p>At the top, you've got a standard web browser. That's how users actually interact with CivicSim. They hit the site, which loads our <b>Next.js frontend</b> running on Vercel. The frontend is mostly a thin layer. It does local state, the UI, the visualization. It proxies API calls back to our backend.</p>
-      <p>The backend is where the interesting stuff happens. We're running <b>FastAPI on Fly.io.</b> It's the orchestration layer. It takes a request from the user, figures out which downstream services to call, and assembles the result.</p>
-      <p>Underneath the API, you've got three core services that the backend coordinates. The first is the <b>agent sampler.</b> That's the piece that generates synthetic people. It uses a probabilistic largest-remainder algorithm to make sure the distributions match what the census tells us about the location.</p>
-      <p>The second service is the <b>prior lookup.</b> Given an agent's demographics, this returns the historical opinion distribution. Basically, given someone matches these traits, here's what people like them have said about this kind of question. We use sparse-cell backoff when an exact demographic combination doesn't exist in the data.</p>
-      <p>The third service is the <b>LLM client.</b> We've built it to be model-agnostic. Works with OpenAI, Anthropic, or any local model.</p>
-      <p>The data layer at the bottom is what powers all of this. ACS census, Pew priors, and external LLM providers.</p>
-      <p>One detail worth flagging. The whole pipeline uses <b>Server-Sent Events</b> to stream responses back to the frontend. So when you're watching a simulation run, you're seeing agents arrive in real time as they're being generated. That matters for the transparency story. Users see the system thinking, not a finished result.</p>
+      <div class="time">~50 SEC · ARCHITECTURE</div>
+      <p>Quick technical pass for the engineers. <b>Next.js frontend on Vercel</b>, a thin UI layer that proxies to the backend. <b>FastAPI on Fly.io</b> is the orchestration layer.</p>
+      <p>Three core services underneath it. The <b>agent sampler</b> generates synthetic people using a largest-remainder algorithm that guarantees distributions match census. The <b>prior lookup</b> returns historical opinion distributions per demographic profile, with sparse-cell backoff when exact combinations are thin. The <b>LLM client</b> is model-agnostic and works with OpenAI, Anthropic, or local models.</p>
+      <p>Worth flagging: the whole pipeline uses <b>Server-Sent Events</b> to stream responses live. You see agents arrive in real time as they're generated, which matters for the transparency story. Users watch the system think, not wait for a finished result.</p>
     </aside>
   </section>
 
@@ -2438,17 +2427,15 @@
 
     <div class="slide-footer" style="color:rgba(255,255,255,0.65);">
       <span class="brand" style="color:white;">CivicSim</span>
-      <span style="color:rgba(255,255,255,0.65);">07 / 15</span>
+      <span style="color:rgba(255,255,255,0.65);">07 / 16</span>
     </div>
     <div class="progress" style="width: 50%; background: linear-gradient(90deg, #2EE0FF, #A855F7);"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~55 SEC · AT A GLANCE</div>
-      <p>Okay, enough engineering. Let me show you what this actually looks like for an end user. Because the whole product really does boil down to three steps, and we wanted to make this visual.</p>
-      <p><b>Step one is on the left. You start with a policy.</b> Whatever you want to test. Here we've got a real example. A federal 20 dollar minimum wage proposal. You drop it in, and CivicSim automatically tags the relevant domains. In this case, economy and labor, because the system figured out the policy touches both.</p>
-      <p><b>Step two is in the middle, on the purple card. CivicSim does the work.</b> Behind the scenes, we're generating 5,000 census-grounded agents, attaching opinion priors to each one, and running the whole simulation. From your perspective as a user, the relevant number is on the screen. It takes about <b>5 seconds.</b> Compare that to traditional polling, where you're looking at weeks to recruit, run, and analyze. So this is roughly four orders of magnitude faster.</p>
-      <p><b>Step three, on the right, is where the value lands. You get instant insights.</b> The aggregate breakdown is at the top. 59 percent support, 27 percent oppose, 14 percent unsure. But the really interesting stuff is below that, in the subgroup breakdowns.</p>
-      <p>Look at the age split. 75 percent of people aged 18 to 29 support this policy. But only 38 percent of people over 65 do. That's almost a 40-point gap based on a single demographic axis. And that's exactly the kind of subgroup divergence policymakers need to see before they ship something. It's basically impossible to surface at this resolution from a traditional poll.</p>
+      <div class="time">~45 SEC · AT A GLANCE</div>
+      <p>Three steps. <b>Left: you pick a policy.</b> A $20 federal minimum wage. CivicSim auto-tags the relevant domains: economy and labor.</p>
+      <p><b>Middle: CivicSim does the work.</b> 5,000 census-grounded agents, opinion priors attached, simulation run. The user-facing number: about <b>5 seconds</b>. Traditional polling takes weeks.</p>
+      <p><b>Right: you get insights.</b> 59% support, 27% oppose, 14% unsure at the top. But the subgroup view is where it gets interesting. 75% of 18-to-29-year-olds support. Only 38% of over-65s. A 40-point gap on a single demographic axis. That's the signal you can't get from a traditional poll at this resolution.</p>
     </aside>
   </section>
 
@@ -2476,21 +2463,18 @@
 
     <div class="slide-footer" style="bottom: 16px;">
       <span class="brand">CivicSim</span>
-      <span>08 / 15</span>
+      <span>08 / 16</span>
     </div>
     <div class="progress" style="width: 57.14%"></div>
 
     <aside class="notes" data-notes>
       <div class="time">~3 TO 4 MIN · LIVE DEMO</div>
-      <p>Alright. Enough abstract talk. Let me actually show you this thing live.</p>
-      <p>What I'm going to do is submit a real policy question, and we'll watch what happens in real time.</p>
-      <p><i>(Submit your rehearsed question. For example, "Should the federal minimum wage be raised to 20 dollars?" Choose Alameda County or whichever location you've rehearsed with.)</i></p>
-      <p>So the first thing you'll see is the population sample being constructed. Look at this list of agents on the left. These aren't random people. These are demographics drawn directly from the census for Alameda County. You can see the age distribution, the race distribution, the income spread. That matches what you'd actually find if you went door to door in Alameda today.</p>
-      <p>Now I'll kick off the simulation. Watch the right pane. <i>(Agents start streaming in.)</i></p>
-      <p>You can see agents are coming in live now. Each one with their demographics, their opinion prior, the LLM's stance for them, and the reasoning. It's not waiting for the whole batch to finish. You're seeing the simulation think.</p>
-      <p>Let me drill into one. <i>(Click into a persona that diverges from the majority.)</i> Notice this one. 67-year-old retired homeowner from Berkeley. Their reasoning here is different from the average. They're saying, and I'm reading directly from the model's output, that they're worried about small business impact. The interesting thing is, our system actually knows that this demographic profile in real Pew data did skew this way. So the agent isn't pulling that opinion out of thin air. It's reflecting an empirical pattern.</p>
-      <p><i>(Wrap up demo.)</i> And all of that took about 5 seconds. Now I'll take you through what just happened, technically.</p>
-      <p><b>Backup plan.</b> If the live demo fails, switch to the pre-recorded video in the second tab. Don't apologize. Just say "let me show you a recorded version" and move on.</p>
+      <p>Let me run this live. <i>(Submit your rehearsed question, e.g. "Should the federal minimum wage be raised to $20?" Select Alameda County.)</i></p>
+      <p>First, watch the population being built on the left. These aren't random. Demographics are drawn directly from census for Alameda County. Age, race, income all matching what you'd find if you polled there today.</p>
+      <p>Kicking off the simulation now. Watch the right pane. <i>(Agents start streaming.)</i> Each one arriving live with their demographics, opinion prior, stance, and reasoning. You're watching it think.</p>
+      <p>Let me drill into one diverging persona. <i>(Click a dissenting agent.)</i> This 67-year-old retired homeowner is citing small business impact, and that's not the LLM guessing. Our prior data shows this demographic profile actually does skew that way in Pew surveys. The reasoning is grounded.</p>
+      <p><i>(Wrap up.)</i> That was about 5 seconds. Now let me walk through what just happened under the hood.</p>
+      <p><b>Backup:</b> if the demo fails, switch to the pre-recorded tab. Don't apologize. Just say "let me show you a recorded version" and move on.</p>
     </aside>
   </section>
 
@@ -2550,18 +2534,17 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>09 / 15</span>
+      <span>09 / 16</span>
     </div>
     <div class="progress" style="width: 64.28%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~70 SEC · HOW IT WORKS (CLICK THROUGH)</div>
-      <p>Okay, so let me actually walk through what the system just did, step by step. There are four phases to every simulation, and I'm going to reveal them one at a time so we can talk about each.</p>
-      <p><i>(Reveal step 1.)</i> The first thing the system does is <b>sample.</b> We build N agents. Could be 200, could be 5,000. They match the demographic profile of the location you picked. So if you picked Alameda County, we're literally generating 200 imaginary residents whose age, income, race, and education distributions all match what the census says actually lives there. We use a stratified algorithm called largest-remainder that's been used in election apportionment for decades. It just guarantees the proportions come out right.</p>
-      <p><i>(Reveal step 2.)</i> The second step is what we call <b>prime.</b> This is the magic step. Most simulation pipelines skip this entirely, and it's the biggest reason their results are unreliable. What we're doing is attaching an opinion prior to each agent. Concretely. Given that this agent has these demographic traits, here's how people like them have historically answered questions in this policy domain. That prior comes from real survey data. We're not asking the LLM to guess.</p>
-      <p><i>(Reveal step 3.)</i> Third step. <b>Simulate.</b> Now the LLM generates a stance and a rationale for each agent, conditioned on both their demographics and their opinion prior. So you get not just yes or no. You get the reasoning chain. Why this person, with their background, supports or opposes this specific policy.</p>
-      <p><i>(Reveal step 4.)</i> And fourth. <b>Aggregate.</b> We stream the results live, and we surface where groups diverge. So you don't just see 68 percent support. You see that renters and homeowners disagree sharply on this question, or that the urban-rural split is way bigger than the partisan split, or whatever the actual signal is.</p>
-      <p>You'll notice the boxes get progressively darker. That's intentional. It's our visual way of showing how each step deepens the synthesis.</p>
+      <div class="time">~55 SEC · HOW IT WORKS (CLICK THROUGH)</div>
+      <p>Four phases. Reveal each as you go.</p>
+      <p><i>(Step 1.)</i> <b>Sample.</b> Build N agents matching the location's demographics. Largest-remainder algorithm, same method used in election apportionment. Proportions are guaranteed to match census.</p>
+      <p><i>(Step 2.)</i> <b>Prime.</b> This is the step everyone else skips. We attach a real opinion prior to each agent: what people with these demographics have historically said about this type of question. The LLM doesn't guess. It conditions.</p>
+      <p><i>(Step 3.)</i> <b>Simulate.</b> LLM generates stance and rationale for each agent, conditioned on both demographics and prior. You get a reasoning chain, not just a vote.</p>
+      <p><i>(Step 4.)</i> <b>Aggregate.</b> Results stream live, group divergence surfaced. Not just "68% support" but renters vs. homeowners, urban vs. rural, wherever the real signal is.</p>
     </aside>
   </section>
 
@@ -2595,25 +2578,111 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>10 / 15</span>
+      <span>10 / 16</span>
     </div>
     <div class="progress" style="width: 71.42%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~55 SEC · DATA FOUNDATION</div>
-      <p>Quick word on where the data comes from. Because if you don't trust the data, none of the rest of this matters.</p>
-      <p>We're using two datasets. Both are completely public, both are gold-standard in policy research, and both have been used in academic work for decades. The cards on the slide show what they are.</p>
-      <p>The first one, on the left, is the <b>American Community Survey.</b> The ACS. This is the Census Bureau's annual survey that gives us roughly 2.5 million adult records every year. We access it through IPUMS, which is the standard interface used by researchers. The reason we picked ACS specifically, and this is important, is that it's the only public source that gives us joint demographic distributions at population scale. Most simulations work with marginal distributions. Which means they know how many people are, say, Black, and how many people are low-income, but not how many people are both. ACS preserves those intersectional combinations. That's huge for representation.</p>
-      <p>The second dataset, on the right, is the <b>Pew American Trends Panel.</b> This is a probability-based survey panel that's been running since 2014. 38,449 validated respondents across 80-plus waves from 2021 to 2024. Consistent methodology, broad topic coverage. We took the raw responses and compiled them into a compact opinion-prior lookup. Importantly, no personally identifying information. Everything is aggregated.</p>
-      <p>So census gives us the <i>who.</i> Who actually lives in a place. Pew gives us <i>what they think.</i> About policies, government, social issues. Our actual contribution isn't either dataset individually. It's how we combine them, and how we let the data tell us which demographic variables matter most for which policy domain.</p>
+      <div class="time">~40 SEC · DATA FOUNDATION</div>
+      <p>Two datasets. Both public, both gold-standard, both used in academic policy research for decades.</p>
+      <p><b>ACS on the left:</b> 2.5 million adult records a year via IPUMS. The critical thing is it's the only public source with <i>joint</i> demographic distributions. Most datasets tell you how many people are Black and how many are low-income. ACS tells you how many are both. That's what preserves intersectional groups.</p>
+      <p><b>Pew ATP on the right:</b> 38,449 respondents, 80+ waves, 2021 to 2024. Consistent methodology, broad topic coverage. We compile it into an opinion-prior lookup with no PII, everything aggregated.</p>
+      <p>Census for the <i>who.</i> Pew for <i>what they think.</i> Our contribution is how we combine them.</p>
     </aside>
   </section>
 
   <!-- ============================================================ -->
-  <!-- SLIDE 11  ·  RESULTS -->
+  <!-- SLIDE 11  ·  1000-RUN BENCHMARK -->
   <!-- ============================================================ -->
   <section class="slide" data-slide="11">
-    <div class="eyebrow">10 · Experimentation &amp; results</div>
+    <div class="eyebrow">10 · Benchmark results · 1,000 runs</div>
+    <h2>CivicSim consistently outperforms<br>both <span class="serif-it">naive</span> baselines at scale.</h2>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:1.5rem 0 1.25rem;">
+
+      <!-- CivicSim -->
+      <div class="stat-block conclusion stagger-item" style="background:linear-gradient(160deg,#dbeafe 0%,#eff6ff 100%);border:1.5px solid #93c5fd;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:.6rem;">★ CivicSim</div>
+        <div style="display:flex;justify-content:space-around;gap:.5rem;margin-bottom:.5rem;">
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:#1D4ED8;line-height:1;">0.101</div>
+            <div style="font-size:11px;color:var(--ink-dim);margin-top:.2rem;">Mean TVD ↓</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:#1D4ED8;line-height:1;">0.058</div>
+            <div style="font-size:11px;color:var(--ink-dim);margin-top:.2rem;">Mean Wass. ↓</div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:#1D4ED8;background:#dbeafe;border-radius:5px;padding:.25rem .6rem;display:inline-block;">Best on both metrics</div>
+      </div>
+
+      <!-- Naive OpenAI -->
+      <div class="stat-block stagger-item" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:18px 14px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:.6rem;">Naive OpenAI</div>
+        <div style="display:flex;justify-content:space-around;gap:.5rem;margin-bottom:.5rem;">
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:var(--ink-faint);line-height:1;">0.188</div>
+            <div style="font-size:11px;color:var(--ink-faint);margin-top:.2rem;">Mean TVD ↓</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:var(--ink-faint);line-height:1;">0.108</div>
+            <div style="font-size:11px;color:var(--ink-faint);margin-top:.2rem;">Mean Wass. ↓</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--ink-faint);background:#f1f5f9;border-radius:5px;padding:.25rem .6rem;display:inline-block;">1.86× worse TVD</div>
+      </div>
+
+      <!-- Naive Anthropic -->
+      <div class="stat-block stagger-item" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:18px 14px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:.6rem;">Naive Anthropic</div>
+        <div style="display:flex;justify-content:space-around;gap:.5rem;margin-bottom:.5rem;">
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:var(--ink-faint);line-height:1;">0.311</div>
+            <div style="font-size:11px;color:var(--ink-faint);margin-top:.2rem;">Mean TVD ↓</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:var(--ink-faint);line-height:1;">0.215</div>
+            <div style="font-size:11px;color:var(--ink-faint);margin-top:.2rem;">Mean Wass. ↓</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--ink-faint);background:#f1f5f9;border-radius:5px;padding:.25rem .6rem;display:inline-block;">3.08× worse TVD</div>
+      </div>
+
+    </div>
+
+    <div class="supp-line">20 policy questions · 50 intersectional demographic slices · 1,000 simulated runs per condition.</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.75rem;">
+      <div style="background:var(--surface-2);border-left:4px solid var(--cyan);border-radius:var(--radius-sm);padding:.65rem 1rem;font-size:13px;color:var(--ink-dim);line-height:1.5;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);display:block;margin-bottom:.3rem;">Ground truth standard</span>
+        Distributions validated against <b style="color:var(--ink);">Pew American Trends Panel (ATP)</b> — probability-based national survey, 38,449 validated respondents across 80+ waves (2021–2024).
+      </div>
+      <div style="background:var(--surface-2);border-left:4px solid #10B981;border-radius:var(--radius-sm);padding:.65rem 1rem;font-size:13px;color:var(--ink-dim);line-height:1.5;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#059669;display:block;margin-bottom:.3rem;">Cost to produce</span>
+        ~<b style="color:var(--ink);">$100</b> in API costs (trial &amp; error included) · 10,000 agent calls ≈ <b style="color:var(--ink);">26% of the ATP respondent pool</b> — at a fraction of fielding a real survey.
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>11 / 16</span>
+    </div>
+    <div class="progress" style="width: 68.75%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~60 SEC · BENCHMARK RESULTS</div>
+      <p>We ran 1,000 simulations across 20 policy questions and 50 intersectional demographic slices to systematically compare CivicSim against two naive baselines: a plain Anthropic prompt and a plain OpenAI prompt with no prior grounding.</p>
+      <p>The metric on the left of each card is <b>Total Variation Distance</b> — how far the simulated opinion distribution is from the real ATP ground truth. Lower is better. CivicSim scores <b>0.101</b>. Naive OpenAI scores 0.188 — nearly twice as far from ground truth. Naive Anthropic scores 0.311, three times worse.</p>
+      <p>The metric on the right is <b>Wasserstein distance</b>, which respects the ordinal structure of Likert-scale responses. It penalizes the model more for being off by two categories than one. CivicSim again wins: <b>0.058</b> versus 0.108 for OpenAI and 0.215 for Anthropic.</p>
+      <p>The takeaway: prior grounding isn't a marginal improvement. It's the difference between a simulation that reflects how real demographic groups actually respond and one that just averages internet text.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 12  ·  RESULTS -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="12">
+    <div class="eyebrow">11 · Experimentation &amp; results</div>
     <h2>The demographics we <span class="serif-it">assume</span> matter<br>are not the ones that shape opinion.</h2>
 
     <div class="stats-grid">
@@ -2642,25 +2711,25 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>11 / 15</span>
+      <span>12 / 16</span>
     </div>
-    <div class="progress" style="width: 78.57%"></div>
+    <div class="progress" style="width: 75.00%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~80 SEC · RESULTS · ★ KEY SLIDE</div>
-      <p>This is the slide that, if you remember nothing else from our presentation, this is the one we want you to remember. Because it's the experimental result that justifies everything else we just told you.</p>
-      <p>We ran what we think is the most exhaustive variable-selection experiment that's been done in this space. We looked at <b>1,426 different opinion items</b> across 14 policy domains. For each one, we tested every combination of seven demographic variables. That's 127 combinations per question. So we ran somewhere around 180,000 mini-experiments to get this number.</p>
-      <p>The baseline number, on the far left, <b>10.6 percent.</b> That's what you get if you ground your simulation using textbook demographics. Age, income, education. The variables every research team starts with. That captures 10.6 percent of the variance in opinion across this dataset.</p>
-      <p>The middle number, <b>25.2 percent.</b> That's what we get when we use our empirical approach. We let the data tell us which variables actually matter for each policy domain. Different variables for tech policy than for immigration policy than for healthcare. And the answer is two and a half times better. Same models. Same compute. Just smarter conditioning.</p>
-      <p>The right number, the <b>2.4×</b>, is just expressing that as a ratio. We're not making a marginal improvement here. We're more than doubling the explanatory power, while changing literally nothing about the LLM. That's the punchline of our research.</p>
-      <p>Now I want to flag the line at the bottom of the slide. <b>Census division</b> is basically a geographic variable. Which region of the country you live in. It turns out that variable drives a <b>53.5 percent signal drop</b> when you remove it. So it's the single most important variable in the dataset for explaining opinion variance. And yet, almost every conventional approach skips it entirely, because intuitively it doesn't feel like it should matter that much. The variable we'd most naturally skip is the variable we most need. That's the methodological insight we want to leave with you.</p>
+      <div class="time">~60 SEC · RESULTS · ★ KEY SLIDE</div>
+      <p>If you remember one slide from this talk, this is it.</p>
+      <p>We ran 1,426 opinion items across 14 policy domains, testing every combination of 7 demographic variables, about 180,000 mini-experiments total.</p>
+      <p><b>10.6%</b>: variance explained by the textbook demographic variables. Age, income, education. What every research team starts with.</p>
+      <p><b>25.2%</b>: variance explained when we let the data tell us which variables actually matter per policy domain. Same models. Same compute. Smarter conditioning.</p>
+      <p><b>2.4×</b>: not a marginal improvement. We're more than doubling explanatory power without touching the LLM.</p>
+      <p>And the punchline: <b>Census division</b>, which region of the country you live in, drives a <b>53.5% signal drop</b> when removed. The most important variable. The one the textbook approach throws out. That's the finding we want to leave with you.</p>
     </aside>
   </section>
 
   <!-- ============================================================ -->
   <!-- SLIDE 12  ·  EVALUATION & VALIDATION -->
   <!-- ============================================================ -->
-  <section class="slide" data-slide="12">
+  <section class="slide" data-slide="13">
     <div class="eyebrow">11 · Evaluation &amp; validation</div>
     <h2>Distributions validated against<br>real-world survey ground truth.</h2>
 
@@ -2690,20 +2759,23 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>12 / 15</span>
+      <span>13 / 16</span>
     </div>
-    <div class="progress" style="width: 80%"></div>
+    <div class="progress" style="width: 81.25%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~60 SEC · EVALS</div>
-      <p>TVD of 0.245 sits in the "moderate" calibration zone (threshold: &lt;0.15 excellent, 0.15–0.30 moderate, ≥0.30 high). Wasserstein of 0.219 respects the ordinal structure of Likert responses — moving from "somewhat favor" to "strongly favor" costs less than crossing the full scale. Evaluated over the MINWAGE_W87 (minimum wage) and POL1JB_W92 (Biden approval) items against held-out Pew ATP responses. 30 agents × 20 demographic slices = 600 simulated respondents per question, spanning all income brackets, racial groups, and age cohorts.</p>
+      <div class="time">~45 SEC · EVALS</div>
+      <p>We validated CivicSim against real held-out Pew ATP data, comparing simulated opinion distributions to what real respondents actually said.</p>
+      <p>Two metrics on the slide. <b>TVD of 0.245</b>: Total Variation Distance, lower is better. That sits in the "moderate" calibration zone. The threshold for excellent is below 0.15; we're in the 0.15 to 0.30 band. <b>Wasserstein of 0.219</b> is the ordinal-aware metric. It respects the structure of Likert responses, so moving from "somewhat favor" to "strongly favor" costs less than crossing the full scale.</p>
+      <p>Tested across <b>Economy</b> and <b>Politics &amp; Government</b> domains. Each question: 30 agents, 20 demographic slices, marginals first then cross-cuts, for 600 simulated respondents per question. Wasserstein is the preferred metric for Likert-scale data.</p>
+      <p>Moderate calibration is honest and expected for a system this early. The purpose isn't to claim perfection. It's to show that the distributions are in the right neighborhood and we have a rigorous eval framework to improve from.</p>
     </aside>
   </section>
 
   <!-- ============================================================ -->
   <!-- SLIDE 13  ·  VOICE OF USERS -->
   <!-- ============================================================ -->
-  <section class="slide" data-slide="13">
+  <section class="slide" data-slide="14">
     <div class="eyebrow">12 · Voice of users</div>
     <h2>What policy researchers<br>are telling us.</h2>
 
@@ -2741,26 +2813,23 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>13 / 15</span>
+      <span>14 / 16</span>
     </div>
-    <div class="progress" style="width: 86.67%"></div>
+    <div class="progress" style="width: 87.50%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~50 SEC · VOICE OF USERS</div>
-      <p>We didn't just measure CivicSim with experiments. We also took it out into the world and showed it to actual policy researchers and AI researchers, to get their feedback.</p>
-      <p>The "tested with" bar at the top shows where we've taken it. People at the <b>Goldman School of Public Policy</b> here at Berkeley, the <b>Possibility Lab</b>, also Berkeley, <b>Stanford's Human-Centered AI Institute</b>, our own home at the <b>School of Information</b>, and the <b>BAIR lab.</b></p>
-      <p>What we kept hearing, across these very different institutions, was that the thing that mattered to them most was transparency. Let me share a couple of quotes. They're on the cards below.</p>
-      <p>From one of the researchers at Goldman. <i>"The transparency is the part that matters. I can defend a recommendation when I can show how the population was constructed."</i> That's exactly the auditability gap that competitor tools don't fill.</p>
-      <p>From the Possibility Lab. <i>"We've been waiting for something that takes subgroup representation seriously. This is the methodological bar academic work requires."</i></p>
-      <p>And maybe my favorite one, from a PhD candidate at Stanford. <i>"The empirical variable selection result changes how I'd design the next study. Not just how I'd run a simulation."</i> Which is a much bigger claim. It's saying our methodology has implications beyond the simulation use case itself.</p>
-      <p>We're not claiming product-market fit yet. But we have signal from people whose opinions in this space carry real weight.</p>
+      <div class="time">~40 SEC · VOICE OF USERS</div>
+      <p>Beyond the experiments, we took CivicSim to researchers at Goldman School of Public Policy, Possibility Lab, Stanford HAI, I School, and BAIR.</p>
+      <p>The thing that kept coming up across all of them wasn't the LLM, wasn't the simulation. It was <b>transparency</b>. The ability to show how the population was constructed and defend every choice.</p>
+      <p>One quote I want to flag, from the Stanford PhD candidate: <i>"The empirical variable selection result changes how I'd design the next study. Not just how I'd run a simulation."</i> That's a big claim. It means the methodology has implications beyond our tool.</p>
+      <p>We don't have product-market fit yet. But we have signal from people whose opinions carry weight in this space.</p>
     </aside>
   </section>
 
   <!-- ============================================================ -->
   <!-- SLIDE 14  ·  LIMITS & NEXT — simpler text -->
   <!-- ============================================================ -->
-  <section class="slide" data-slide="14">
+  <section class="slide" data-slide="15">
     <div class="eyebrow">13 · Limits &amp; what's next</div>
     <h2>A decision-support tool.<br>Not a replacement for real engagement.</h2>
 
@@ -2800,25 +2869,24 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>14 / 15</span>
+      <span>15 / 16</span>
     </div>
-    <div class="progress" style="width: 93.33%"></div>
+    <div class="progress" style="width: 93.75%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~60 SEC · LIMITS &amp; NEXT</div>
-      <p>Now we want to be really honest about what CivicSim is, and what it isn't. Because in policy work, overclaiming is worse than underclaiming.</p>
-      <p>The slide has three cards. The first two are limits. The third one, in green on the right, is where we're going.</p>
-      <p><b>On the data side.</b> Our version one currently covers exactly one county. Alameda County in California. So geographically, we're early. Some survey time periods are sparse because Pew didn't ask certain questions in certain waves. And the smallest intersectional subgroups, think rural Black women under 25 with graduate degrees, those cells are still thin in the data. We use backoff strategies, but it's a real limitation.</p>
-      <p><b>On the simulation side.</b> CivicSim gives you what we call directional realism. We're not predicting election outcomes. We're not telling you exactly what the support percentage will be when the policy ships. We're telling you the structure of disagreement. Who supports, who opposes, why, and where the subgroups diverge. That's a different and we think more useful claim, but it's important to be clear about it. We also don't yet model opinion dynamics over time. Political opinions change, and our system doesn't yet capture that.</p>
-      <p><b>Where we're going from here.</b> We're working on expanding to multi-state and eventually national coverage. We're starting longitudinal validation against real policy outcomes. And we're planning to open-source the variable-selection toolkit, so other research groups can use the methodology.</p>
-      <p>The most important sentence on this whole slide is at the bottom, in the warning box. <b>Representative simulations support decision-making. They never replace the actual voices of real communities.</b></p>
+      <div class="time">~45 SEC · LIMITS &amp; NEXT</div>
+      <p>We want to be honest about what CivicSim is and isn't. In policy work, overclaiming is worse than underclaiming.</p>
+      <p><b>Data limits:</b> v1 covers Alameda County only. Some survey time periods are sparse. Smallest intersectional subgroups are still thin. We use backoff, but it's a real constraint.</p>
+      <p><b>Simulation limits:</b> this is directional realism, not prediction. We tell you the structure of disagreement: who supports, who opposes, where subgroups diverge. We can't tell you the exact percentage when the policy ships. Opinion dynamics over time aren't modeled yet.</p>
+      <p><b>Where we're heading:</b> multi-state expansion, longitudinal validation against real outcomes, open-sourcing the variable-selection toolkit.</p>
+      <p>Pause on the warning box at the bottom. <b>Representative simulations support decisions. They never replace the voices of real communities.</b> That's the moral spine of this project.</p>
     </aside>
   </section>
 
   <!-- ============================================================ -->
   <!-- SLIDE 14  ·  CLOSE -->
   <!-- ============================================================ -->
-  <section class="slide s-close" data-slide="15">
+  <section class="slide s-close" data-slide="16">
     <div class="close-eyebrow">14 · Thank you</div>
 
     <div class="hero-block">
@@ -2834,16 +2902,15 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>15 / 15</span>
+      <span>16 / 16</span>
     </div>
     <div class="progress" style="width: 100%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~30 SEC · CLOSE + Q&amp;A</div>
-      <p>And that's CivicSim. <b>Ground it before you simulate it.</b></p>
-      <p>It's live right now at <b>civicsim.xyz</b>. Please try it yourself. Run a policy question against any U.S. location we support. We'd love your feedback. We'd love to hear your hardest, weirdest policy questions. And we'd love a conversation about where this goes from here. Both technically, and in terms of who we should be talking to next.</p>
-      <p>Thank you for listening. Happy to take questions.</p>
-      <p><i>Stage tip. Pause after "thank you." Don't rush into Q and A. Make eye contact. Then say something like "happy to take questions, and the demo is open on the screen if anyone wants to try a question afterwards." Keep this slide on screen during Q and A.</i></p>
+      <div class="time">~20 SEC · CLOSE + Q&amp;A</div>
+      <p>That's CivicSim. <b>Ground it before you simulate it.</b></p>
+      <p>It's live at <b>civicsim.xyz</b>. Try it now, throw your hardest policy question at it. Happy to take questions.</p>
+      <p><i>Stage tip: pause after "thank you." Make eye contact. Then invite questions and leave the demo open on screen for anyone who wants to try a question during Q&A.</i></p>
     </aside>
   </section>
 
@@ -2852,7 +2919,7 @@
 <!-- Speaker notes overlay -->
 <div class="notes-panel" id="notesPanel">
   <div class="nh">
-    <span>Speaker Notes · Slide <span id="notesNum">1</span> / 15</span>
+    <span>Speaker Notes · Slide <span id="notesNum">1</span> / 16</span>
     <button class="nclose" onclick="document.body.classList.remove('show-notes')">close (N)</button>
   </div>
   <div class="notes-content" id="notesContent"></div>
