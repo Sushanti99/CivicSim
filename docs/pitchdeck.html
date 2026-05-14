@@ -2815,93 +2815,6 @@
   </section>
 
   <!-- ============================================================ -->
-  <!-- SLIDE 11  ·  1000-RUN BENCHMARK -->
-  <!-- ============================================================ -->
-  <section class="slide" data-slide="11">
-    <div class="eyebrow">10 · Benchmark results · 1,000 runs</div>
-    <h2>CivicSim consistently outperforms<br>both <span class="serif-it">naive</span> baselines at scale.</h2>
-
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:1.5rem 0 1.25rem;">
-
-      <!-- CivicSim -->
-      <div class="stat-block conclusion stagger-item" style="background:linear-gradient(160deg,#dbeafe 0%,#eff6ff 100%);border:1.5px solid #93c5fd;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:.6rem;">★ CivicSim</div>
-        <div style="display:flex;justify-content:space-around;gap:.5rem;margin-bottom:.5rem;">
-          <div style="text-align:center;">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:#1D4ED8;line-height:1;">0.101</div>
-            <div style="font-size:11px;color:var(--ink-dim);margin-top:.2rem;">Mean TVD ↓</div>
-          </div>
-          <div style="text-align:center;">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:#1D4ED8;line-height:1;">0.058</div>
-            <div style="font-size:11px;color:var(--ink-dim);margin-top:.2rem;">Mean Wass. ↓</div>
-          </div>
-        </div>
-        <div style="font-size:12px;font-weight:600;color:#1D4ED8;background:#dbeafe;border-radius:5px;padding:.25rem .6rem;display:inline-block;">Best on both metrics</div>
-      </div>
-
-      <!-- Naive OpenAI -->
-      <div class="stat-block stagger-item" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:18px 14px;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:.6rem;">Naive OpenAI</div>
-        <div style="display:flex;justify-content:space-around;gap:.5rem;margin-bottom:.5rem;">
-          <div style="text-align:center;">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:var(--ink-faint);line-height:1;">0.188</div>
-            <div style="font-size:11px;color:var(--ink-faint);margin-top:.2rem;">Mean TVD ↓</div>
-          </div>
-          <div style="text-align:center;">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:var(--ink-faint);line-height:1;">0.108</div>
-            <div style="font-size:11px;color:var(--ink-faint);margin-top:.2rem;">Mean Wass. ↓</div>
-          </div>
-        </div>
-        <div style="font-size:12px;color:var(--ink-faint);background:#f1f5f9;border-radius:5px;padding:.25rem .6rem;display:inline-block;">1.86× worse TVD</div>
-      </div>
-
-      <!-- Naive Anthropic -->
-      <div class="stat-block stagger-item" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:18px 14px;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:.6rem;">Naive Anthropic</div>
-        <div style="display:flex;justify-content:space-around;gap:.5rem;margin-bottom:.5rem;">
-          <div style="text-align:center;">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:var(--ink-faint);line-height:1;">0.311</div>
-            <div style="font-size:11px;color:var(--ink-faint);margin-top:.2rem;">Mean TVD ↓</div>
-          </div>
-          <div style="text-align:center;">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:800;color:var(--ink-faint);line-height:1;">0.215</div>
-            <div style="font-size:11px;color:var(--ink-faint);margin-top:.2rem;">Mean Wass. ↓</div>
-          </div>
-        </div>
-        <div style="font-size:12px;color:var(--ink-faint);background:#f1f5f9;border-radius:5px;padding:.25rem .6rem;display:inline-block;">3.08× worse TVD</div>
-      </div>
-
-    </div>
-
-    <div class="supp-line">20 policy questions · 50 intersectional demographic slices · 1,000 simulated runs per condition.</div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.75rem;">
-      <div style="background:var(--surface-2);border-left:4px solid var(--cyan);border-radius:var(--radius-sm);padding:.65rem 1rem;font-size:13px;color:var(--ink-dim);line-height:1.5;">
-        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);display:block;margin-bottom:.3rem;">Ground truth standard</span>
-        Distributions validated against <b style="color:var(--ink);">Pew American Trends Panel (ATP)</b> — probability-based national survey, 38,449 validated respondents across 80+ waves (2021–2024).
-      </div>
-      <div style="background:var(--surface-2);border-left:4px solid #10B981;border-radius:var(--radius-sm);padding:.65rem 1rem;font-size:13px;color:var(--ink-dim);line-height:1.5;">
-        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#059669;display:block;margin-bottom:.3rem;">Cost to produce</span>
-        ~<b style="color:var(--ink);">$100</b> in API costs (trial &amp; error included) · 10,000 agent calls ≈ <b style="color:var(--ink);">26% of the ATP respondent pool</b> — at a fraction of fielding a real survey.
-      </div>
-    </div>
-
-    <div class="slide-footer">
-      <span class="brand">CivicSim</span>
-      <span>11 / 16</span>
-    </div>
-    <div class="progress" style="width: 68.75%"></div>
-
-    <aside class="notes" data-notes>
-      <div class="time">~60 SEC · BENCHMARK RESULTS</div>
-      <p>We ran 1,000 simulations across 20 policy questions and 50 intersectional demographic slices to systematically compare CivicSim against two naive baselines: a plain Anthropic prompt and a plain OpenAI prompt with no prior grounding.</p>
-      <p>The metric on the left of each card is <b>Total Variation Distance</b> — how far the simulated opinion distribution is from the real ATP ground truth. Lower is better. CivicSim scores <b>0.101</b>. Naive OpenAI scores 0.188 — nearly twice as far from ground truth. Naive Anthropic scores 0.311, three times worse.</p>
-      <p>The metric on the right is <b>Wasserstein distance</b>, which respects the ordinal structure of Likert-scale responses. It penalizes the model more for being off by two categories than one. CivicSim again wins: <b>0.058</b> versus 0.108 for OpenAI and 0.215 for Anthropic.</p>
-      <p>The takeaway: prior grounding isn't a marginal improvement. It's the difference between a simulation that reflects how real demographic groups actually respond and one that just averages internet text.</p>
-    </aside>
-  </section>
-
-  <!-- ============================================================ -->
   <!-- SLIDE 12  ·  RESULTS -->
   <!-- ============================================================ -->
   <section class="slide" data-slide="12">
@@ -2950,9 +2863,87 @@
   </section>
 
   <!-- ============================================================ -->
-  <!-- SLIDE 12  ·  EVALUATION & VALIDATION -->
+  <!-- SLIDE 13  ·  EVALUATIONS (10,000-RUN BENCHMARK) -->
   <!-- ============================================================ -->
   <section class="slide" data-slide="13">
+    <div class="eyebrow">12 · Evaluations · 10,000 runs</div>
+    <h2>CivicSim consistently outperforms<br>both <span class="serif-it">naive</span> baselines at scale.</h2>
+
+    <!-- METRIC HIGHLIGHTS — the two metrics that matter -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:.6rem 0 1rem;">
+      <div class="stagger-item" style="background:linear-gradient(160deg,#dbeafe 0%,#eff6ff 100%);border:1.5px solid #93c5fd;border-radius:var(--radius);padding:.85rem 1.15rem;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:.3rem;">Metric 1</div>
+        <div style="font-size:1.25rem;font-weight:800;color:var(--ink);line-height:1.15;margin-bottom:.3rem;">Total Variation Distance <span style="font-family:'JetBrains Mono',monospace;color:var(--cyan);">(TVD)</span></div>
+      </div>
+      <div class="stagger-item" style="background:linear-gradient(160deg,#dbeafe 0%,#eff6ff 100%);border:1.5px solid #93c5fd;border-radius:var(--radius);padding:.85rem 1.15rem;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:.3rem;">Metric 2</div>
+        <div style="font-size:1.25rem;font-weight:800;color:var(--ink);line-height:1.15;margin-bottom:.3rem;">Wasserstein Distance</div>
+      </div>
+    </div>
+
+    <!-- RESULTS TABLE — standard eval format with green/yellow/red cells -->
+    <div class="stagger-item" style="border-radius:12px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-card);background:var(--surface);margin-bottom:1rem;">
+      <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;background:var(--ink);color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">
+        <div style="padding:.95rem 1.25rem;">Condition</div>
+        <div style="padding:.95rem 1.25rem;text-align:center;">TVD ↓</div>
+        <div style="padding:.95rem 1.25rem;text-align:center;">Wasserstein ↓</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;align-items:center;border-bottom:1px solid var(--border);">
+        <div style="padding:.7rem 1.15rem;font-weight:600;color:var(--ink);font-size:14px;">
+          🏛️ Pew ATP <span style="font-size:10.5px;font-weight:700;color:#065f46;background:#d1fae5;border-radius:5px;padding:.15rem .45rem;margin-left:.4rem;letter-spacing:.04em;">GROUND TRUTH</span>
+        </div>
+        <div style="padding:.7rem 1.15rem;text-align:center;font-style:italic;color:var(--ink-faint);font-size:13px;">reference</div>
+        <div style="padding:.7rem 1.15rem;text-align:center;font-style:italic;color:var(--ink-faint);font-size:13px;">reference</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;align-items:center;border-bottom:1px solid var(--border);background:#fafcff;">
+        <div style="padding:.7rem 1.15rem;font-weight:700;color:var(--ink);font-size:14px;">
+          ★ CivicSim
+          <span style="font-size:10.5px;font-weight:700;color:#1D4ED8;background:#dbeafe;border-radius:5px;padding:.15rem .45rem;margin-left:.4rem;letter-spacing:.04em;">BEST</span>
+        </div>
+        <div style="padding:.7rem 1.15rem;text-align:center;background:#d1fae5;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1.25rem;color:#065f46;">0.101</div>
+        <div style="padding:.7rem 1.15rem;text-align:center;background:#d1fae5;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1.25rem;color:#065f46;">0.058</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;align-items:center;border-bottom:1px solid var(--border);">
+        <div style="padding:.7rem 1.15rem;font-weight:600;color:var(--ink-dim);font-size:14px;">Naive OpenAI (gpt4o-mini)</div>
+        <div style="padding:.7rem 1.15rem;text-align:center;background:#fef9c3;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1.25rem;color:#854d0e;">0.188</div>
+        <div style="padding:.7rem 1.15rem;text-align:center;background:#fef9c3;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1.25rem;color:#854d0e;">0.201</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;align-items:center;">
+        <div style="padding:.7rem 1.15rem;font-weight:600;color:var(--ink-dim);font-size:14px;">Naive Anthropic (claude haiku 4.5)</div>
+        <div style="padding:.7rem 1.15rem;text-align:center;background:#fee2e2;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1.25rem;color:#991b1b;">0.311</div>
+        <div style="padding:.7rem 1.15rem;text-align:center;background:#fef9c3;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1.25rem;color:#854d0e;">0.215</div>
+      </div>
+    </div>
+
+    <!-- Threshold legend -->
+    <div style="display:flex;align-items:center;gap:.5rem;font-size:11px;color:var(--ink-faint);margin-bottom:.75rem;flex-wrap:wrap;">
+      <span style="font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);">Thresholds:</span>
+      <span style="background:#d1fae5;color:#065f46;padding:.1rem .45rem;border-radius:4px;font-weight:700;font-family:'JetBrains Mono',monospace;">excellent &lt; 0.15</span>
+      <span style="background:#fef9c3;color:#854d0e;padding:.1rem .45rem;border-radius:4px;font-weight:700;font-family:'JetBrains Mono',monospace;">moderate 0.15 – 0.30</span>
+      <span style="background:#fee2e2;color:#991b1b;padding:.1rem .45rem;border-radius:4px;font-weight:700;font-family:'JetBrains Mono',monospace;">poor &gt; 0.30</span>
+      <span style="margin-left:auto;">20 questions · 50 demographic slices · 10,000 runs per condition</span>
+    </div>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>13 / 16</span>
+    </div>
+    <div class="progress" style="width: 81.25%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~70 SEC · EVALUATIONS</div>
+      <p>Before we get to the numbers, two metrics worth knowing.</p>
+      <p><b>Total Variation Distance (TVD)</b> — how far the simulated opinion distribution is from the real ATP ground truth. Zero means perfect match. One means completely wrong.</p>
+      <p><b>Wasserstein Distance</b> — respects the ordinal structure of Likert responses. Being off by one step costs less than being off by four. For opinion surveys, this matters.</p>
+      <p>CivicSim scores <b>0.101 TVD</b> and <b>0.058 Wasserstein</b>. Naive OpenAI is 1.86× worse on TVD. Naive Anthropic is 3× worse. Same underlying models — the only difference is demographic prior grounding.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 13  ·  EVALUATION & VALIDATION (commented out) -->
+  <!-- ============================================================ -->
+  <!--
+  <section class="slide" data-slide="13-old">
     <div class="eyebrow">11 · Evaluation &amp; validation</div>
     <h2>Distributions validated against<br>real-world survey ground truth.</h2>
 
@@ -2994,6 +2985,7 @@
       <p>Moderate calibration is honest and expected for a system this early. The purpose isn't to claim perfection. It's to show that the distributions are in the right neighborhood and we have a rigorous eval framework to improve from.</p>
     </aside>
   </section>
+  -->
 
   <!-- ============================================================ -->
   <!-- SLIDE 13  ·  VOICE OF USERS -->
