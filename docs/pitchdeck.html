@@ -996,8 +996,22 @@
       radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.14), transparent 50%),
       linear-gradient(180deg, #F6F9FF 0%, #EEF5FF 100%);
     padding: 40px 56px 50px;
+    display: flex;
+    flex-direction: column;
   }
   .s-demo h2 { font-size: 38px; margin-bottom: 18px; }
+  .demo-video-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-hero);
+    border: 1px solid rgba(0,0,0,0.15);
+    max-height: 490px;
+  }
   .demo-frame {
     flex: 1;
     background: white;
@@ -2446,19 +2460,13 @@
     <div class="eyebrow">07 · Live demo</div>
     <h2>CivicSim in action.</h2>
 
-    <div class="demo-frame">
-      <img src="report-assets/screenshots/civicsim_simulator.png" alt="CivicSim simulator">
-      <div class="play-overlay">
-        <div class="play-btn"></div>
-      </div>
-    </div>
-
-    <div class="demo-steps">
-      <div class="demo-step"><div class="sn">STEP 01</div><div class="sl">Submit a policy question</div></div>
-      <div class="demo-step"><div class="sn">STEP 02</div><div class="sl">Sample a representative electorate</div></div>
-      <div class="demo-step"><div class="sn">STEP 03</div><div class="sl">Stream agent responses live</div></div>
-      <div class="demo-step"><div class="sn">STEP 04</div><div class="sl">Compare stakeholder groups</div></div>
-      <div class="demo-step"><div class="sn">STEP 05</div><div class="sl">Inspect any persona</div></div>
+    <div class="demo-video-wrap">
+      <video
+        src="../demo/demo-final-hd.mp4"
+        controls
+        preload="metadata"
+        style="width:100%;height:100%;object-fit:contain;border-radius:12px;background:#000;"
+      ></video>
     </div>
 
     <div class="slide-footer" style="bottom: 16px;">
