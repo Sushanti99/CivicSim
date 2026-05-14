@@ -51,3 +51,6 @@ data/simulations/
 !data/locations/*.csv
 Walkthrough.md
 .claude/
+# Eval scratch dirs
+evals/results/_parallel_scratch/
+evals/scratch/

@@ -562,27 +562,34 @@ def compute_all_metrics(
 # ── Low-level HTTP API calls (no SDK required, uses stdlib requests) ──────────
 
 def _call_anthropic(prompt: str, system: str, api_key: str) -> str:
-    """POST to Anthropic Messages API, return raw text."""
+    """POST to Anthropic Messages API, return raw text. Retries on 429/529."""
     import requests as _req
-    resp = _req.post(
-        "https://api.anthropic.com/v1/messages",
-        headers={
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-        },
-        json={
-            "model": ANTHROPIC_MODEL,
-            "system": system,
-            "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 200,
-            "temperature": 1.0,
-        },
-        timeout=30,
-    )
-    resp.raise_for_status()
-    data = resp.json()
-    return data["content"][0]["text"]
+    for attempt in range(4):
+        resp = _req.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": api_key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            json={
+                "model": ANTHROPIC_MODEL,
+                "system": system,
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 200,
+                "temperature": 1.0,
+            },
+            timeout=30,
+        )
+        if resp.status_code in (429, 529):
+            wait = 2 ** attempt
+            log.warning("Anthropic rate limit (attempt %d) — retrying in %ds", attempt + 1, wait)
+            import time as _time; _time.sleep(wait)
+            continue
+        resp.raise_for_status()
+        data = resp.json()
+        return data["content"][0]["text"]
+    raise RuntimeError("Anthropic: max retries exceeded")
 
 
 def _call_openai(prompt: str, system: str, api_key: str) -> str:
@@ -725,7 +732,7 @@ async def run_civicsim(
                 # Fall back to the pre-sampled stance if the LLM deviates or fails
                 return parsed if parsed else presampled_stance
             except Exception as exc:
-                log.debug("CivicSim LLM error: %s", exc)
+                log.warning("CivicSim LLM error: %s", exc)
                 return presampled_stance
 
     results = await asyncio.gather(*[one_agent(r) for r in agents_df.itertuples(index=False)])
@@ -838,7 +845,7 @@ async def run_naive_anthropic(
                 )
                 return _parse_stance(text, answer_options)
             except Exception as exc:
-                log.debug("Naive Anthropic error: %s", exc)
+                log.warning("Naive Anthropic agent error: %s", exc)
                 return None
 
     results = await asyncio.gather(*[one_agent(r) for r in agents_df.itertuples(index=False)])
@@ -867,7 +874,7 @@ async def run_naive_openai(
                 )
                 return _parse_stance(text, answer_options)
             except Exception as exc:
-                log.debug("Naive OpenAI error: %s", exc)
+                log.warning("Naive OpenAI agent error: %s", exc)
                 return None
 
     results = await asyncio.gather(*[one_agent(r) for r in agents_df.itertuples(index=False)])
@@ -1279,6 +1286,7 @@ def build_html_report(rows: list[dict], elapsed_s: float) -> str:  # type: ignor
 
 async def main(args: argparse.Namespace) -> None:
     n_agents = args.n_agents
+    output_dir = Path(args.output_dir) if args.output_dir else RESULTS_DIR
     creds = check_credentials()
 
     catalog = load_domain_catalog()
@@ -1324,7 +1332,7 @@ async def main(args: argparse.Namespace) -> None:
     atp_cache: dict[str, pd.DataFrame | None] = {}
 
     semaphore = asyncio.Semaphore(LLM_CONCURRENCY)
-    RESULTS_DIR.mkdir(exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     rows: list[dict] = []
     t0 = time.time()
@@ -1474,17 +1482,17 @@ async def main(args: argparse.Namespace) -> None:
         flat_rows.append(base)
 
     result_df = pd.DataFrame(flat_rows)
-    parquet_out = RESULTS_DIR / "eval_table.parquet"
+    parquet_out = output_dir / "eval_table.parquet"
     result_df.to_parquet(parquet_out, index=False)
     log.info("Saved parquet → %s", parquet_out)
 
     md = build_markdown_report(rows, elapsed)
-    md_out = RESULTS_DIR / "eval_report.md"
+    md_out = output_dir / "eval_report.md"
     md_out.write_text(md)
     log.info("Saved markdown → %s", md_out)
 
     html = build_html_report(rows, elapsed)
-    html_out = RESULTS_DIR / "eval_report.html"
+    html_out = output_dir / "eval_report.html"
     html_out.write_text(html)
     log.info("Saved HTML → %s", html_out)
 
@@ -1492,13 +1500,16 @@ async def main(args: argparse.Namespace) -> None:
     print("\n=== RESULTS SUMMARY ===")
     for row in rows:
         slice_label = ", ".join(f"{k}={v}" for k, v in row["slice"].items())
-        cs_tvd = row.get("metrics_civicsim", {}).get("tvd")
-        na_tvd = row.get("metrics_naive_anthropic", {}).get("tvd")
-        no_tvd = row.get("metrics_naive_openai", {}).get("tvd")
+        cs_tvd  = row.get("metrics_civicsim", {}).get("tvd")
+        na_tvd  = row.get("metrics_naive_anthropic", {}).get("tvd")
+        no_tvd  = row.get("metrics_naive_openai", {}).get("tvd")
+        cs_wass = row.get("metrics_civicsim", {}).get("wasserstein")
+        na_wass = row.get("metrics_naive_anthropic", {}).get("wasserstein")
+        no_wass = row.get("metrics_naive_openai", {}).get("wasserstein")
         print(f"  {row['domain']} | {row['question_id']} | {slice_label}")
-        print(f"    CivicSim TVD:        {_fmt_metric(cs_tvd)}")
-        print(f"    Naive Anthropic TVD: {_fmt_metric(na_tvd)}")
-        print(f"    Naive OpenAI TVD:    {_fmt_metric(no_tvd)}")
+        print(f"    CivicSim        TVD={_fmt_metric(cs_tvd)}  Wasserstein={_fmt_metric(cs_wass)}")
+        print(f"    Naive Anthropic TVD={_fmt_metric(na_tvd)}  Wasserstein={_fmt_metric(na_wass)}")
+        print(f"    Naive OpenAI    TVD={_fmt_metric(no_tvd)}  Wasserstein={_fmt_metric(no_wass)}")
 
 
 def parse_args() -> argparse.Namespace:
@@ -1506,6 +1517,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--domain", help="Restrict to one domain (e.g. economy)")
     p.add_argument("--dry-run", action="store_true", help="Show plan without making LLM calls")
     p.add_argument("--n-agents", type=int, default=N_AGENTS, help=f"Agents per slice (default {N_AGENTS})")
+    p.add_argument("--output-dir", help="Directory for output files (default: evals/results)")
     return p.parse_args()
 
 
