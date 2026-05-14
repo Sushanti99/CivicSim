@@ -95,6 +95,19 @@ function Hero() {
             </div>
           ))}
         </div>
+
+        <div className="hero-demo">
+          <div className="hero-demo-frame">
+            <Image
+              src="/assets/demo-simulator.gif"
+              alt="CivicSim simulator demo"
+              width={900}
+              height={562}
+              unoptimized
+              priority
+            />
+          </div>
+        </div>
       </div>
     </header>
   );
