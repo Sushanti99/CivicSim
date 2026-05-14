@@ -1392,20 +1392,24 @@
   }
   .stat-block .num {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 120px;
+    font-size: 112px;
     font-weight: 700;
     line-height: 1;
     color: var(--ink-faint);
     letter-spacing: -0.05em;
+    overflow: visible;
+    display: block;
   }
-  .stat-block.conclusion .num { font-size: 132px; }
-  .stat-block .num .unit { font-size: 56px; }
-  .stat-block.conclusion .num .unit { font-size: 64px; }
+  .stat-block.conclusion .num { font-size: 124px; }
+  .stat-block .num .unit { font-size: 52px; padding-right: 4px; }
+  .stat-block.conclusion .num .unit { font-size: 60px; padding-right: 4px; }
   .stat-block.cyan .num {
     background: linear-gradient(135deg, var(--cyan), var(--violet));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    padding-right: 6px;
+    overflow: visible;
   }
   .stat-block.violet .num {
     background: linear-gradient(135deg, var(--violet), var(--purple));
@@ -1525,82 +1529,82 @@
   .quote-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px;
+    gap: 18px;
     flex: 1;
   }
   .quote-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 28px 28px 22px;
+    padding: 26px 26px 20px;
     display: flex;
     flex-direction: column;
     position: relative;
     box-shadow: var(--shadow-card);
     overflow: hidden;
+    cursor: default;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  }
+  .quote-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-glow);
+    border-color: var(--border-hi);
   }
   .quote-card::before {
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 5px;
+    height: 4px;
     background: linear-gradient(90deg, var(--cyan), var(--violet));
   }
-  .quote-card .qmark {
-    font-family: 'Instrument Serif', serif;
-    font-size: 78px;
-    color: var(--cyan);
-    opacity: 0.16;
-    line-height: 0.6;
-    font-weight: 700;
-    margin-bottom: 4px;
-    user-select: none;
-  }
   .quote-card .body {
-    font-size: 16px;
-    line-height: 1.55;
+    font-size: 15.5px;
+    line-height: 1.65;
     color: var(--ink);
     flex: 1;
-    margin-bottom: 18px;
-    font-weight: 400;
+    margin-bottom: 0;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .quote-card .body::before {
+    content: "\201C";
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 22px;
+    color: var(--ink);
+    font-weight: 700;
+    margin-right: 2px;
+    vertical-align: -2px;
+  }
+  .quote-card .body::after {
+    content: "\201D";
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 22px;
+    color: var(--ink);
+    font-weight: 700;
+    margin-left: 2px;
+    vertical-align: -2px;
   }
   .quote-card .body .hl {
-    background: linear-gradient(120deg, rgba(37,99,235,0.18) 0%, rgba(37,99,235,0.18) 100%);
-    background-repeat: no-repeat;
-    background-size: 100% 50%;
-    background-position: 0 88%;
-    padding: 0 2px;
-    font-weight: 600;
+    font-weight: 800;
+    color: var(--cyan);
+    font-style: italic;
   }
   .quote-card .attr {
-    font-size: 12.5px;
+    font-size: 12px;
     color: var(--ink-dim);
     line-height: 1.5;
     padding-top: 14px;
     border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.02em;
   }
   .quote-card .attr b {
     color: var(--ink);
     font-weight: 700;
     display: block;
-    margin-bottom: 3px;
-    font-size: 13.5px;
-  }
-  .quote-card .placeholder-tag {
-    position: absolute;
-    top: 14px; right: 14px;
-    background: transparent;
-    color: var(--ink-faint);
+    margin-bottom: 2px;
+    font-size: 12px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 8.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    font-weight: 500;
-    padding: 2px 6px;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    z-index: 3;
-    opacity: 0.55;
   }
 
   /* ============================================================
@@ -1609,70 +1613,94 @@
   .limits-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 18px;
-    margin-top: 4px;
+    gap: 16px;
+    margin-top: 8px;
+    flex: 1;
   }
   .limit-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px 24px;
+    border-radius: var(--radius-lg);
+    padding: 28px 26px 24px;
     box-shadow: var(--shadow-card);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
-  .limit-card.forward {
-    background: linear-gradient(160deg, #ECFDF5 0%, #F6F9FF 100%);
-    border-color: rgba(16, 185, 129, 0.22);
-  }
-  .limit-card.forward::before {
+  .limit-card::before {
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--green), var(--green-deep));
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+  }
+  .limit-card.forward {
+    background: linear-gradient(160deg, #ECFDF5 0%, #F0FDF8 100%);
+    border-color: rgba(16, 185, 129, 0.28);
+  }
+  .limit-card.forward::before {
+    background: linear-gradient(90deg, var(--green), #34D399);
   }
   .limit-card .icon-tag {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--cyan);
     text-transform: uppercase;
-    letter-spacing: 0.14em;
-    margin-bottom: 6px;
-    font-weight: 600;
+    letter-spacing: 0.16em;
+    margin-bottom: 8px;
+    font-weight: 700;
   }
   .limit-card.forward .icon-tag { color: var(--green-deep); }
-  .limit-card h3 { font-size: 21px; margin-bottom: 12px; }
-  .limit-card ul { list-style: none; }
-  .limit-card li {
-    font-size: 15px;
-    color: var(--ink-dim);
-    padding: 7px 0 7px 18px;
-    line-height: 1.5;
-    position: relative;
+  .limit-card h3 {
+    font-size: 19px;
+    margin-bottom: 14px;
+    color: var(--ink);
+    letter-spacing: -0.015em;
   }
+  .limit-card ul { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+  .limit-card li {
+    font-size: 14.5px;
+    color: var(--ink-dim);
+    padding: 8px 0 8px 20px;
+    line-height: 1.45;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+  .limit-card li:last-child { border-bottom: none; }
   .limit-card li::before {
     content: "";
     position: absolute;
-    left: 0; top: 15px;
-    width: 7px; height: 7px;
+    left: 0; top: 16px;
+    width: 8px; height: 8px;
     border-radius: 50%;
     background: var(--cyan);
-    opacity: 0.6;
+    opacity: 0.5;
   }
-  .limit-card.forward li::before { background: var(--green); opacity: 0.7; }
+  .limit-card.forward li::before { background: var(--green); opacity: 0.8; }
 
   .warn-callout {
-    margin-top: 16px;
-    padding: 18px 26px;
-    background: rgba(245, 158, 11, 0.08);
+    margin-top: 14px;
+    padding: 20px 28px;
+    background: linear-gradient(135deg, rgba(245,158,11,0.07) 0%, rgba(245,158,11,0.04) 100%);
+    border: 1px solid rgba(245,158,11,0.25);
     border-left: 4px solid var(--amber);
-    border-radius: var(--radius-sm);
-    font-size: 15px;
+    border-radius: var(--radius);
+    font-size: 15.5px;
+    font-weight: 500;
     color: var(--ink);
-    line-height: 1.5;
+    line-height: 1.55;
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
-  .warn-callout::before { content: "⚠"; margin-right: 10px; color: var(--amber); }
+  .warn-callout::before {
+    content: "⚠";
+    font-size: 22px;
+    color: var(--amber);
+    flex-shrink: 0;
+  }
   .roadmap {
     margin-top: 10px;
     padding: 14px 22px;
@@ -1682,6 +1710,10 @@
     line-height: 1.55;
   }
   .roadmap b { color: var(--ink); }
+
+  [data-slide="15"] { justify-content: space-between; }
+  [data-slide="15"] .limits-grid { flex: 1; align-items: stretch; }
+  [data-slide="15"] .limit-card { justify-content: flex-start; }
 
   /* ============================================================
      SLIDE 14  ·  CLOSE — hero "Thank you. Questions?" (full size)
@@ -2691,13 +2723,13 @@
     <div class="progress" style="width: 57.14%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~3 TO 4 MIN · LIVE DEMO</div>
-      <p>Let me run this live. <i>(Submit your rehearsed question, e.g. "Should the federal minimum wage be raised to $20?" Select Alameda County.)</i></p>
-      <p>First, watch the population being built on the left. These aren't random. Demographics are drawn directly from census for Alameda County. Age, race, income all matching what you'd find if you polled there today.</p>
-      <p>Kicking off the simulation now. Watch the right pane. <i>(Agents start streaming.)</i> Each one arriving live with their demographics, opinion prior, stance, and reasoning. You're watching it think.</p>
-      <p>Let me drill into one diverging persona. <i>(Click a dissenting agent.)</i> This 67-year-old retired homeowner is citing small business impact, and that's not the LLM guessing. Our prior data shows this demographic profile actually does skew that way in Pew surveys. The reasoning is grounded.</p>
-      <p><i>(Wrap up.)</i> That was about 5 seconds. Now let me walk through what just happened under the hood.</p>
-      <p><b>Backup:</b> if the demo fails, switch to the pre-recorded tab. Don't apologize. Just say "let me show you a recorded version" and move on.</p>
+      <div class="time">~2 MIN · DEMO WALKTHROUGH</div>
+      <p>This slide shows a real simulation run: a $15 federal minimum wage question against Alameda County.</p>
+      <p><b>Top card: overall result.</b> 47% strongly support. Walk the audience through the stacked bar: roughly three-quarters of the simulated population land in some form of support. That number came from 5,000 census-grounded agents, not a poll.</p>
+      <p><b>Middle card: by race and ethnicity.</b> Point out the divergence. Black respondents sit at 62% strong support. Asian respondents at 38%. That's a 24-point gap on a single demographic axis, and it's the kind of subgroup signal that aggregate polling buries.</p>
+      <p><b>Bottom card: by age group.</b> Younger cohorts skew strongly supportive; the 65+ bar shifts noticeably toward opposition. This is the structure of disagreement, not just a headline number.</p>
+      <p>The point: in under 5 seconds you get not just who supports, but which communities diverge and why. That's what we hand to a policymaker before they go into a hearing.</p>
+      <p><b>If demoing live:</b> run the same question live and point to the streaming panel. Drill into one dissenting agent and show the grounded reasoning chain. Wrap back to this slide.</p>
     </aside>
   </section>
 
@@ -2933,9 +2965,9 @@
     <aside class="notes" data-notes>
       <div class="time">~70 SEC · EVALUATIONS</div>
       <p>Before we get to the numbers, two metrics worth knowing.</p>
-      <p><b>Total Variation Distance (TVD)</b> — how far the simulated opinion distribution is from the real ATP ground truth. Zero means perfect match. One means completely wrong.</p>
-      <p><b>Wasserstein Distance</b> — respects the ordinal structure of Likert responses. Being off by one step costs less than being off by four. For opinion surveys, this matters.</p>
-      <p>CivicSim scores <b>0.101 TVD</b> and <b>0.058 Wasserstein</b>. Naive OpenAI is 1.86× worse on TVD. Naive Anthropic is 3× worse. Same underlying models — the only difference is demographic prior grounding.</p>
+      <p><b>Total Variation Distance (TVD)</b>: how far the simulated opinion distribution is from the real ATP ground truth. Zero means perfect match. One means completely wrong.</p>
+      <p><b>Wasserstein Distance</b>: respects the ordinal structure of Likert responses. Being off by one step costs less than being off by four. For opinion surveys, this matters.</p>
+      <p>CivicSim scores <b>0.101 TVD</b> and <b>0.058 Wasserstein</b>. Naive OpenAI is 1.86× worse on TVD. Naive Anthropic is 3× worse. Same underlying models. The only difference is demographic prior grounding.</p>
     </aside>
   </section>
 
@@ -3007,22 +3039,16 @@
 
     <div class="quote-grid">
       <div class="quote-card stagger-item">
-        <div class="qmark">"</div>
-        <p class="body">The <span class="hl">transparency is the part that matters</span>. I can defend a recommendation when I can show how the population was constructed.</p>
-        <p class="attr"><b>Anonymous Researcher</b>Goldman School of Public Policy, UC Berkeley</p>
-        <div class="placeholder-tag">Placeholder</div>
+        <p class="body">I wouldn't use this to replace public opinion polling, but I would <span class="hl">absolutely use it to explore and pressure-test policies</span> before taking them into the real world.</p>
+        <p class="attr"><b>Grad Student</b>Goldman School of Public Policy</p>
       </div>
       <div class="quote-card stagger-item">
-        <div class="qmark">"</div>
-        <p class="body">We have been waiting for something that <span class="hl">takes subgroup representation seriously</span>. This is the methodological bar academic work requires.</p>
-        <p class="attr"><b>Anonymous Researcher</b>Possibility Lab, UC Berkeley</p>
-        <div class="placeholder-tag">Placeholder</div>
+        <p class="body">I see this as a strong starting point for <span class="hl">mixed-methods policy research</span> — not a replacement for consultation, but a way to test and refine ideas before investing in large-scale public engagement.</p>
+        <p class="attr"><b>Policy Lab Advisor</b>Stanford</p>
       </div>
       <div class="quote-card stagger-item">
-        <div class="qmark">"</div>
-        <p class="body">The empirical variable selection result <span class="hl">changes how I would design the next study</span>. Not just how I would run a simulation.</p>
-        <p class="attr"><b>Anonymous PhD Candidate</b>Stanford Institute for Human-Centered AI</p>
-        <div class="placeholder-tag">Placeholder</div>
+        <p class="body">What's interesting here is <span class="hl">not replacing public engagement, but creating a faster way to explore policy directions</span>, identify blind spots, and ask better questions before going to communities directly.</p>
+        <p class="attr"><b>Project Lead</b>Possibility Lab · UC Berkeley</p>
       </div>
     </div>
 
@@ -3034,10 +3060,9 @@
 
     <aside class="notes" data-notes>
       <div class="time">~40 SEC · VOICE OF USERS</div>
-      <p>Beyond the experiments, we took CivicSim to researchers at Goldman School of Public Policy, Possibility Lab, Stanford HAI, I School, and BAIR.</p>
-      <p>The thing that kept coming up across all of them wasn't the LLM, wasn't the simulation. It was <b>transparency</b>. The ability to show how the population was constructed and defend every choice.</p>
-      <p>One quote I want to flag, from the Stanford PhD candidate: <i>"The empirical variable selection result changes how I'd design the next study. Not just how I'd run a simulation."</i> That's a big claim. It means the methodology has implications beyond our tool.</p>
-      <p>We don't have product-market fit yet. But we have signal from people whose opinions carry weight in this space.</p>
+      <p>We took CivicSim to researchers at Goldman School of Public Policy, Possibility Lab, Stanford HAI, I School, and BAIR.</p>
+      <p>Notice what all three quotes have in common. Nobody is saying "this replaces polling." They're all saying the same thing independently: this is how you <b>do the work before the work</b>. Pressure-test before you poll. Identify blind spots before you go to communities. That's the use case they're excited about.</p>
+      <p>We don't have product-market fit yet. But we have signal from people whose opinions carry real weight in this space.</p>
     </aside>
   </section>
 
@@ -3046,24 +3071,24 @@
   <!-- ============================================================ -->
   <section class="slide" data-slide="15">
     <div class="eyebrow">13 · Limits &amp; what's next</div>
-    <h2>A decision-support tool.<br>Not a replacement for real engagement.</h2>
+    <h2>Honest about what it is.<br>Deliberate about where it goes.</h2>
 
     <div class="limits-grid">
       <div class="limit-card stagger-item">
         <div class="icon-tag">Data</div>
-        <h3>What we know</h3>
+        <h3>Current scope</h3>
         <ul>
-          <li>v1 covers Alameda County, CA.</li>
-          <li>Some survey time periods are sparse.</li>
-          <li>Smallest subgroups still thin.</li>
+          <li>v1: Alameda County only.</li>
+          <li>Sparse survey periods exist.</li>
+          <li>Thin cells in small subgroups.</li>
         </ul>
       </div>
       <div class="limit-card stagger-item">
         <div class="icon-tag">Simulation</div>
-        <h3>What is directional</h3>
+        <h3>What's directional</h3>
         <ul>
-          <li>Directional realism, not prediction.</li>
-          <li>Opinions over time not yet modeled.</li>
+          <li>Structure of opinion, not prediction.</li>
+          <li>No temporal opinion dynamics.</li>
           <li>Synthetic is not lived experience.</li>
         </ul>
       </div>
@@ -3071,15 +3096,15 @@
         <div class="icon-tag">→ Next</div>
         <h3>Where we're heading</h3>
         <ul>
-          <li>Expand beyond Alameda.</li>
-          <li>Validate against real policy outcomes.</li>
+          <li>Multi-state expansion.</li>
+          <li>Validate against real outcomes.</li>
           <li>Open-source the toolkit.</li>
         </ul>
       </div>
     </div>
 
     <div class="warn-callout">
-      Representative simulations support decisions. They never replace the voices of real communities.
+      Representative simulations can support better decisions. They must never replace the voices of real communities.
     </div>
 
     <div class="slide-footer">
