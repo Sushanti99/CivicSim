@@ -1786,9 +1786,10 @@
   .s-close h2.close-h {
     font-family: 'Inter', sans-serif;
     font-weight: 800;
-    font-size: 108px;
-    line-height: 0.92;
+    font-size: 96px;
+    line-height: 1;
     letter-spacing: -0.05em;
+    white-space: nowrap;
     background: linear-gradient(135deg, #ffffff 0%, #93c5fd 50%, #a78bfa 100%);
     -webkit-background-clip: text;
     background-clip: text;
@@ -1802,8 +1803,7 @@
     background: #00d4ff;
     box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.5);
     animation: pulseDot 2s infinite;
-    margin-right: 14px;
-    transform: translateY(-18px);
+    flex-shrink: 0;
   }
   @keyframes pulseDot {
     0%   { box-shadow: 0 0 0 0 rgba(0,212,255,0.5); }
@@ -3163,11 +3163,14 @@
       <!-- Left: text -->
       <div class="close-left">
         <div class="close-eyebrow">CivicSim · 2026</div>
-        <h2 class="close-h"><span class="pulse-dot"></span>Thank<br>you.</h2>
+        <h2 class="close-h">Thank you.</h2>
         <div class="close-tagline">Ground it before you simulate it.</div>
         <div class="close-url-block">
           <div class="close-url-label">Try it live</div>
-          <a href="https://civicsim.xyz" class="site-link">civicsim.xyz</a>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="pulse-dot"></span>
+            <a href="https://civicsim.xyz" class="site-link">civicsim.xyz</a>
+          </div>
         </div>
       </div>
 
