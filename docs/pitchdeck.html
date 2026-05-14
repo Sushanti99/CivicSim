@@ -2001,7 +2001,7 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>02 / 15</span>
+      <span>02 / 16</span>
     </div>
     <div class="progress" style="width: 14.28%"></div>
 
@@ -2056,7 +2056,7 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>03 / 15</span>
+      <span>03 / 16</span>
     </div>
     <div class="progress" style="width: 21.42%"></div>
 
@@ -2131,7 +2131,7 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>04 / 15</span>
+      <span>04 / 16</span>
     </div>
     <div class="progress" style="width: 28.57%"></div>
 
@@ -2179,7 +2179,7 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>05 / 15</span>
+      <span>05 / 16</span>
     </div>
     <div class="progress" style="width: 35.71%"></div>
 
@@ -2344,7 +2344,7 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>06 / 15</span>
+      <span>06 / 16</span>
     </div>
     <div class="progress" style="width: 42.85%"></div>
 
@@ -2427,7 +2427,7 @@
 
     <div class="slide-footer" style="color:rgba(255,255,255,0.65);">
       <span class="brand" style="color:white;">CivicSim</span>
-      <span style="color:rgba(255,255,255,0.65);">07 / 15</span>
+      <span style="color:rgba(255,255,255,0.65);">07 / 16</span>
     </div>
     <div class="progress" style="width: 50%; background: linear-gradient(90deg, #2EE0FF, #A855F7);"></div>
 
@@ -2463,7 +2463,7 @@
 
     <div class="slide-footer" style="bottom: 16px;">
       <span class="brand">CivicSim</span>
-      <span>08 / 15</span>
+      <span>08 / 16</span>
     </div>
     <div class="progress" style="width: 57.14%"></div>
 
@@ -2534,7 +2534,7 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>09 / 15</span>
+      <span>09 / 16</span>
     </div>
     <div class="progress" style="width: 64.28%"></div>
 
@@ -2578,7 +2578,7 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>10 / 15</span>
+      <span>10 / 16</span>
     </div>
     <div class="progress" style="width: 71.42%"></div>
 
@@ -2592,10 +2592,61 @@
   </section>
 
   <!-- ============================================================ -->
-  <!-- SLIDE 11  ·  RESULTS -->
+  <!-- SLIDE 11  ·  1000-RUN BENCHMARK -->
   <!-- ============================================================ -->
   <section class="slide" data-slide="11">
-    <div class="eyebrow">10 · Experimentation &amp; results</div>
+    <div class="eyebrow">10 · Benchmark results · 1,000 runs</div>
+    <h2>CivicSim consistently outperforms<br>both <span class="serif-it">naive</span> baselines at scale.</h2>
+
+    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);gap:1.5rem;margin:2rem 0 1.5rem;">
+      <div class="stat-block cyan stagger-item" style="text-align:center;padding:1.5rem 1rem;">
+        <div style="font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan-bright);margin-bottom:.75rem;">CivicSim</div>
+        <div style="font-size:2.6rem;font-weight:800;line-height:1;color:#fff;">0.101</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.55);margin:.3rem 0 1rem;">Mean TVD ↓</div>
+        <div style="font-size:2.6rem;font-weight:800;line-height:1;color:var(--cyan-bright);">0.058</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.55);margin:.3rem 0 0;">Mean Wasserstein ↓</div>
+        <div style="margin-top:1rem;font-size:.75rem;font-weight:700;background:rgba(46,224,255,.15);color:var(--cyan-bright);border-radius:6px;padding:.3rem .6rem;">★ Best</div>
+      </div>
+      <div class="stat-block stagger-item" style="text-align:center;padding:1.5rem 1rem;opacity:.85;">
+        <div style="font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:.75rem;">Naive OpenAI</div>
+        <div style="font-size:2.6rem;font-weight:800;line-height:1;color:rgba(255,255,255,.8);">0.188</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin:.3rem 0 1rem;">Mean TVD ↓</div>
+        <div style="font-size:2.6rem;font-weight:800;line-height:1;color:rgba(255,255,255,.7);">0.108</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin:.3rem 0 0;">Mean Wasserstein ↓</div>
+        <div style="margin-top:1rem;font-size:.75rem;color:rgba(255,255,255,.4);background:rgba(255,255,255,.06);border-radius:6px;padding:.3rem .6rem;">1.86× worse TVD</div>
+      </div>
+      <div class="stat-block stagger-item" style="text-align:center;padding:1.5rem 1rem;opacity:.75;">
+        <div style="font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.75rem;">Naive Anthropic</div>
+        <div style="font-size:2.6rem;font-weight:800;line-height:1;color:rgba(255,255,255,.65);">0.311</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin:.3rem 0 1rem;">Mean TVD ↓</div>
+        <div style="font-size:2.6rem;font-weight:800;line-height:1;color:rgba(255,255,255,.55);">0.215</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin:.3rem 0 0;">Mean Wasserstein ↓</div>
+        <div style="margin-top:1rem;font-size:.75rem;color:rgba(255,255,255,.35);background:rgba(255,255,255,.04);border-radius:6px;padding:.3rem .6rem;">3.08× worse TVD</div>
+      </div>
+    </div>
+
+    <div class="supp-line">20 policy questions · 50 demographic slices · 1,000 simulated runs. Lower TVD and Wasserstein = closer to real ATP survey distributions.</div>
+
+    <div class="slide-footer">
+      <span class="brand">CivicSim</span>
+      <span>11 / 16</span>
+    </div>
+    <div class="progress" style="width: 68.75%"></div>
+
+    <aside class="notes" data-notes>
+      <div class="time">~60 SEC · BENCHMARK RESULTS</div>
+      <p>We ran 1,000 simulations across 20 policy questions and 50 intersectional demographic slices to systematically compare CivicSim against two naive baselines: a plain Anthropic prompt and a plain OpenAI prompt with no prior grounding.</p>
+      <p>The metric on the left of each card is <b>Total Variation Distance</b> — how far the simulated opinion distribution is from the real ATP ground truth. Lower is better. CivicSim scores <b>0.101</b>. Naive OpenAI scores 0.188 — nearly twice as far from ground truth. Naive Anthropic scores 0.311, three times worse.</p>
+      <p>The metric on the right is <b>Wasserstein distance</b>, which respects the ordinal structure of Likert-scale responses. It penalizes the model more for being off by two categories than one. CivicSim again wins: <b>0.058</b> versus 0.108 for OpenAI and 0.215 for Anthropic.</p>
+      <p>The takeaway: prior grounding isn't a marginal improvement. It's the difference between a simulation that reflects how real demographic groups actually respond and one that just averages internet text.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 12  ·  RESULTS -->
+  <!-- ============================================================ -->
+  <section class="slide" data-slide="12">
+    <div class="eyebrow">11 · Experimentation &amp; results</div>
     <h2>The demographics we <span class="serif-it">assume</span> matter<br>are not the ones that shape opinion.</h2>
 
     <div class="stats-grid">
@@ -2624,9 +2675,9 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>11 / 15</span>
+      <span>12 / 16</span>
     </div>
-    <div class="progress" style="width: 78.57%"></div>
+    <div class="progress" style="width: 75.00%"></div>
 
     <aside class="notes" data-notes>
       <div class="time">~60 SEC · RESULTS · ★ KEY SLIDE</div>
@@ -2642,7 +2693,7 @@
   <!-- ============================================================ -->
   <!-- SLIDE 12  ·  EVALUATION & VALIDATION -->
   <!-- ============================================================ -->
-  <section class="slide" data-slide="12">
+  <section class="slide" data-slide="13">
     <div class="eyebrow">11 · Evaluation &amp; validation</div>
     <h2>Distributions validated against<br>real-world survey ground truth.</h2>
 
@@ -2672,9 +2723,9 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>12 / 15</span>
+      <span>13 / 16</span>
     </div>
-    <div class="progress" style="width: 80%"></div>
+    <div class="progress" style="width: 81.25%"></div>
 
     <aside class="notes" data-notes>
       <div class="time">~45 SEC · EVALS</div>
@@ -2688,7 +2739,7 @@
   <!-- ============================================================ -->
   <!-- SLIDE 13  ·  VOICE OF USERS -->
   <!-- ============================================================ -->
-  <section class="slide" data-slide="13">
+  <section class="slide" data-slide="14">
     <div class="eyebrow">12 · Voice of users</div>
     <h2>What policy researchers<br>are telling us.</h2>
 
@@ -2726,9 +2777,9 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>13 / 15</span>
+      <span>14 / 16</span>
     </div>
-    <div class="progress" style="width: 86.67%"></div>
+    <div class="progress" style="width: 87.50%"></div>
 
     <aside class="notes" data-notes>
       <div class="time">~40 SEC · VOICE OF USERS</div>
@@ -2742,7 +2793,7 @@
   <!-- ============================================================ -->
   <!-- SLIDE 14  ·  LIMITS & NEXT — simpler text -->
   <!-- ============================================================ -->
-  <section class="slide" data-slide="14">
+  <section class="slide" data-slide="15">
     <div class="eyebrow">13 · Limits &amp; what's next</div>
     <h2>A decision-support tool.<br>Not a replacement for real engagement.</h2>
 
@@ -2782,9 +2833,9 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>14 / 15</span>
+      <span>15 / 16</span>
     </div>
-    <div class="progress" style="width: 93.33%"></div>
+    <div class="progress" style="width: 93.75%"></div>
 
     <aside class="notes" data-notes>
       <div class="time">~45 SEC · LIMITS &amp; NEXT</div>
@@ -2799,7 +2850,7 @@
   <!-- ============================================================ -->
   <!-- SLIDE 14  ·  CLOSE -->
   <!-- ============================================================ -->
-  <section class="slide s-close" data-slide="15">
+  <section class="slide s-close" data-slide="16">
     <div class="close-eyebrow">14 · Thank you</div>
 
     <div class="hero-block">
@@ -2815,7 +2866,7 @@
 
     <div class="slide-footer">
       <span class="brand">CivicSim</span>
-      <span>15 / 15</span>
+      <span>16 / 16</span>
     </div>
     <div class="progress" style="width: 100%"></div>
 
@@ -2832,7 +2883,7 @@
 <!-- Speaker notes overlay -->
 <div class="notes-panel" id="notesPanel">
   <div class="nh">
-    <span>Speaker Notes · Slide <span id="notesNum">1</span> / 15</span>
+    <span>Speaker Notes · Slide <span id="notesNum">1</span> / 16</span>
     <button class="nclose" onclick="document.body.classList.remove('show-notes')">close (N)</button>
   </div>
   <div class="notes-content" id="notesContent"></div>
