@@ -2555,9 +2555,12 @@
 
     <aside class="notes" data-notes>
       <div class="time">~50 SEC · ARCHITECTURE</div>
-      <p>Quick technical pass for the engineers. <b>Next.js frontend on Vercel</b>, a thin UI layer that proxies to the backend. <b>FastAPI on Fly.io</b> is the orchestration layer.</p>
-      <p>Three core services underneath it. The <b>agent sampler</b> generates synthetic people using a largest-remainder algorithm that guarantees distributions match census. The <b>prior lookup</b> returns historical opinion distributions per demographic profile, with sparse-cell backoff when exact combinations are thin. The <b>LLM client</b> is model-agnostic and works with OpenAI, Anthropic, or local models.</p>
-      <p>Worth flagging: the whole pipeline uses <b>Server-Sent Events</b> to stream responses live. You see agents arrive in real time as they're generated, which matters for the transparency story. Users watch the system think, not wait for a finished result.</p>
+      <p>Let me walk through this top to bottom. When a user opens CivicSim, they hit our <b>Next.js frontend</b>. That's what handles the UI, the inputs, and the live visualization. It's a thin layer that passes requests down to our backend API.</p>
+      <p>The backend is a <b>FastAPI server</b> that orchestrates everything. When a simulation request comes in, it kicks off three things in sequence.</p>
+      <p>First, the <b>agent sampler</b> builds your synthetic population. It uses a largest-remainder algorithm to draw people from ACS census data so the demographics of your simulated group actually match the real location.</p>
+      <p>Second, the <b>prior lookup</b> attaches an opinion prior to each agent. Given this person's demographics, here's how people like them have historically answered this kind of question. That comes from Pew ATP data, not the LLM's imagination.</p>
+      <p>Third, the <b>LLM client</b> runs each agent through the model, conditioned on both their demographics and their prior. It works with OpenAI, Anthropic, or local models.</p>
+      <p>The responses stream back using <b>Server-Sent Events</b>, so you see agents arriving one by one in real time. That's not just a UI choice. It's part of the transparency story: you watch the system think rather than waiting for a black-box result.</p>
     </aside>
   </section>
 
