@@ -17,6 +17,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://civicsim.xyz"),
   title: "CivicSim — Demographically Grounded LLM Opinion Simulation",
   description:
     "Pick a U.S. location, ask a policy question, and watch a synthetic electorate respond.",
@@ -24,14 +25,15 @@ export const metadata: Metadata = {
     title: "CivicSim — Demographically Grounded LLM Opinion Simulation",
     description:
       "Pick a U.S. location, ask a policy question, and watch a synthetic electorate respond.",
-    images: [{ url: "/assets/og-image.png", width: 1200, height: 630 }],
+    url: "https://civicsim.xyz",
+    images: [{ url: "https://civicsim.xyz/assets/og-image.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "CivicSim — Demographically Grounded LLM Opinion Simulation",
     description:
       "Pick a U.S. location, ask a policy question, and watch a synthetic electorate respond.",
-    images: ["/assets/og-image.png"],
+    images: ["https://civicsim.xyz/assets/og-image.png"],
   },
 };
 
