@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
@@ -69,17 +70,17 @@ def _resolve_question(
     user_q = (req.free_text or "").strip()
 
     # Best-effort: try to find an ATP question for a demographic prior.
-    prior_qid = match_free_text(user_q)
+    prior_qid, _ = match_free_text(user_q)
     if prior_qid:
         try:
             options = _answer_options_for(prior_qid)
             prior_label = question_label(prior_qid)
         except QuestionNotFoundError:
             prior_qid = None
-            options = _DEFAULT_ANSWER_OPTIONS
+            options = req.custom_answer_options or _DEFAULT_ANSWER_OPTIONS
             prior_label = None
     else:
-        options = _DEFAULT_ANSWER_OPTIONS
+        options = req.custom_answer_options or _DEFAULT_ANSWER_OPTIONS
         prior_label = None
 
     return prior_qid, user_q, options, prior_label
@@ -135,6 +136,7 @@ async def run_simulation_stream(
     )
     for a in agents:
         yield SimulateEvent(event="agent_sampled", data=a.model_dump())
+        await asyncio.sleep(0)  # yield control so the event flushes immediately
 
     geo = geo_for(req.location)
 
@@ -204,7 +206,7 @@ async def run_simulation_stream(
     # Persist summary
     summary_data = {
         "sim_id": sim_id,
-        "question_id": qid,
+        "question_id": prior_qid,
         "question_label": qlabel,
         "n": len(responses),
         "distribution": [a.model_dump() for a in aggregate],

@@ -9,6 +9,7 @@ import {
   AnswerProb,
   Domain,
   Location,
+  MatchQuestionResult,
   QuestionMeta,
   api,
   simulateStream,
@@ -23,6 +24,29 @@ import { RationaleList } from "@/components/RationaleList";
 
 type Status = "idle" | "running" | "done" | "error";
 
+const ANSWER_SCALES = [
+  {
+    id: "support_oppose",
+    label: "Support / Oppose",
+    options: ["Strongly support", "Somewhat support", "Neither support nor oppose", "Somewhat oppose", "Strongly oppose"],
+  },
+  {
+    id: "agree_disagree",
+    label: "Agree / Disagree",
+    options: ["Strongly agree", "Somewhat agree", "Neither agree nor disagree", "Somewhat disagree", "Strongly disagree"],
+  },
+  {
+    id: "favor_oppose",
+    label: "Favor / Oppose",
+    options: ["Strongly favor", "Somewhat favor", "Neither favor nor oppose", "Somewhat oppose", "Strongly oppose"],
+  },
+  {
+    id: "yes_no",
+    label: "Yes / No",
+    options: ["Yes", "Probably yes", "Unsure", "Probably no", "No"],
+  },
+];
+
 export default function SimulatePage() {
   // ---- catalog data ----
   const [locations, setLocations] = useState<Location[]>([]);
@@ -36,6 +60,15 @@ export default function SimulatePage() {
   const [questionId, setQuestionId] = useState<string>("");
   const [freeText, setFreeText] = useState<string>("");
   const [n, setN] = useState<number>(15);
+  const [answerScaleId, setAnswerScaleId] = useState<string>("support_oppose");
+
+  // ---- free-text validation & matching ----
+  const [matchStatus, setMatchStatus] = useState<{
+    level: MatchQuestionResult["match_level"] | "checking";
+    label?: string | null;
+  } | null>(null);
+  const [validationError, setValidationError] = useState<string>("");
+  const matchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ---- run state ----
   const [status, setStatus] = useState<Status>("idle");
@@ -68,14 +101,46 @@ export default function SimulatePage() {
       setSelectedDims(new Set());
       return;
     }
-    // Pre-select dims marked auto_selected by Experiment 2
     setSelectedDims(new Set(domain.dimensions.filter((d) => d.auto_selected).map((d) => d.key)));
-    // Pre-select first matching question from this domain
     if (domain.question_ids.length > 0 && !questionId) {
       const match = questions.find((q) => domain.question_ids.includes(q.question_id));
       if (match) setQuestionId(match.question_id);
     }
   }, [domainId, domains]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ---- debounced match + validation when free text changes ----
+  useEffect(() => {
+    if (questionId || !freeText.trim()) {
+      setMatchStatus(null);
+      setValidationError("");
+      return;
+    }
+    setMatchStatus({ level: "checking" });
+    setValidationError("");
+
+    if (matchDebounceRef.current) clearTimeout(matchDebounceRef.current);
+    matchDebounceRef.current = setTimeout(async () => {
+      try {
+        const [validate, match] = await Promise.all([
+          api.validateQuestion(freeText.trim()),
+          api.matchQuestion(freeText.trim()),
+        ]);
+        if (!validate.is_policy) {
+          setValidationError(validate.reason);
+          setMatchStatus(null);
+        } else {
+          setValidationError("");
+          setMatchStatus({ level: match.match_level, label: match.question_label });
+        }
+      } catch {
+        setMatchStatus(null);
+      }
+    }, 600);
+
+    return () => {
+      if (matchDebounceRef.current) clearTimeout(matchDebounceRef.current);
+    };
+  }, [freeText, questionId]);
 
   function toggleDim(key: string) {
     setSelectedDims((prev) => {
@@ -102,6 +167,11 @@ export default function SimulatePage() {
     reset();
     setStatus("running");
 
+    const noMatch = !questionId && matchStatus?.level === "none";
+    const customOptions = noMatch
+      ? (ANSWER_SCALES.find((s) => s.id === answerScaleId)?.options ?? undefined)
+      : undefined;
+
     try {
       for await (const ev of simulateStream(
         {
@@ -111,6 +181,7 @@ export default function SimulatePage() {
           free_text: freeText || undefined,
           domain: domainId || undefined,
           selected_dims: selectedDims.size > 0 ? [...selectedDims] : undefined,
+          custom_answer_options: customOptions,
         },
         ctrl.signal,
       )) {
@@ -149,11 +220,31 @@ export default function SimulatePage() {
   }
 
   const activeDomain = domains.find((d) => d.id === domainId) ?? null;
+  const showScalePicker = !questionId && freeText.trim().length > 4 && matchStatus?.level === "none";
   const canRun =
-    !!location && (!!questionId || freeText.trim().length > 4) && status !== "running";
+    !!location &&
+    (!!questionId || freeText.trim().length > 4) &&
+    (!!questionId || !validationError) &&
+    (!!questionId || matchStatus?.level !== "checking") &&
+    status !== "running";
+
+  // Dynamic step numbers
+  const stepQuestion = activeDomain ? 4 : 3;
+  const stepScale = activeDomain ? 5 : 4;
+  const stepSample = activeDomain ? (showScalePicker ? 6 : 5) : (showScalePicker ? 5 : 4);
 
   return (
     <div className="min-h-screen">
+      {/* Top progress bar */}
+      {status === "running" && (
+        <div className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-[color:var(--color-border)]">
+          <div
+            className="h-0.5 bg-[color:var(--color-cyan)] transition-all duration-500"
+            style={{ width: `${Math.round((responses.length / n) * 100)}%` }}
+          />
+        </div>
+      )}
+
       <header className="border-b border-[color:var(--color-border)]">
         <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between px-8">
           <Link href="/" className="flex items-center gap-2 font-semibold">
@@ -214,8 +305,8 @@ export default function SimulatePage() {
             </StepCard>
           )}
 
-          {/* Step 4: Question */}
-          <StepCard step={activeDomain ? 4 : 3} title="Policy question">
+          {/* Step 4 (or 3): Question */}
+          <StepCard step={stepQuestion} title="Policy question">
             <QuestionPicker
               questions={
                 activeDomain && activeDomain.question_ids.length > 0
@@ -230,6 +321,8 @@ export default function SimulatePage() {
                 setQuestionId(questionId);
                 setFreeText(freeText);
               }}
+              matchStatus={matchStatus ?? undefined}
+              validationError={validationError}
             />
             {activeDomain && activeDomain.question_ids.length === 0 && (
               <p className="mt-1.5 text-xs text-[color:var(--color-text-dim)]">
@@ -238,8 +331,35 @@ export default function SimulatePage() {
             )}
           </StepCard>
 
-          {/* Step 5: Sample size */}
-          <StepCard step={activeDomain ? 5 : 4} title="Sample size">
+          {/* Scale picker: only when free text has no ATP match */}
+          {showScalePicker && (
+            <StepCard step={stepScale} title="Response scale">
+              <p className="mb-3 text-xs text-[color:var(--color-text-dim)]">
+                No survey prior found for this question. Choose the scale agents should respond on.
+              </p>
+              <div className="space-y-2">
+                {ANSWER_SCALES.map((scale) => (
+                  <button
+                    key={scale.id}
+                    onClick={() => setAnswerScaleId(scale.id)}
+                    className={`w-full rounded-xl border px-4 py-2.5 text-left text-sm transition ${
+                      answerScaleId === scale.id
+                        ? "border-[color:var(--color-cyan)] bg-[color:var(--color-cyan)]/10 text-[color:var(--color-cyan)]"
+                        : "border-[color:var(--color-border)] hover:border-[color:var(--color-border-hi)] text-[color:var(--color-text-dim)]"
+                    }`}
+                  >
+                    <span className="font-medium">{scale.label}</span>
+                    <span className="ml-2 text-xs opacity-60">
+                      ({scale.options[0]} … {scale.options[scale.options.length - 1]})
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </StepCard>
+          )}
+
+          {/* Sample size */}
+          <StepCard step={stepSample} title="Sample size">
             <label className="block">
               <span className="flex items-center justify-between text-xs uppercase tracking-wider text-[color:var(--color-text-faint)]">
                 <span># Agents</span>
@@ -286,27 +406,65 @@ export default function SimulatePage() {
         {/* ── Right panel: results ── */}
         <section className="space-y-8">
           {/* Simulation saved banner */}
-          {simId && (
+          {simId && status === "done" && (
             <div className="rounded-2xl border border-[color:var(--color-cyan)]/30 bg-[color:var(--color-cyan)]/5 px-5 py-4">
               <div className="flex items-center justify-between">
                 <div className="text-xs uppercase tracking-wider text-[color:var(--color-cyan)]">
-                  Simulation saved
+                  Simulation complete
                 </div>
-                {status === "done" && (
-                  <Link
-                    href="/simulations"
-                    className="rounded-full border border-[color:var(--color-cyan)]/40 px-3 py-1 text-xs text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)]/10"
-                  >
-                    View dashboard →
-                  </Link>
-                )}
+                <Link
+                  href={`/simulations/${encodeURIComponent(simId)}`}
+                  className="rounded-full border border-[color:var(--color-cyan)]/40 px-3 py-1 text-xs text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)]/10"
+                >
+                  View full results →
+                </Link>
               </div>
               <div className="mt-1 font-mono text-sm text-[color:var(--color-text-dim)]">
-                data/simulations/{simId}/
+                {simId}
               </div>
-              <p className="mt-1 text-xs text-[color:var(--color-text-dim)]">
-                Per-agent JSON files: demographics · prior · stance · rationale
-              </p>
+            </div>
+          )}
+
+          {/* Running state: clean progress card */}
+          {status === "running" && (
+            <div className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]/40 p-6">
+              <div className="flex items-center gap-3 mb-5">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[color:var(--color-cyan)] opacity-60" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[color:var(--color-cyan)]" />
+                </span>
+                <span className="text-sm font-medium text-[color:var(--color-text)]">
+                  Assembling synthetic electorate
+                </span>
+              </div>
+
+              {/* Phase 1: agent sampling */}
+              <div className="mb-4">
+                <div className="flex justify-between text-xs text-[color:var(--color-text-faint)] mb-1.5">
+                  <span>Agents sampled</span>
+                  <span className="font-mono text-[color:var(--color-text-dim)]">{agents.length} / {n}</span>
+                </div>
+                <div className="h-1.5 w-full rounded-full bg-[color:var(--color-border)]">
+                  <div
+                    className="h-1.5 rounded-full bg-[color:var(--color-cyan)]/60 transition-all duration-500"
+                    style={{ width: `${Math.round((agents.length / n) * 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Phase 2: LLM responses */}
+              <div>
+                <div className="flex justify-between text-xs text-[color:var(--color-text-faint)] mb-1.5">
+                  <span>Responses collected</span>
+                  <span className="font-mono text-[color:var(--color-text-dim)]">{responses.length} / {n}</span>
+                </div>
+                <div className="h-1.5 w-full rounded-full bg-[color:var(--color-border)]">
+                  <div
+                    className="h-1.5 rounded-full bg-[color:var(--color-cyan)] transition-all duration-500"
+                    style={{ width: `${Math.round((responses.length / n) * 100)}%` }}
+                  />
+                </div>
+              </div>
             </div>
           )}
 
@@ -343,37 +501,42 @@ export default function SimulatePage() {
             </div>
           )}
 
-          <div>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
-              Aggregate distribution
-            </h2>
-            <OpinionDistribution
-              distribution={aggregate}
-              title={`n = ${responses.length}`}
-              empty="The aggregate will appear once the LLM has responded for every agent."
-            />
-          </div>
+          {(aggregate.length > 0 || status === "done") && (
+            <div>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
+                Aggregate distribution
+              </h2>
+              <OpinionDistribution
+                distribution={aggregate}
+                title={`n = ${responses.length}`}
+                empty="The aggregate will appear once the LLM has responded for every agent."
+              />
+            </div>
+          )}
 
-          <div>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
-              Synthetic electorate
-            </h2>
-            <AgentTable agents={agents} />
-          </div>
+          {agents.length > 0 && (
+            <div>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
+                Synthetic electorate
+              </h2>
+              <AgentTable agents={agents} />
+            </div>
+          )}
 
-          <div>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
-              Per-agent rationales
-            </h2>
-            <RationaleList agents={agents} responses={responses} />
-          </div>
+          {responses.length > 0 && (
+            <div>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
+                Per-agent rationales
+              </h2>
+              <RationaleList agents={agents} responses={responses} />
+            </div>
+          )}
         </section>
       </main>
     </div>
   );
 }
 
-/* Tiny wrapper to keep sidebar items visually grouped */
 function StepCard({
   step,
   title,

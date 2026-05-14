@@ -33,6 +33,11 @@ class SimulateRequest(BaseModel):
         None,
         description="Override the default LLM model for this request.",
     )
+    custom_answer_options: list[str] | None = Field(
+        None,
+        description="Custom response scale labels for free-text questions with no ATP prior match. "
+        "Ignored when a prior match is found.",
+    )
 
     @model_validator(mode="after")
     def _need_question(self) -> SimulateRequest:
