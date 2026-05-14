@@ -14,6 +14,7 @@ export default function Home() {
       <Nav />
       <main>
         <Hero />
+        <Partners />
         <Overview />
         <Architecture />
         <Findings />
@@ -110,6 +111,27 @@ function Hero() {
         </div>
       </div>
     </header>
+  );
+}
+
+const PARTNERS = [
+  "Stanford University",
+  "UC Berkeley Policy Lab",
+  "UC Berkeley BAIR Lab",
+  "Goldman School of Public Policy",
+  "UC Berkeley School of Information",
+];
+
+function Partners() {
+  return (
+    <div className="partners-strip">
+      <p className="partners-label">Interviewing &amp; collaborating with · Ongoing user testing</p>
+      <div className="partners-logos">
+        {PARTNERS.map((name) => (
+          <span key={name} className="partner-logo">{name}</span>
+        ))}
+      </div>
+    </div>
   );
 }
 

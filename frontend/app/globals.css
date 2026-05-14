@@ -140,6 +140,46 @@
   background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--color-surface) 60%, transparent) 50%, transparent 100%);
 }
 
+/* ── partners strip ── */
+.partners-strip {
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1.5rem 2rem;
+  text-align: center;
+  background: color-mix(in srgb, var(--color-surface) 50%, transparent);
+}
+
+.partners-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: 1.25rem;
+}
+
+.partners-logos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 2.5rem;
+}
+
+.partner-logo {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--color-text-dim);
+  opacity: 0.7;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.partner-logo:hover {
+  opacity: 1;
+}
+
 nav {
   position: sticky;
   top: 0;
