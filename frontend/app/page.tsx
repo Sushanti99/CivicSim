@@ -116,7 +116,7 @@ function Hero() {
 
 const PARTNERS = [
   { name: "Stanford University",               src: "/assets/logos/stanford2.png",       w: 160, h: 107 },
-  { name: "California Policy Lab",             src: "/assets/logos/policy-lab.jpg",      w: 140, h: 69  },
+  { name: "Possibility Lab",                   src: "/assets/logos/possibility-lab.svg", w: 48,  h: 48, label: "Possibility Lab" },
   { name: "UC Berkeley BAIR Lab",              src: "/assets/logos/bair.png",            w: 150, h: 80  },
   { name: "Goldman School of Public Policy",   src: "/assets/logos/ucb-seal.svg",        w: 64,  h: 64, label: "Goldman School\nof Public Policy" },
   { name: "UC Berkeley School of Information", src: "/assets/logos/ischool-color.png",   w: 200, h: 14  },
