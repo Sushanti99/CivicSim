@@ -1712,8 +1712,14 @@
   .roadmap b { color: var(--ink); }
 
   [data-slide="15"] { justify-content: space-between; }
-  [data-slide="15"] .limits-grid { flex: 1; align-items: stretch; }
+  [data-slide="15"] .limits-grid {
+    grid-template-columns: 1fr 1fr;
+    flex: 1;
+    align-items: stretch;
+    gap: 22px;
+  }
   [data-slide="15"] .limit-card { justify-content: flex-start; }
+  [data-slide="15"] .limit-card li { font-size: 15.5px; padding: 10px 0 10px 22px; }
 
   /* ============================================================
      SLIDE 14  ·  CLOSE — hero "Thank you. Questions?" (full size)
@@ -3139,30 +3145,21 @@
 
     <div class="limits-grid">
       <div class="limit-card stagger-item">
-        <div class="icon-tag">Data</div>
-        <h3>Current scope</h3>
+        <div class="icon-tag">Current scope</div>
+        <h3>What we're working with</h3>
         <ul>
-          <li>v1: Alameda County only.</li>
-          <li>Sparse survey periods exist.</li>
-          <li>Thin cells in small subgroups.</li>
-        </ul>
-      </div>
-      <div class="limit-card stagger-item">
-        <div class="icon-tag">Simulation</div>
-        <h3>What's directional</h3>
-        <ul>
-          <li>Structure of opinion, not prediction.</li>
-          <li>No temporal opinion dynamics.</li>
-          <li>Synthetic is not lived experience.</li>
+          <li>Directional realism, not outcome prediction.</li>
+          <li>Thin cells in rare intersectional subgroups.</li>
+          <li>Synthetic opinion is not lived experience.</li>
         </ul>
       </div>
       <div class="limit-card forward stagger-item">
-        <div class="icon-tag">→ Next</div>
+        <div class="icon-tag">→ What's next</div>
         <h3>Where we're heading</h3>
         <ul>
-          <li>Multi-state expansion.</li>
-          <li>Validate against real outcomes.</li>
-          <li>Open-source the toolkit.</li>
+          <li>Custom datasets for granular policies — e.g. climate impact on low-income Hispanic populations in CA.</li>
+          <li>Real surveys to validate sparse subgroup opinions, inspired by Stanford HCI Lab.</li>
+          <li>Larger evaluations — expanding beyond Pew ATP to CCES.</li>
         </ul>
       </div>
     </div>
@@ -3178,12 +3175,11 @@
     <div class="progress" style="width: 93.75%"></div>
 
     <aside class="notes" data-notes>
-      <div class="time">~45 SEC · LIMITS &amp; NEXT</div>
-      <p>We want to be honest about what CivicSim is and isn't. In policy work, overclaiming is worse than underclaiming.</p>
-      <p><b>Data limits:</b> v1 covers Alameda County only. Some survey time periods are sparse. Smallest intersectional subgroups are still thin. We use backoff, but it's a real constraint.</p>
-      <p><b>Simulation limits:</b> this is directional realism, not prediction. We tell you the structure of disagreement: who supports, who opposes, where subgroups diverge. We can't tell you the exact percentage when the policy ships. Opinion dynamics over time aren't modeled yet.</p>
-      <p><b>Where we're heading:</b> multi-state expansion, longitudinal validation against real outcomes, open-sourcing the variable-selection toolkit.</p>
-      <p>Pause on the warning box at the bottom. <b>Representative simulations support decisions. They never replace the voices of real communities.</b> That's the moral spine of this project.</p>
+      <div class="time">~40 SEC · LIMITS &amp; NEXT</div>
+      <p>Two cards. Left is what we're working with today. Right is where we're going.</p>
+      <p>On the left: this is directional realism, not prediction. We surface the structure of opinion, not exact outcome percentages. Rare intersectional subgroups are thin and we use backoff, which is honest but not perfect.</p>
+      <p>On the right, three concrete next steps. First, letting policymakers bring custom datasets for granular questions, things like climate impact on low-income Hispanic populations in California. Second, running real surveys to validate what the model says about sparse subgroups, an approach inspired by Stanford HCI Lab. Third, scaling evaluations beyond Pew ATP to CCES for broader coverage.</p>
+      <p>And the callout at the bottom is the one we mean: simulations support decisions. They never replace real communities.</p>
     </aside>
   </section>
 
