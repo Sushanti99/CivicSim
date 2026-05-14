@@ -995,12 +995,12 @@
     background:
       radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.14), transparent 50%),
       linear-gradient(180deg, #F6F9FF 0%, #EEF5FF 100%);
-    padding: 40px 56px 50px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
   }
   .demo-time-word {
+    position: absolute;
+    top: 56px;
+    left: 64px;
+    right: 64px;
     font-size: 86px;
     font-weight: 800;
     letter-spacing: -3px;
@@ -1009,20 +1009,20 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 24px;
-    flex-shrink: 0;
   }
   .demo-shots {
+    position: absolute;
+    top: 220px;
+    left: 64px;
+    right: 64px;
+    bottom: 60px;
     display: flex;
     gap: 12px;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
   }
   .demo-shots img {
     flex: 1;
-    min-width: 0;
     width: 0;
+    min-width: 0;
     height: 100%;
     border-radius: 10px;
     object-fit: cover;
@@ -2476,7 +2476,7 @@
   <!-- SLIDE 8  ·  LIVE DEMO -->
   <!-- ============================================================ -->
   <section class="slide s-demo" data-slide="8">
-    <div class="eyebrow">07 · Live demo</div>
+    <div class="eyebrow" style="position:absolute;top:30px;left:64px;">07 · Live demo</div>
 
     <div class="demo-time-word">Demo time.</div>
 
