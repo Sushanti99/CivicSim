@@ -167,17 +167,27 @@
 }
 
 .partner-logo {
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  color: var(--color-text-dim);
-  opacity: 0.7;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
   transition: opacity 0.2s;
+  filter: grayscale(1);
 }
 
 .partner-logo:hover {
   opacity: 1;
+  filter: grayscale(0);
+}
+
+.dark .partner-logo {
+  filter: grayscale(1) invert(1) brightness(1.8);
+  opacity: 0.55;
+}
+
+.dark .partner-logo:hover {
+  filter: grayscale(0) invert(1) brightness(1.8);
+  opacity: 0.9;
 }
 
 nav {

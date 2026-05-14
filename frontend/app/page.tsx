@@ -115,11 +115,11 @@ function Hero() {
 }
 
 const PARTNERS = [
-  "Stanford University",
-  "UC Berkeley Policy Lab",
-  "UC Berkeley BAIR Lab",
-  "Goldman School of Public Policy",
-  "UC Berkeley School of Information",
+  { name: "Stanford University",              src: "/assets/logos/stanford.png",    w: 140, h: 60  },
+  { name: "California Policy Lab",            src: "/assets/logos/policy-lab.jpg",  w: 130, h: 64  },
+  { name: "UC Berkeley BAIR Lab",             src: "/assets/logos/bair.png",        w: 130, h: 70  },
+  { name: "Goldman School of Public Policy",  src: "/assets/logos/gspp.svg",        w: 110, h: 70  },
+  { name: "UC Berkeley School of Information",src: "/assets/logos/ischool.svg",     w: 130, h: 60  },
 ];
 
 function Partners() {
@@ -127,8 +127,16 @@ function Partners() {
     <div className="partners-strip">
       <p className="partners-label">Interviewing &amp; collaborating with · Ongoing user testing</p>
       <div className="partners-logos">
-        {PARTNERS.map((name) => (
-          <span key={name} className="partner-logo">{name}</span>
+        {PARTNERS.map((p) => (
+          <div key={p.name} className="partner-logo">
+            <Image
+              src={p.src}
+              alt={p.name}
+              width={p.w}
+              height={p.h}
+              style={{ objectFit: "contain", maxWidth: "100%", height: "auto" }}
+            />
+          </div>
         ))}
       </div>
     </div>
