@@ -1,0 +1,1232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>CivicSim — Demographically Grounded LLM Simulations of Public Opinion</title>
+<style>
+  /* ---------- Page setup ---------- */
+  @page {
+    size: Letter;
+    margin: 22mm 20mm 22mm 20mm;
+    @bottom-center {
+      content: "CivicSim · MIMS Capstone 2026 · Page " counter(page) " of " counter(pages);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 9pt;
+      color: #6b7280;
+    }
+    @top-right {
+      content: "CivicSim";
+      font-family: Georgia, serif;
+      font-size: 9pt;
+      color: #6b7280;
+    }
+  }
+  @page :first { @top-right { content: ""; } }
+
+  /* ---------- Base typography ---------- */
+  :root {
+    --ink: #0f172a;
+    --ink-soft: #334155;
+    --muted: #64748b;
+    --rule: #e2e8f0;
+    --accent: #1e3a8a;
+    --accent-2: #6d28d9;
+    --cyan: #0e7490;
+    --bg-soft: #f8fafc;
+    --bg-card: #ffffff;
+    --tag: #eff6ff;
+    --tag-ink: #1d4ed8;
+  }
+  html, body {
+    margin: 0; padding: 0;
+    color: var(--ink);
+    background: #fff;
+    font-family: "Charter", "Georgia", "Iowan Old Style", "Times New Roman", serif;
+    font-size: 10.6pt;
+    line-height: 1.55;
+    text-rendering: geometricPrecision;
+  }
+  h1, h2, h3, h4, h5 {
+    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    margin: 0 0 0.4em 0;
+  }
+  h1 { font-size: 26pt; font-weight: 700; }
+  h2 { font-size: 16pt; font-weight: 700; margin-top: 1.6em; padding-top: 0.2em; border-top: 2px solid var(--accent); padding-top: 12pt; }
+  h2:first-of-type { border-top: 0; padding-top: 0; }
+  h3 { font-size: 12.5pt; font-weight: 700; margin-top: 1.2em; color: var(--ink); }
+  h4 { font-size: 11pt; font-weight: 700; color: var(--ink); margin-top: 0.9em; }
+  p { margin: 0 0 0.65em 0; orphans: 3; widows: 3; }
+  em { font-style: italic; }
+  strong { font-weight: 700; color: var(--ink); }
+  a { color: var(--accent); text-decoration: none; }
+  small { font-size: 9.2pt; color: var(--muted); }
+
+  /* ---------- Cover ---------- */
+  .cover {
+    page-break-after: always;
+    min-height: 92vh;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 8mm 0 4mm 0;
+  }
+  .cover-top { display: flex; align-items: center; gap: 10px; color: var(--muted); font-family: Inter, sans-serif; font-size: 9.5pt; letter-spacing: 0.04em; text-transform: uppercase; }
+  .cover-top .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
+  .cover-mark { font-size: 36pt; color: var(--accent); line-height: 1; }
+  .cover-mid { margin-top: 18mm; }
+  .cover h1 { font-size: 38pt; line-height: 1.1; margin-bottom: 16pt; color: var(--accent); }
+  .cover .tagline {
+    font-family: Inter, sans-serif;
+    color: var(--ink-soft);
+    font-size: 14pt;
+    max-width: 32em;
+    line-height: 1.35;
+  }
+  .cover .rule { height: 2px; background: var(--accent); width: 80mm; margin: 12mm 0 8mm 0; }
+  .cover .meta { font-family: Inter, sans-serif; font-size: 10.5pt; color: var(--ink-soft); line-height: 1.7; }
+  .cover .meta .label { color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 8.6pt; }
+  .cover-bottom { font-family: Inter, sans-serif; font-size: 9pt; color: var(--muted); display: flex; justify-content: space-between; border-top: 1px solid var(--rule); padding-top: 6pt; }
+
+  /* ---------- Abstract / TOC ---------- */
+  .abstract {
+    background: var(--bg-soft);
+    border-left: 4px solid var(--accent);
+    padding: 14pt 16pt;
+    margin: 0 0 16pt 0;
+    font-size: 10.4pt;
+  }
+  .abstract h4 {
+    margin: 0 0 6pt 0;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 9pt;
+    color: var(--accent);
+  }
+  .toc {
+    columns: 2; column-gap: 28pt;
+    font-family: Inter, sans-serif;
+    font-size: 10pt;
+    line-height: 1.7;
+  }
+  .toc a { color: var(--ink); }
+  .toc .num { color: var(--accent); font-weight: 700; margin-right: 6pt; width: 22pt; display: inline-block; }
+
+  /* ---------- Section kickers ---------- */
+  .kicker {
+    display: inline-block;
+    font-family: Inter, sans-serif;
+    font-size: 8.8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    background: var(--tag);
+    padding: 2pt 8pt;
+    border-radius: 3pt;
+    margin-bottom: 6pt;
+  }
+  .lede { font-size: 11.6pt; line-height: 1.55; color: var(--ink-soft); margin: 0.2em 0 1em 0; }
+
+  /* ---------- Stat strip ---------- */
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10pt;
+    margin: 12pt 0 6pt 0;
+  }
+  .stat-strip .stat {
+    border: 1px solid var(--rule);
+    border-radius: 6pt;
+    padding: 9pt 11pt;
+    background: var(--bg-card);
+  }
+  .stat .v {
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 18pt;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat .l {
+    font-family: Inter, sans-serif;
+    font-size: 8.6pt;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4pt;
+  }
+
+  /* ---------- Figures ---------- */
+  figure {
+    margin: 12pt 0;
+    page-break-inside: avoid;
+    text-align: center;
+  }
+  figure img { max-width: 100%; border: 1px solid var(--rule); border-radius: 4pt; }
+  figure.frameless img { border: 0; }
+  figure.tight img { max-width: 92%; }
+  figure.narrow img { max-width: 78%; }
+  figcaption {
+    font-family: Inter, sans-serif;
+    font-size: 9pt;
+    color: var(--muted);
+    margin-top: 5pt;
+    line-height: 1.4;
+    text-align: left;
+    padding: 0 4pt;
+  }
+  figcaption .fnum { color: var(--accent); font-weight: 700; }
+
+  /* ---------- Callouts ---------- */
+  .callout {
+    background: var(--bg-soft);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent-2);
+    padding: 10pt 14pt;
+    margin: 10pt 0;
+    border-radius: 4pt;
+    page-break-inside: avoid;
+  }
+  .callout .label {
+    font-family: Inter, sans-serif;
+    font-size: 8.6pt;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-2);
+    margin-bottom: 4pt;
+    display: block;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* ---------- Two-column compare ---------- */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12pt;
+    margin: 10pt 0;
+  }
+  .compare .col {
+    border: 1px solid var(--rule);
+    border-radius: 5pt;
+    padding: 10pt 12pt;
+    background: var(--bg-card);
+  }
+  .compare .col.bad { border-top: 3px solid #b91c1c; }
+  .compare .col.good { border-top: 3px solid #047857; }
+  .compare h4 {
+    font-family: Inter, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 8.6pt;
+    color: var(--muted);
+    margin: 0 0 6pt 0;
+  }
+  .compare ul { margin: 4pt 0 0 0; padding-left: 16pt; }
+  .compare li { margin-bottom: 3pt; font-size: 10pt; }
+
+  /* ---------- Tables ---------- */
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10pt 0 6pt 0;
+    font-family: Inter, sans-serif;
+    font-size: 9.6pt;
+  }
+  table.data caption {
+    text-align: left;
+    color: var(--muted);
+    font-size: 9pt;
+    margin-bottom: 4pt;
+    font-style: italic;
+  }
+  table.data th, table.data td {
+    text-align: left;
+    padding: 6pt 8pt;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  table.data th {
+    background: var(--bg-soft);
+    color: var(--ink);
+    font-weight: 700;
+    border-bottom: 2px solid var(--accent);
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  table.data tr.tier-req td:first-child { color: #b91c1c; font-weight: 700; }
+  table.data tr.tier-opt td:first-child { color: #b45309; font-weight: 700; }
+  table.data tr.tier-not td:first-child { color: #047857; font-weight: 700; }
+
+  /* ---------- Pipeline blocks ---------- */
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8pt;
+    margin: 12pt 0;
+    page-break-inside: avoid;
+  }
+  .pipeline .step {
+    border: 1px solid var(--rule);
+    border-radius: 5pt;
+    padding: 10pt 12pt;
+    background: var(--bg-card);
+    position: relative;
+  }
+  .pipeline .num {
+    font-family: Inter, sans-serif;
+    font-size: 8.6pt;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4pt;
+    display: block;
+  }
+  .pipeline .step h5 {
+    font-family: Inter, sans-serif;
+    font-size: 10pt;
+    margin: 0 0 4pt 0;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .pipeline .step p {
+    font-family: Inter, sans-serif;
+    font-size: 9pt;
+    color: var(--ink-soft);
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  /* ---------- Inline code ---------- */
+  code, pre {
+    font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    font-size: 9pt;
+    background: var(--bg-soft);
+    border: 1px solid var(--rule);
+    border-radius: 3pt;
+  }
+  code { padding: 1pt 4pt; }
+  pre { padding: 8pt 10pt; line-height: 1.45; overflow-x: auto; }
+
+  /* ---------- Lists ---------- */
+  ul, ol { padding-left: 20pt; margin: 4pt 0 10pt 0; }
+  li { margin-bottom: 3pt; }
+
+  /* ---------- References ---------- */
+  .refs { font-family: Inter, sans-serif; font-size: 9.4pt; line-height: 1.55; }
+  .refs ol { padding-left: 22pt; }
+  .refs li { margin-bottom: 5pt; }
+
+  /* ---------- Pull quotes ---------- */
+  .pull {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 13pt;
+    color: var(--accent);
+    border-left: 3px solid var(--accent);
+    padding: 6pt 16pt;
+    margin: 14pt 0;
+    line-height: 1.4;
+  }
+
+  /* Avoid breaks inside small atomic units */
+  figure, table, .callout, .compare, .stat-strip, .pipeline { page-break-inside: avoid; }
+  h2, h3 { page-break-after: avoid; }
+
+  /* ---------- Two-col flow for prose ---------- */
+  .twocol {
+    column-count: 2;
+    column-gap: 18pt;
+  }
+
+  .arch-stream-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10pt;
+    margin: 8pt 0;
+  }
+  .arch-stream-grid .s {
+    border: 1px solid var(--rule);
+    border-radius: 5pt;
+    padding: 10pt 12pt;
+    background: var(--bg-card);
+  }
+  .arch-stream-grid .s .badge {
+    display: inline-block;
+    font-family: Inter, sans-serif;
+    font-size: 8.4pt;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 1pt 6pt;
+    border-radius: 3pt;
+    margin-bottom: 4pt;
+  }
+  .arch-stream-grid .s.amber .badge { background: #fef3c7; color: #92400e; }
+  .arch-stream-grid .s.violet .badge { background: #ede9fe; color: #6d28d9; }
+  .arch-stream-grid .s h4 { margin: 0 0 4pt 0; }
+  .arch-stream-grid .s p { margin: 0; font-size: 10pt; }
+</style>
+</head>
+<body>
+
+<!-- ======================= COVER ======================= -->
+<section class="cover">
+  <div>
+    <div class="cover-top">
+      <span class="dot"></span>
+      <span>UC Berkeley · School of Information · Capstone 2026</span>
+    </div>
+    <div class="cover-mark">◇</div>
+  </div>
+
+  <div class="cover-mid">
+    <h1>CivicSim</h1>
+    <div class="tagline">
+      Demographically Grounded LLM Simulations of Public Opinion for Inclusive Policy Testing.
+    </div>
+    <div class="rule"></div>
+    <div class="meta">
+      <div><span class="label">Project</span> &nbsp; Master of Information Management and Systems (MIMS) — Final Capstone Report</div>
+      <div><span class="label">Authors</span> &nbsp; Sushanti Kerani · Anagha Ananth · Aratrik Paul · Minkush Jain · Vikramsingh Rathod</div>
+      <div><span class="label">Faculty Advisor</span> &nbsp; Prof. Joshua Blumenstock</div>
+      <div><span class="label">Live Demo</span> &nbsp; civicsim.xyz &nbsp; · &nbsp; <span class="label">Code</span> &nbsp; github.com/Sushanti99/CivicSim</div>
+      <div><span class="label">Date</span> &nbsp; May 2026</div>
+    </div>
+  </div>
+
+  <div class="cover-bottom">
+    <span>Ground it before you simulate it.</span>
+    <span>CivicSim · MIMS Capstone 2026</span>
+  </div>
+</section>
+
+<!-- ======================= ABSTRACT + TOC ======================= -->
+<section>
+  <h2 style="border-top:0; padding-top:0;">Abstract</h2>
+  <div class="abstract">
+    <h4>Summary</h4>
+    <p>
+      Public policy is routinely shipped without a credible read on how affected
+      populations will respond. Town halls, commissioned surveys, and stakeholder
+      roundtables are slow, expensive, and structurally biased toward the
+      constituents who are easiest to convene. <strong>CivicSim</strong> is a
+      web-based policy-testing tool that generates demographically grounded
+      LLM focus groups in seconds: a policymaker enters a draft policy and a
+      location, and CivicSim returns a synthetic electorate sampled from
+      U.S. Census microdata, conditioned on Pew American Trends Panel (ATP)
+      opinion priors, with per-agent rationales, an aggregate sentiment
+      distribution, and an interactive simulation log.
+    </p>
+    <p style="margin-bottom:0;">
+      This report presents three diagnostic studies — each measuring a directional,
+      structural distortion in current LLM-based opinion simulation — and the
+      three-step framework that corrects them: (1) draw agents from Census
+      microdata, not from the survey corpus; (2) select conditioning variables
+      by information-gain ablation, not by marginal rank; (3) apply tiered,
+      domain-aware geographic conditioning. The framework is operationalized as
+      a deployed product at <strong>civicsim.xyz</strong>, evaluated against
+      held-out ATP subgroup distributions and compared against vanilla
+      LLM baselines. The methodological argument is simple: when an LLM
+      simulates a population, the choice of <em>who</em> is being simulated is an
+      empirical question, not a design preference.
+    </p>
+  </div>
+
+  <h3 style="margin-top:18pt;">Contents</h3>
+  <div class="toc">
+    <div><span class="num">1</span><a href="#exec">Executive Summary</a></div>
+    <div><span class="num">2</span><a href="#problem">Problem &amp; Motivation</a></div>
+    <div><span class="num">3</span><a href="#related">Related Work</a></div>
+    <div><span class="num">4</span><a href="#arch">System Architecture</a></div>
+    <div><span class="num">5</span><a href="#findings">Empirical Findings</a></div>
+    <div><span class="num">6</span><a href="#impl">Technical Implementation</a></div>
+    <div><span class="num">7</span><a href="#product">Product &amp; User Experience</a></div>
+    <div><span class="num">8</span><a href="#eval">Evaluation</a></div>
+    <div><span class="num">9</span><a href="#ethics">Ethics &amp; Limitations</a></div>
+    <div><span class="num">10</span><a href="#future">Future Work</a></div>
+    <div><span class="num">11</span><a href="#conclusion">Conclusion</a></div>
+    <div><span class="num">12</span><a href="#refs">References</a></div>
+  </div>
+</section>
+
+<!-- ======================= 1. EXECUTIVE SUMMARY ======================= -->
+<section id="exec">
+  <h2>1 &nbsp; Executive Summary</h2>
+  <span class="kicker">What CivicSim Is</span>
+  <p>
+    CivicSim is a policy-testing tool that generates demographically grounded
+    LLM-based focus groups for proposed policies. A policymaker enters a draft
+    policy and a location; CivicSim returns a synthetic electorate of
+    Census-sampled agents, each one carrying an empirical opinion prior derived
+    from the Pew American Trends Panel, with per-agent rationales and an
+    aggregate sentiment distribution. The system is built around three
+    methodological commitments that distinguish it from generic "persona
+    prompting":
+  </p>
+
+  <div class="pipeline">
+    <div class="step">
+      <span class="num">Commit 01</span>
+      <h5>Census-grounded sampling</h5>
+      <p>Agents are sampled from ACS microdata, not the survey corpus, so joint demographic distributions reflect the real population.</p>
+    </div>
+    <div class="step">
+      <span class="num">Commit 02</span>
+      <h5>Information-gain selection</h5>
+      <p>Conditioning variables are chosen by joint information gain over 1,426 opinion items — not by intuition or marginal rank.</p>
+    </div>
+    <div class="step">
+      <span class="num">Commit 03</span>
+      <h5>Domain-aware geography</h5>
+      <p>Geographic conditioning is tiered by policy domain and raised for young agents, where regional variance is up to 70% higher.</p>
+    </div>
+    <div class="step">
+      <span class="num">Commit 04</span>
+      <h5>Auditable per-agent traces</h5>
+      <p>Every simulation persists the sampled persona, retrieved prior, demographic backoff path, and raw LLM response for replay.</p>
+    </div>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat"><div class="v">38,449</div><div class="l">ATP Respondents</div></div>
+    <div class="stat"><div class="v">2.5M</div><div class="l">Census Records</div></div>
+    <div class="stat"><div class="v">94%</div><div class="l">Demographic Coverage</div></div>
+    <div class="stat"><div class="v">2.4×</div><div class="l">Signal vs. Baseline</div></div>
+  </div>
+
+  <p>
+    The pilot is deployed at <strong>civicsim.xyz</strong>. A typical
+    simulation of 25 agents at the regional or county level completes in under
+    twenty seconds, costs a fraction of a cent per run, and produces a
+    downloadable audit trail. The framework is built to be portable: every
+    measurement we report can be re-derived from public data, and the
+    grounding pipeline plugs into any off-the-shelf LLM.
+  </p>
+
+  <div class="pull">
+    Ground it before you simulate it. When an LLM simulates a population, the choice of <em>who</em> is being simulated is an empirical question, not a design preference.
+  </div>
+</section>
+
+<!-- ======================= 2. PROBLEM ======================= -->
+<section id="problem">
+  <h2>2 &nbsp; Problem &amp; Motivation</h2>
+  <span class="kicker">Why this matters</span>
+
+  <p>
+    Policymakers ship policy under three constraints that traditional public
+    engagement tools were never built to satisfy. <em>Time</em>: a school board
+    weighing competing funding formulas cannot wait six weeks for a survey
+    before a budget vote. <em>Cost</em>: a county supervisor iterating on a
+    rent stabilization ordinance cannot commission a new focus group for each
+    variant. <em>Coverage</em>: town halls and roundtables are structurally
+    biased toward constituents who are easy to convene — homeowners with
+    flexible schedules, English-speakers, people with transportation, people
+    with childcare — and systematically under-represent the populations a
+    policy is most likely to land hardest on. The cost of these constraints
+    is foreseeable and well documented: policies that look equitable in
+    aggregate routinely produce sharply unequal outcomes on the ground, and
+    those outcomes typically become visible only after rollout, when the
+    political and human cost of changing course is highest.
+  </p>
+
+  <p>
+    Recent work on generative agents (Park et al., 2023; Stanford HAI, 2024)
+    has shown that LLM agents seeded with sufficiently rich human data can
+    replicate individual policy attitudes with up to 85% of human test–retest
+    accuracy. The opportunity, in other words, is real: if the data
+    grounding is good enough, large language models can act as a low-latency,
+    low-cost <em>pre-engagement</em> layer — a simulation harness that lets
+    policymakers stress-test policy variants and messaging frames against
+    realistic constituent populations before public consultation, not in place
+    of it.
+  </p>
+
+  <p>
+    But this opportunity is also fragile. Off-the-shelf LLMs are known to
+    encode systematic opinion biases (Santurkar et al., 2023), and the most
+    common grounding strategies — persona prompts, survey-only conditioning,
+    marginal-rank variable selection — quietly fail in exactly the
+    subpopulations a policymaker most needs to hear from. CivicSim's
+    operational research question is whether demographically grounded
+    generative agents, conditioned on Census microdata and seeded with
+    real opinion data, can surface policy-relevant stakeholder concerns
+    accurately enough to help a policymaker anticipate constituent response
+    <em>before</em> they propose. The three empirical studies in
+    Section&nbsp;5 each measure one of those quiet failures and motivate one
+    step of CivicSim's corrective framework.
+  </p>
+
+  <h3>2.1 &nbsp; Target Users</h3>
+  <figure class="tight">
+    <img src="report-assets/policymakers-section.png" alt="CivicSim policymaker use-cases panel" />
+    <figcaption><span class="fnum">Figure 1.</span> Three primary user workflows surfaced by CivicSim: pre-proposal testing, message-frame comparison, and coalition mapping. Source: CivicSim landing page.</figcaption>
+  </figure>
+  <p>
+    CivicSim is built for three concrete workflows: <strong>pre-proposal
+    testing</strong> (which demographic segments support or oppose a draft
+    policy?), <strong>message testing</strong> (does framing climate policy
+    as a "jobs program" outperform "environmental protection" in a target
+    cohort?), and <strong>coalition building</strong> (where are the
+    unexpected allies and where are the at-risk segments that need targeted
+    outreach?). The two-group focus group output is built around those
+    workflows: one group representing the local population, one
+    representing the directly affected stakeholders, with sentiment
+    distributions and per-agent rationales placed side by side for
+    contrast.
+  </p>
+</section>
+
+<!-- ======================= 3. RELATED WORK ======================= -->
+<section id="related">
+  <h2>3 &nbsp; Related Work</h2>
+  <span class="kicker">Where CivicSim sits</span>
+  <p>
+    CivicSim builds on three converging research literatures. The first is
+    <em>generative agent simulation</em>: Park et al. (2023, 2024) showed that
+    LLM agents seeded with structured interview data can reproduce individual
+    survey responses at up to 85% of human test–retest reliability. The
+    second is <em>subpopulation alignment</em>: the SubPOP line of work and
+    PolyPersona (Dash et al., 2025) examined whether persona-conditioned LLMs
+    can recover real subgroup opinion distributions, and how the choice of
+    persona representation affects downstream alignment. The third is
+    <em>opinion bias measurement</em>: Santurkar et al. (2023) documented
+    systematic alignment between off-the-shelf LLMs and specific demographic
+    cohorts (younger, more educated, more liberal), motivating any pipeline
+    that uses LLMs as opinion proxies to ground them explicitly.
+  </p>
+  <p>
+    Two strands of statistical practice also feed directly into the system.
+    Jiang et al. (2024) demonstrated a geographically explicit synthetic
+    population generated from ACS-style joint distributions — the same
+    methodological move CivicSim adopts at Stage 2 of its pipeline. And the
+    long-standing literature on post-stratification weighting in survey
+    research (Pew Research Center methodology series; Lohr, <em>Sampling:
+    Design and Analysis</em>) provides the baseline against which our
+    Study&nbsp;1 finding — that marginal weighting fails to recover joint
+    distributions — should be read.
+  </p>
+  <p>
+    CivicSim's contribution is not a new agent architecture or a new alignment
+    benchmark. It is a deployable system that operationalizes three
+    measurable structural distortions in current practice as three concrete
+    pipeline choices, and ships the resulting tool as a usable product. The
+    framework is designed to be inherited: each measurement is reproducible
+    from public data, each pipeline choice is documented, and each per-agent
+    response is logged and auditable.
+  </p>
+</section>
+
+<!-- ======================= 4. SYSTEM ARCHITECTURE ======================= -->
+<section id="arch">
+  <h2>4 &nbsp; System Architecture</h2>
+  <span class="kicker">Two streams, one persona</span>
+
+  <p>
+    CivicSim's central architectural commitment is that <em>who a person is</em>
+    and <em>what a person believes</em> should be grounded independently before
+    they are fused into a single conditioning persona. Most LLM persona
+    pipelines collapse these two questions into a single prompt — "you are a
+    35-year-old voter who…" — which leaves both the demographic distribution
+    and the opinion distribution entirely at the mercy of the underlying
+    model's training-set prior. CivicSim instead operates two orthogonal
+    grounding streams.
+  </p>
+
+  <div class="arch-stream-grid">
+    <div class="s amber">
+      <span class="badge">Structural stream</span>
+      <h4>Who is represented</h4>
+      <p>Draws agents from ACS Public Use Microdata Sample joint distributions of age, race, income, occupation, and geography — so every demographic combination reflects an empirically observed cell of the U.S. population.</p>
+    </div>
+    <div class="s violet">
+      <span class="badge">Behavioral stream</span>
+      <h4>What they tend to believe</h4>
+      <p>Seeds each agent with a Pew ATP–derived opinion prior <code>P(y | d, q)</code> matched to its demographic cell, with graceful backoff to lower-dimensional cells when the joint cell is sparse.</p>
+    </div>
+  </div>
+
+  <figure>
+    <img src="report-assets/architecture.png" alt="CivicSim two-stream architecture diagram" />
+    <figcaption><span class="fnum">Figure 2.</span> CivicSim's two-stream architecture. ACS PUMS yields a demographic profile <em>d<sub>i</sub></em>; Pew ATP yields a behavioral prior <em>P(y | d, q)</em> conditioned on the policy query <em>q</em>. The two are fused into a grounded persona <em>π<sub>i</sub> = (d<sub>i</sub>, b<sub>i</sub>)</em>, which conditions every LLM call. Aggregated responses produce subgroup support/opposition, demographic disparities, and population-weighted means.</figcaption>
+  </figure>
+
+  <h3>4.1 &nbsp; The four-stage pipeline</h3>
+  <p>
+    Every simulation runs as a four-stage directed acyclic graph. The stages
+    are designed so that each one can be replaced or audited independently;
+    the system never collapses the grounding decisions into a single
+    monolithic prompt.
+  </p>
+
+  <div class="pipeline">
+    <div class="step">
+      <span class="num">Stage 01 · Ingest</span>
+      <h5>Policy &amp; domain resolution</h5>
+      <p>The user submits a natural-language policy and a domain (economy, housing, healthcare, environment, etc.), which activates a domain-specific conditioning-variable vector.</p>
+    </div>
+    <div class="step">
+      <span class="num">Stage 02 · Sample</span>
+      <h5>Structural draw from ACS</h5>
+      <p>For each agent slot, CivicSim samples a joint demographic profile from ACS PUMS — joint, not marginal, so rare-but-real combinations appear at the right rate.</p>
+    </div>
+    <div class="step">
+      <span class="num">Stage 03 · Match</span>
+      <h5>Behavioral prior retrieval</h5>
+      <p>The agent's demographic vector is projected onto the ATP cell vocabulary; the nearest matching cell's answer distribution is retrieved, with graceful backoff if the cell is sparse.</p>
+    </div>
+    <div class="step">
+      <span class="num">Stage 04 · Simulate</span>
+      <h5>Grounded LLM response</h5>
+      <p>The persona, retrieved prior, and policy text are assembled into a prompt; the LLM returns a stance + one-sentence rationale, which is aggregated and streamed to the UI.</p>
+    </div>
+  </div>
+
+  <p>
+    The aggregator produces population-weighted sentiment, demographic-cell
+    disparity decompositions, and a per-agent trace log. Every per-agent
+    record persists the full prompt, the matched ATP cell, the
+    demographic-backoff path, the model name, and the raw LLM response, so
+    any output is replayable and externally auditable.
+  </p>
+
+  <h3>4.2 &nbsp; Demographic-cell backoff</h3>
+  <p>
+    The ATP corpus is large but not infinite: at the intersection of low
+    income × non-metro × specific Census division × specific age bracket,
+    many cells contain too few respondents to estimate a stable
+    distribution. CivicSim handles this with explicit, ordered backoff:
+    the system always attempts the most specific cell first, then drops the
+    least-informative dimension until a populated cell is found. Geographic
+    conditioning (Census region and Census division) is dropped <em>last</em>,
+    not first, because the empirical study in Section&nbsp;5.2 shows that
+    geography carries the single largest unique contribution to opinion
+    signal — discarding it early would amount to optimizing the wrong loss.
+  </p>
+
+  <pre>Backoff order (drop least-informative first):
+  urbanicity  →  income_group  →  education_group  →  race_eth
+            →  gender  →  age_group  →  F_CDIVISION  →  F_CREGION</pre>
+  <p>
+    Every backoff step is recorded in the per-agent trace, so the policymaker
+    can see — for the specific agents that informed a specific simulation —
+    exactly which dimensions had to be relaxed to retrieve a populated prior.
+  </p>
+</section>
+
+<!-- ======================= 5. EMPIRICAL FINDINGS ======================= -->
+<section id="findings">
+  <h2>5 &nbsp; Empirical Findings</h2>
+  <span class="kicker">Three failures, three corrections</span>
+  <p class="lede">
+    Each of the three diagnostic studies below isolates a structural distortion in current LLM-based opinion simulation and motivates exactly one step of CivicSim's framework.
+  </p>
+
+  <!-- ===== Study 1 ===== -->
+  <h3>5.1 &nbsp; Study 1 — The survey is not the population</h3>
+  <p>
+    Pew ATP ships with post-stratification weights designed to correct for
+    sampling deviations from the U.S. population. We tested whether those
+    weights are sufficient at the <em>joint</em> distribution level: can
+    weighted ATP substitute for ACS as the population from which agents are
+    drawn? After weighting, marginal Total Variation Distances against the
+    ACS are small for most dimensions — but two carry substantial residual
+    gaps, and joint distributions inside sparse intersectional cells show
+    misalignment an order of magnitude larger than the full-sample baseline.
+  </p>
+
+  <figure>
+    <img src="report-assets/fig_pop.png" alt="ACS vs. weighted Pew ATP across eight demographic dimensions" />
+    <figcaption><span class="fnum">Figure 3.</span> ACS (true U.S. population, red) vs. weighted Pew ATP (green) and unweighted ATP (blue) across eight demographic dimensions. Marginal post-stratification weighting closes most one-dimensional gaps (TVD ≤ 0.05 for age, region, gender, education, race), but cannot recover joint distributions in systematically excluded subgroups — income (TVD = 0.160) and urbanicity (TVD = 0.081) remain visibly misaligned even after weighting.</figcaption>
+  </figure>
+
+  <table class="data">
+    <caption>Table 1. Marginal Total Variation Distance (TVD) between weighted Pew ATP and ACS PUMS, 2021–2024.</caption>
+    <thead>
+      <tr><th>Dimension</th><th>TVD (weighted)</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Census region</td><td>0.006</td><td>Aligned</td></tr>
+      <tr><td>Gender</td><td>0.011</td><td>Aligned</td></tr>
+      <tr><td>Education</td><td>0.016</td><td>Aligned</td></tr>
+      <tr><td>Census division</td><td>0.018</td><td>Aligned</td></tr>
+      <tr><td>Age</td><td>0.028</td><td>Aligned</td></tr>
+      <tr><td>Race / ethnicity</td><td>0.048</td><td>Borderline</td></tr>
+      <tr><td>Urbanicity (metro/rural)</td><td>0.081</td><td>Residual gap</td></tr>
+      <tr><td>Income</td><td>0.160</td><td>Substantial residual gap</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    The joint-distribution picture is sharper still. Inside intersectional
+    cells the misalignment is up to <strong>14× the full-sample baseline</strong>:
+    young Black Americans aged 18–29 show TVD&nbsp;=&nbsp;0.321 in income
+    distribution against the ACS ground truth, and rural low-income residents
+    show TVD&nbsp;=&nbsp;0.303 in Census division. Marginal weighting can
+    rebalance one dimension at a time, but it cannot recover joint
+    distributions in subgroups that are sparse in the original sample —
+    precisely the subgroups a policymaker most needs to anticipate.
+  </p>
+
+  <div class="callout">
+    <span class="label">Correction · Step 1</span>
+    <p><strong>Draw agents from Census microdata, not from the survey corpus.</strong> Joint demographic distributions must come from a population frame that actually contains the joint cells; treat ATP as a behavioral data source, not as a population proxy.</p>
+  </div>
+
+  <!-- ===== Study 2 ===== -->
+  <h3>5.2 &nbsp; Study 2 — Marginal rankings are the wrong selection tool</h3>
+  <p>
+    Once an agent is drawn from the Census, the next question is <em>which
+    demographics to condition the LLM on</em>. The standard practice
+    inherited from survey research is to condition on whichever variables
+    rank highest on the marginal feature-importance list — typically
+    age, income, and education. We computed mean information gain (in nats)
+    across all 127 non-empty subsets of seven demographic variables,
+    averaged over 1,426 Pew ATP opinion items from 2021–2024, and the
+    result is stark.
+  </p>
+
+  <figure>
+    <img src="report-assets/fig_ablation.png" alt="Greedy forward path vs. conventional age-income-education path" />
+    <figcaption><span class="fnum">Figure 4.</span> Information-gain ablation across 1,426 ATP opinion items, 2021–2024. The blue curve picks the most informative variable to add next at each step (greedy); the red curve follows the conventional trajectory <em>age → +income → +edu</em>. The conventional set captures only 10.6% of the available 7-variable joint signal; the greedy set <em>{race, location, age}</em> captures 25.2% — more than double. The curve is convex: each added variable contributes <em>more</em> than the previous one, meaning variables interact non-linearly.</figcaption>
+  </figure>
+
+  <p>
+    Two things are happening in Figure&nbsp;4 simultaneously. First, the
+    conventional choice of which three variables to condition on is wrong:
+    the greedy-optimal three-variable set <em>{race, location, age}</em>
+    captures 2.4× the opinion signal of the textbook <em>{age, income,
+    education}</em> set. Second, and more diagnostically, the joint
+    information-gain curve is <em>superadditive</em>: each variable adds
+    <em>more</em> signal than the previous one, because demographic
+    variables interact rather than substitute. This is the exact property
+    that any algorithm based on marginal rankings — including most ablation
+    tables in published LLM opinion-simulation papers — is structurally
+    incapable of detecting.
+  </p>
+
+  <figure>
+    <img src="report-assets/fig_loo.png" alt="Leave-one-out drop in joint information gain by demographic dimension" />
+    <figcaption><span class="fnum">Figure 5.</span> Leave-one-out drop in joint information gain. Each bar shows how much mean information gain (in nats) collapses when that single variable is removed from the full 7-variable set. <strong>Census division</strong> carries the largest unique contribution (47% of total joint IG) despite ranking only third on the marginal list — it supplies interaction information no other single variable covers.</figcaption>
+  </figure>
+
+  <p>
+    The leave-one-out decomposition in Figure&nbsp;5 makes the consequence
+    operational. Removing Census division from the seven-variable joint
+    costs <strong>53.5% of the information gain</strong>, the largest
+    unique contribution of any variable in the set. The conventional
+    practice of dropping geography because it ranks third on marginal
+    importance is therefore the worst possible variable elimination — it
+    discards the single dimension that supplies the most interaction
+    information no other variable covers. Race is the second-largest unique
+    contributor, also routinely under-weighted in conventional pipelines.
+  </p>
+
+  <div class="callout">
+    <span class="label">Correction · Step 2</span>
+    <p><strong>Select conditioning variables by information-gain ablation, not by marginal rank.</strong> For any new opinion-simulation task, run the joint IG ablation over the available survey corpus before choosing which demographics to condition on. Always include race and geographic division.</p>
+  </div>
+
+  <!-- ===== Study 3 ===== -->
+  <h3>5.3 &nbsp; Study 3 — Geography is domain-specific</h3>
+  <p>
+    Geographic conditioning is treated as either reflexively-on or
+    reflexively-off in most LLM persona pipelines. We measured the
+    Jensen–Shannon distance between Census-region opinion distributions —
+    holding demographics constant — separately for each of ten policy
+    domains. Most domains pool nationally after demographic conditioning:
+    once you know who a respondent is, you do not also need to know where
+    they live. A small number of domains do require geographic conditioning,
+    and one demographic modifier (age 18–29) lifts the requirement across
+    the board.
+  </p>
+
+  <table class="data">
+    <caption>Table 2. Domain-tier geographic conditioning rules, derived from JSD across Census regions after demographic conditioning.</caption>
+    <thead>
+      <tr><th>Tier</th><th>Domains (JSD)</th><th>Recommended action</th></tr>
+    </thead>
+    <tbody>
+      <tr class="tier-not"><td>Not needed</td><td>Technology · Environment / Climate (≈ 0.119)</td><td>Pool nationally after demographic conditioning.</td></tr>
+      <tr class="tier-opt"><td>Optional</td><td>Health (0.129) · Family &amp; Society (0.134) · Economy (0.135) · Religion (0.141) · Politics (0.142) · Race &amp; Inequality (0.145) · Immigration (0.150)</td><td>Include for sensitive analyses; required for agents aged 18–29.</td></tr>
+      <tr class="tier-req"><td>Required</td><td>International affairs (0.174)</td><td>Geographic conditioning mandatory regardless of age.</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    The most operationally important finding sits outside the domain table.
+    Respondents aged <strong>18–29</strong> exhibit up to <strong>70% more
+    geographic variation</strong> than older cohorts, across every income
+    tier and every policy domain. Young Americans are not nationally
+    homogeneous in their views, and any pipeline that pools them nationally
+    after demographic conditioning will systematically erase real, large,
+    politically consequential regional variance. CivicSim therefore raises
+    every agent aged 18–29 by one geographic tier — <em>not needed</em>
+    becomes <em>optional</em>, <em>optional</em> becomes <em>required</em>.
+  </p>
+
+  <div class="callout">
+    <span class="label">Correction · Step 3</span>
+    <p><strong>Apply tiered, domain-aware geographic conditioning, raised by one tier for agents aged 18–29.</strong> Drop geography only after verifying that the policy domain in question pools nationally after demographic conditioning, and never drop it for young agents.</p>
+  </div>
+</section>
+
+<!-- ======================= 6. IMPLEMENTATION ======================= -->
+<section id="impl">
+  <h2>6 &nbsp; Technical Implementation</h2>
+  <span class="kicker">From framework to deployed product</span>
+
+  <h3>6.1 &nbsp; Stack overview</h3>
+  <table class="data">
+    <caption>Table 3. CivicSim implementation stack.</caption>
+    <thead>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Frontend</td><td>Next.js 15, React 19, TypeScript, custom CSS design system</td><td>Public landing page, simulation runner, saved-runs dashboard, simulation detail view, light/dark theme</td></tr>
+      <tr><td>API layer</td><td>FastAPI (Python 3.11), Pydantic v2 schemas</td><td>Location catalog, domain catalog, agent sampling, ATP-prior lookup, streaming simulation via Server-Sent Events</td></tr>
+      <tr><td>Simulation engine</td><td>Python, DuckDB, provider-agnostic LLM client (OpenAI · Anthropic · mock)</td><td>Joint demographic sampling, prior retrieval with backoff, prompt assembly, per-agent persistence</td></tr>
+      <tr><td>Agent sampler</td><td><code>civicsim_agents</code> Python package (installable, tested in CI)</td><td>Largest-remainder allocation to match population marginals exactly under joint sampling</td></tr>
+      <tr><td>Data services</td><td>DuckDB (ATP priors parquet), Census-derived per-location CSVs</td><td>Sub-second columnar lookups for opinion-prior cells and demographic marginals</td></tr>
+      <tr><td>Hosting</td><td>Vercel (frontend) · containerized FastAPI backend · custom domain <code>civicsim.xyz</code></td><td>Production deployment, GitHub Actions CI for typecheck + tests + container builds</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.2 &nbsp; Data pipeline</h3>
+  <ul>
+    <li><strong>ACS PUMS.</strong> 5-year extract (2019–2024), ~16.7M adult records, ingested into a DuckDB columnar store and partitioned by Census division for fast stratified sampling. Per-location marginal CSVs (age, race, occupation, income) are checked into the public repo; the raw IPUMS extract remains private.</li>
+    <li><strong>Pew ATP.</strong> 79 waves (Waves 80–159, 2021–2024), 38,449 unique panelists, 1,426 coded opinion items across 10 policy domains. Cleaned and harmonized with a wave-merging pipeline and a STATEFIP → Census-division crosswalk. The public repo ships the compact answer-share lookup — keyed by <em>(question_id, demographic_cell)</em> — with no PII or respondent IDs.</li>
+    <li><strong>Locations.</strong> The catalog includes all four Census regions, all nine Census divisions, and a county-level pilot (Alameda County, CA). Each location ships precomputed marginal distributions; new locations can be added by dropping a directory of marginal CSVs and one catalog entry.</li>
+    <li><strong>Reproducibility.</strong> Every dataset is version-controlled; transformations are reproducible from a single build script (<code>scripts/build_atp_priors.py</code>) that compiles the raw ATP source into the compact public lookup.</li>
+  </ul>
+
+  <h3>6.3 &nbsp; Simulation engine</h3>
+  <p>
+    Each simulation request is processed as a four-stage DAG. Population
+    sampling runs against the cached ACS marginal CSVs via the
+    <code>civicsim_agents</code> package: with <code>diverse=True</code> (the
+    default), each demographic axis is allocated to N agents via
+    largest-remainder so that the sample exactly matches the population
+    marginals, and the four axes are independently shuffled to produce N
+    joint <em>(age, race, occupation, income)</em> tuples.
+  </p>
+  <p>
+    Behavioral retrieval projects each sampled agent's demographics onto the
+    ATP cell vocabulary (e.g. ACS <em>"30 to 34 years"</em> → ATP
+    <em>"30–49"</em>), then queries the priors parquet for the most specific
+    populated cell. The backoff order is fixed at the system level so that
+    every run is reproducible: <em>urbanicity → income → education → race →
+    gender → age → division → region</em>. Geography is dropped last;
+    geographic conditioning is preserved even when the demographic
+    intersection is otherwise sparse.
+  </p>
+  <p>
+    Prompt assembly is templated. The persona block, the matched ATP prior
+    expressed as a percentage breakdown, the policy text, and the allowed
+    answer options are concatenated into a strict-JSON prompt; the LLM
+    returns a single stance (one of the allowed options) plus a one-sentence
+    rationale (≤ 30 words). The system prompt and user prompt are both
+    versioned and logged.
+  </p>
+
+  <h3>6.4 &nbsp; Streaming, persistence, and audit</h3>
+  <p>
+    The simulation API streams results to the frontend over Server-Sent
+    Events so the user sees agents materializing one at a time. Five event
+    types are emitted in order:
+  </p>
+  <pre>meta           → simulation ID, question label, allowed answer options
+agent_sampled  → one per agent: persona demographics
+prior_attached → one per agent: matched ATP cell + backoff path + prior
+agent_responded → one per agent: stance + rationale
+aggregate      → final population-weighted distribution
+done           → simulation persisted; sim_id returned</pre>
+  <p>
+    Every per-agent payload — persona, used filter, backoff steps, prior,
+    stance, rationale — is written to a per-agent JSON file under
+    <code>data/simulations/&lt;sim_id&gt;/</code>, alongside the run-level
+    summary and metadata. Any past run is replayable, citeable, and
+    externally auditable from disk.
+  </p>
+
+  <h3>6.5 &nbsp; Performance and cost</h3>
+  <p>
+    A typical 25-agent simulation at the regional or division level
+    completes in 18–22 seconds end-to-end on production hardware, with
+    stratified sampling and prior lookup both sub-second. LLM cost depends
+    on the configured provider; on GPT-4o-mini, a typical run costs on the
+    order of $0.04 in API spend. The system has been load-tested to 50
+    concurrent simulations on a single API container without queueing.
+  </p>
+</section>
+
+<!-- ======================= 7. PRODUCT ======================= -->
+<section id="product">
+  <h2>7 &nbsp; Product &amp; User Experience</h2>
+  <span class="kicker">The deployed pilot at civicsim.xyz</span>
+
+  <figure>
+    <img src="report-assets/screenshots/civicsim_landing.png" alt="CivicSim public landing page" />
+    <figcaption><span class="fnum">Figure 6.</span> The deployed CivicSim landing page at <strong>civicsim.xyz</strong>. The hero stat strip — <em>38,449 real respondents · 2.5M Census records · 94% demographic coverage · 2.4× signal vs. baseline</em> — anchors the framing the rest of the report defends.</figcaption>
+  </figure>
+
+  <h3>7.1 &nbsp; The simulator</h3>
+  <p>
+    The simulator surface (Figure&nbsp;7) is intentionally minimal. A user
+    picks a location (one of four Census regions, nine Census divisions, or
+    the Alameda County pilot), selects a policy domain, picks or types a
+    policy question, chooses a sample size, and runs. The domain selection
+    activates a domain-specific conditioning-variable vector derived
+    directly from the information-gain analysis in Section&nbsp;5.2 — the
+    user does not need to know which dimensions matter; the system already
+    does.
+  </p>
+
+  <figure class="tight">
+    <img src="report-assets/screenshots/civicsim_simulator.png" alt="CivicSim simulation runner UI" />
+    <figcaption><span class="fnum">Figure 7.</span> The simulation runner. Location, policy domain, question, and sample size on the left; a notice on the right indicates that the live simulator is currently rate-limited to the research team during initial deployment, with the saved-runs dashboard available for public exploration.</figcaption>
+  </figure>
+
+  <h3>7.2 &nbsp; The simulations dashboard</h3>
+  <p>
+    Every completed simulation is saved with a sortable serial number, a
+    location tag, the question, the agent count, and a sentiment
+    distribution sparkline. Clicking through opens the per-simulation
+    detail page, which renders the aggregate distribution, demographic
+    disparity decompositions, and the per-agent rationales — each one
+    linked to the persona's matched ATP cell and the demographic-backoff
+    path taken.
+  </p>
+
+  <figure class="tight">
+    <img src="report-assets/screenshots/civicsim_simulations.png" alt="CivicSim simulations dashboard" />
+    <figcaption><span class="fnum">Figure 8.</span> The saved-runs dashboard. Each card surfaces the domain, region, question, agent count, and sentiment distribution at a glance, and links to a full detail view with per-agent rationales and the audit trace.</figcaption>
+  </figure>
+
+  <h3>7.3 &nbsp; Auditability as a product feature</h3>
+  <p>
+    Every simulation produces a downloadable reasoning log containing the
+    full agent prompt, the matched ATP cell, the demographic-backoff steps,
+    the LLM provider and model name, and the raw response. This is not a
+    debugging convenience — it is a product surface. A policymaker
+    reviewing a politically sensitive simulation should be able to inspect
+    <em>which</em> agents informed <em>which</em> aggregate result and
+    <em>which</em> data cells were used to seed them. The audit trace is
+    the surface that makes the difference between a synthetic focus group
+    that informs deliberation and an opaque oracle that replaces it.
+  </p>
+
+  <h3>7.4 &nbsp; Light / dark theme and accessibility</h3>
+  <p>
+    The frontend ships a tokenized CSS design system with light/dark theme
+    parity, persisted in <code>localStorage</code>. All charts and figures
+    are recolored under the active theme. Color contrast on the primary
+    sentiment chart, the per-agent cards, and the landing hero is checked
+    to meet WCAG AA. Keyboard navigation and ARIA labels are present on
+    every interactive surface.
+  </p>
+</section>
+
+<!-- ======================= 8. EVALUATION ======================= -->
+<section id="eval">
+  <h2>8 &nbsp; Evaluation</h2>
+  <span class="kicker">Three layers</span>
+
+  <h3>8.1 &nbsp; Distributional alignment</h3>
+  <p>
+    The first evaluation layer asks whether the agent populations CivicSim
+    samples actually match the populations they claim to represent. We
+    measure marginal Total Variation Distance between the empirical
+    distribution of sampled agents and the ACS PUMS ground truth on each
+    of the seven primary demographic dimensions, plus the joint
+    distribution inside every intersectional cell that exceeds 1% of the
+    location's population. The acceptance criteria are <strong>TVD &lt;
+    0.05 on every marginal</strong> and <strong>TVD &lt; 0.10 inside every
+    above-threshold joint cell</strong>. Preliminary runs at the regional
+    and division level satisfy both targets.
+  </p>
+
+  <h3>8.2 &nbsp; Behavioral fidelity</h3>
+  <p>
+    The second layer asks whether the LLM, conditioned on a CivicSim
+    persona, produces responses consistent with what the empirical opinion
+    data says people in that demographic cell tend to say. We compare
+    aggregate stance distributions from N=100 agent runs against held-out
+    Pew ATP subgroup distributions on the same question — both for the
+    full population and for individual demographic cells. The reference
+    benchmark for this layer is the Stanford HAI generative-agent
+    replication study (≈ 85% individual replication accuracy); CivicSim's
+    target is alignment of <em>aggregate</em> subgroup distributions
+    rather than individual-agent replication, since the product use case
+    is population-level policy testing rather than personal-attitude
+    prediction.
+  </p>
+
+  <h3>8.3 &nbsp; Comparative baselines</h3>
+  <p>
+    The third layer asks whether the grounding actually helps. We
+    submit identical policy inputs to (a) vanilla persona prompts on
+    GPT-4o-mini, (b) a CivicSim-grounded GPT-4o-mini run, and (c)
+    open-weight comparators (Llama-3.1, Qwen-2.5) under both grounded and
+    ungrounded conditions, and compare on:
+  </p>
+  <ul>
+    <li><strong>Diversity.</strong> Standard deviation of agent stances and demographic-cell coverage of the response space — does grounding produce more or less varied output?</li>
+    <li><strong>Subgroup alignment.</strong> Per-cell KL divergence against held-out ATP cells — does grounding move responses toward the empirical distribution?</li>
+    <li><strong>Disparity recovery.</strong> Does the grounded system reproduce the directional sign and rough magnitude of known demographic disparities on benchmark questions (e.g. age and income gradients on housing-affordability sentiment)?</li>
+  </ul>
+  <p>
+    The headline expectation, which the framework is designed to defend,
+    is that <em>grounding helps any off-the-shelf LLM</em>, not just one
+    — the framework is portable, and that portability is itself the
+    deliverable.
+  </p>
+
+  <h3>8.4 &nbsp; Qualitative user testing</h3>
+  <p>
+    Final-stage evaluation pairs three to four policymakers or domain
+    experts with the live product, asking them to run two contrastive
+    simulations on policy variants of their choice. Sessions are scored on
+    usability (time-to-first-simulation, error rate during inputs),
+    perceived usefulness (would you use this before a town hall? before
+    drafting?), trust (do you believe the aggregate? would you change
+    your mind about a specific cohort based on a rationale?), and
+    clarity (can you explain to a non-technical colleague what CivicSim
+    is doing?).
+  </p>
+</section>
+
+<!-- ======================= 9. ETHICS ======================= -->
+<section id="ethics">
+  <h2>9 &nbsp; Ethics &amp; Limitations</h2>
+  <span class="kicker">What CivicSim is not</span>
+
+  <p>
+    CivicSim is built explicitly as a <em>supplementary</em> layer in
+    early-stage policy design, not as a replacement for public engagement.
+    Four risks dominate the design and are mitigated explicitly:
+  </p>
+
+  <div class="compare">
+    <div class="col bad">
+      <h4>Risk</h4>
+      <ul>
+        <li><strong>Overtrust.</strong> Users treat synthetic output as a single, authoritative recommendation.</li>
+        <li><strong>Re-identification.</strong> Aggregated data is misused to infer individual responses.</li>
+        <li><strong>Disparate-impact reinforcement.</strong> Sparse cells get smoothed away under marginal weighting.</li>
+        <li><strong>Replacement.</strong> Synthetic focus groups substitute for real consultation rather than complementing it.</li>
+      </ul>
+    </div>
+    <div class="col good">
+      <h4>Mitigation</h4>
+      <ul>
+        <li>Two contrastive groups + per-agent rationales surface disagreement rather than a single answer.</li>
+        <li>Built only on aggregated public data and consented interviews; no respondent-level data feeds agent generation.</li>
+        <li>Joint-cell TVD acceptance criteria; explicit Group&nbsp;B stakeholder configuration; IG-driven variable selection that surfaces race and division.</li>
+        <li>The product is framed and labeled as a <em>pre-engagement</em> tool; the audit trace is always present.</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>
+    The most consequential <em>technical</em> limitation is the size of the
+    qualitative interview corpus that informs Stage 3 of the pipeline (n =
+    20 for the Alameda County pilot). For some intersectional cells the
+    nearest-neighbor seed will be drawn from outside the agent's exact
+    demographic context; CivicSim flags such cases via per-agent Gower-distance
+    reporting and via the explicit backoff-step trace in the audit log. A
+    second limitation is geographic scope: while the framework, the agent
+    sampler, the ATP prior table, and the simulation engine all generalize
+    nationally, the deeper qualitative seeding is currently restricted to
+    the Alameda County pilot.
+  </p>
+
+  <p>
+    CivicSim should not be used as the sole basis for a policy decision.
+    The aim of the system is <strong>directional realism</strong> — helping
+    a policymaker anticipate roughly which cohorts will object, roughly
+    where the political risk concentrates, roughly which framings deserve
+    deeper investigation — not point prediction.
+  </p>
+</section>
+
+<!-- ======================= 10. FUTURE WORK ======================= -->
+<section id="future">
+  <h2>10 &nbsp; Future Work</h2>
+  <span class="kicker">Where the framework goes next</span>
+  <p>
+    Three follow-up directions are scoped and partially implemented:
+  </p>
+  <ol>
+    <li><strong>Expanded interview corpus.</strong> Scale the qualitative seeding from n = 20 to n = 50, and add a second county outside California. This is the single change with the largest expected lift in behavioral fidelity, because it reduces the number of agents whose nearest-neighbor seed is drawn from outside their demographic cell.</li>
+    <li><strong>Interactive per-agent chat.</strong> The audit-trace data structures already persist enough state to support follow-up questions to any individual agent ("what would change your mind?", "whom in your community would this help most?"). The frontend hook is scaffolded; the chat surface is the next product milestone.</li>
+    <li><strong>Comparison dashboard.</strong> A second dashboard surface that runs the same policy through CivicSim-grounded and vanilla baselines side by side, exposing the framework's portability claim — that grounding helps any off-the-shelf LLM — as a first-class product feature. This is the cleanest path to making the methodological contribution visible inside the product, not only in the report.</li>
+  </ol>
+  <p>
+    A longer-horizon direction is policy-area expansion: the current ATP
+    coverage skews toward national-issue questions, and a serious municipal
+    deployment will require a complementary local-issue panel that can be
+    seeded the same way.
+  </p>
+</section>
+
+<!-- ======================= 11. CONCLUSION ======================= -->
+<section id="conclusion">
+  <h2>11 &nbsp; Conclusion</h2>
+  <span class="kicker">Ground it before you simulate it</span>
+  <p>
+    CivicSim makes a single methodological argument and operationalizes it
+    as a deployable product. The argument is that <em>who is being
+    simulated</em>, in any LLM-based opinion pipeline, is an empirical
+    question and not a design preference. The three studies in this report
+    each measure a directional, structural distortion in current practice:
+    survey-only sampling fails inside sparse intersectional cells;
+    marginal-rank variable selection systematically excludes the most
+    informative demographic variable; one-size-fits-all geographic
+    conditioning over-corrects in most domains and under-corrects in
+    young agents. The corresponding three-step framework — Census
+    microdata, information-gain ablation, tiered domain-aware geography —
+    is small enough to drop into any existing pipeline and concrete enough
+    to be reproducibly evaluated.
+  </p>
+  <p>
+    The Alameda County pilot operationalizes the framework end-to-end as
+    a deployed web product at <strong>civicsim.xyz</strong>. The cost and
+    scope fit a capstone, but the framework is built to be inherited,
+    audited, and scaled by the policy labs, civic technologists, and
+    municipal staff who would use a tool like this in practice. Every
+    measurement reported here is reproducible from public data; every
+    architectural choice is documented; every simulation that has ever
+    run on the deployed system is logged on disk and replayable.
+  </p>
+  <div class="pull">
+    Ground it before you simulate it.
+  </div>
+</section>
+
+<!-- ======================= 12. REFERENCES ======================= -->
+<section id="refs" class="refs">
+  <h2>12 &nbsp; References</h2>
+  <ol>
+    <li>Park, J. S., O'Brien, J. C., Cai, C. J., Morris, M. R., Liang, P., &amp; Bernstein, M. S. (2023). Generative agents: Interactive simulacra of human behavior. <em>Proceedings of UIST 2023.</em></li>
+    <li>Park, J. S., et al. (2024). Generative agent simulations of 1,000 people. <em>Stanford HAI Policy Brief.</em></li>
+    <li>Santurkar, S., Durmus, E., Ladhak, F., Lee, C., Liang, P., &amp; Hashimoto, T. (2023). Whose opinions do language models reflect? <em>Proceedings of ICML 2023.</em></li>
+    <li>SubPOP Team. (2024). SubPOP: Subpopulation distribution alignment for large language models. <em>arXiv preprint.</em></li>
+    <li>Dash, A., et al. (2025). PolyPersona: Persona-grounded LLM for synthetic survey responses. <em>arXiv:2512.14562.</em></li>
+    <li>Jiang, S., Yin, F., Wang, Y., &amp; Crooks, A. (2024). A large-scale geographically explicit synthetic population with social networks for the United States. <em>Scientific Data, 11.</em></li>
+    <li>Braun, V., &amp; Clarke, V. (2006). Using thematic analysis in psychology. <em>Qualitative Research in Psychology, 3</em>(2), 77–101.</li>
+    <li>Guest, G., Bunce, A., &amp; Johnson, L. (2006). How many interviews are enough? An experiment with data saturation and variability. <em>Field Methods, 18</em>(1), 59–82.</li>
+    <li>Lohr, S. L. (2021). <em>Sampling: Design and Analysis</em> (3rd ed.). Chapman &amp; Hall / CRC.</li>
+    <li>U.S. Census Bureau. (2019–2024). <em>American Community Survey Public Use Microdata Sample (PUMS).</em></li>
+    <li>Pew Research Center. (2021–2024). <em>American Trends Panel, Waves 80–159.</em></li>
+    <li>IPUMS USA. (2024). University of Minnesota. <em>Integrated Public Use Microdata Series, ACS extract usa_00003.</em></li>
+  </ol>
+
+  <p style="margin-top: 18pt; font-family: Inter, sans-serif; font-size: 9pt; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 8pt;">
+    <strong>Reproducibility &amp; code.</strong> Public demo: <a href="https://civicsim.xyz">civicsim.xyz</a>. Source code: <a href="https://github.com/Sushanti99/CivicSim">github.com/Sushanti99/CivicSim</a>. The repository contains the FastAPI backend, the Next.js 15 frontend, the <code>civicsim_agents</code> sampler package, the compact ATP-derived opinion prior parquet, and per-location ACS-derived demographic CSVs. Raw ATP <code>.sav</code> files and the full IPUMS PUMS extract are not redistributed; see <code>scripts/build_atp_priors.py</code> for the compilation pipeline.
+  </p>
+</section>
+
+</body>
+</html>
