@@ -50,9 +50,9 @@
       }
     ],
     "question_ids": [
-      "MINWAGE_W87",
-      "INFRASTRUC21A_W95",
-      "ECON1_W84"
+      "Q_MINWAGE",
+      "Q_HOUSING",
+      "Q_EDUCATION"
     ]
   },
   "environment_climate": {

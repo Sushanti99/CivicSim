@@ -15,6 +15,105 @@ import {
 
 import { AgentRecord, AnswerProb, SimulationDetail, api } from "@/lib/api";
 
+// ── hard-coded demo simulations (no backend needed) ────────────────────────────
+
+const H1B_PRIOR: AnswerProb[] = [
+  { answer_label: "Strongly support",           prob: 0.46 },
+  { answer_label: "Somewhat support",           prob: 0.27 },
+  { answer_label: "Neither support nor oppose", prob: 0.07 },
+  { answer_label: "Somewhat oppose",            prob: 0.13 },
+  { answer_label: "Strongly oppose",            prob: 0.07 },
+];
+
+const MINWAGE_PRIOR: AnswerProb[] = [
+  { answer_label: "Strongly favor",  prob: 0.44 },
+  { answer_label: "Somewhat favor",  prob: 0.28 },
+  { answer_label: "Neither",         prob: 0.08 },
+  { answer_label: "Somewhat oppose", prob: 0.12 },
+  { answer_label: "Strongly oppose", prob: 0.08 },
+];
+
+const DEMO_SIMULATIONS: Record<string, SimulationDetail> = {
+  "demo__minwage__region_west": {
+    sim_id: "demo__minwage__region_west",
+    timestamp: "2026-05-10T14:32:00Z",
+    location: "region_west",
+    domain: "economy",
+    domain_label: "Economy & Jobs",
+    question_id: "MINWAGE_W87",
+    question_label: "Should the federal minimum wage be raised to $15/hour?",
+    n: 15,
+    selected_dims: ["age_group", "income_group", "race_eth"],
+    matched_from_free_text: false,
+    summary: {
+      n: 15,
+      distribution: [
+        { answer_label: "Strongly favor",  prob: 0.33 },
+        { answer_label: "Somewhat favor",  prob: 0.27 },
+        { answer_label: "Neither",         prob: 0.07 },
+        { answer_label: "Somewhat oppose", prob: 0.20 },
+        { answer_label: "Strongly oppose", prob: 0.13 },
+      ],
+    },
+    agents: [
+      { agent_id: 1,  demographics: { agent_id: 1,  age: "25–34", income: "$30k–50k",   race: "Hispanic", occupation: "Restaurant Worker"   }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Strongly favor",  rationale: "I work two jobs and still can't make rent. A $15 minimum isn't generous — it's barely survivable. Raising the floor lifts everyone who can't negotiate for better pay." },
+      { agent_id: 2,  demographics: { agent_id: 2,  age: "35–44", income: "$30k–50k",   race: "Black",    occupation: "Healthcare Aide"     }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Strongly favor",  rationale: "I care for elderly patients 40 hours a week and still qualify for food assistance. If essential workers deserve respect, the wage floor should reflect that." },
+      { agent_id: 3,  demographics: { agent_id: 3,  age: "45–54", income: "$100k–150k", race: "White",    occupation: "Small Business Owner" }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Strongly oppose", rationale: "I run a small restaurant on thin margins. A sudden jump to $15 forces me to cut hours or close. Mandates that ignore regional cost differences punish small operators most." },
+      { agent_id: 4,  demographics: { agent_id: 4,  age: "25–34", income: "$30k–50k",   race: "White",    occupation: "Retail Worker"       }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Strongly favor",  rationale: "I've watched corporate profits grow while my wages stagnate. A federal floor makes companies compete for labor instead of racing to the bottom. Basic economics." },
+      { agent_id: 5,  demographics: { agent_id: 5,  age: "55–64", income: "$150k+",     race: "White",    occupation: "Corporate Executive"  }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Somewhat oppose", rationale: "Wage floors disrupt market signals and can reduce employment for the workers they're meant to help. Regional variation or a phased approach would be far less disruptive." },
+      { agent_id: 6,  demographics: { agent_id: 6,  age: "35–44", income: "$30k–50k",   race: "Black",    occupation: "Food Service Worker" }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Strongly favor",  rationale: "The data shows moderate minimum wages don't kill jobs — they reduce turnover and boost local spending. A $15 floor closes the gap between what workers produce and what they're paid." },
+      { agent_id: 7,  demographics: { agent_id: 7,  age: "25–34", income: "$50k–75k",   race: "Asian",    occupation: "Grad Student"        }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Strongly favor",  rationale: "The economic literature on this is pretty clear — workers below $15 spend every additional dollar locally. That multiplier effect is real. I don't see a compelling empirical case for keeping the floor where it is." },
+      { agent_id: 8,  demographics: { agent_id: 8,  age: "45–54", income: "$100k–150k", race: "White",    occupation: "Restaurant Owner"    }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Strongly oppose", rationale: "My labor costs are already 35% of revenue. Going to $15 pushes that past the margin. I've installed tablet ordering to survive. A mandate at this level finishes the job — then we argue about who was helped." },
+      { agent_id: 9,  demographics: { agent_id: 9,  age: "65+",   income: "$75k–100k",  race: "White",    occupation: "Retired Teacher"     }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Somewhat favor",  rationale: "In my career I watched a generation fall behind because wages didn't keep pace. I support raising it, but I'd feel better with a regional or indexed approach rather than a single national number." },
+      { agent_id: 10, demographics: { agent_id: 10, age: "35–44", income: "$50k–75k",   race: "Hispanic", occupation: "Construction Worker" }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Somewhat favor",  rationale: "Most of us in trades already earn above $15, but a higher floor lifts conditions across the labor market. Better low-wage jobs mean less competition and more dignity for everyone." },
+      { agent_id: 11, demographics: { agent_id: 11, age: "25–34", income: "$75k–100k",  race: "Asian",    occupation: "Software Engineer"   }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Somewhat oppose", rationale: "From a market standpoint, a national floor doesn't account for local labor conditions. $15 may be fair in San Francisco but above prevailing wages in rural areas — risking real job losses there." },
+      { agent_id: 12, demographics: { agent_id: 12, age: "45–54", income: "$50k–75k",   race: "White",    occupation: "Nurse"               }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Somewhat favor",  rationale: "Hospital support staff doing essential work earn near minimum wage. Raising the floor reduces staff turnover and improves patient care — the economic and human case align." },
+      { agent_id: 13, demographics: { agent_id: 13, age: "35–44", income: "$30k–50k",   race: "Black",    occupation: "Social Worker"       }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Somewhat favor",  rationale: "I work with families in poverty daily. Most are employed — sometimes three jobs. The minimum wage is a direct lever into household budgets. I support it, though I'd rather see it paired with rent reform." },
+      { agent_id: 14, demographics: { agent_id: 14, age: "55–64", income: "$100k–150k", race: "White",    occupation: "Economist"           }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Somewhat oppose", rationale: "The literature since Card and Krueger is more mixed than advocates suggest. Recent studies on Seattle and Chicago show meaningful disemployment for teen and low-skill workers at higher minimums — the evidence isn't settled." },
+      { agent_id: 15, demographics: { agent_id: 15, age: "25–34", income: "$30k–50k",   race: "White",    occupation: "Barista"             }, selected_dims: ["age_group","income_group","race_eth"], used_filter: {}, backoff_steps: [], prior: MINWAGE_PRIOR, stance: "Neither",         rationale: "You'd think I'd be for it — and I believe wages are too low. But I've watched my shop cut hours every time local costs spike. I want something to change, but I'm not sure this is the right lever." },
+    ] as AgentRecord[],
+  },
+  "demo__h1b_wage_policy__region_west": {
+    sim_id: "demo__h1b_wage_policy__region_west",
+    timestamp: "2026-05-14T10:00:00Z",
+    location: "region_west",
+    domain: "immigration",
+    domain_label: "Immigration",
+    question_id: "demo_h1b_wage_policy",
+    question_label: "Should H-1B be a wage-based policy?",
+    n: 15,
+    selected_dims: ["age_group", "race_eth", "income_group"],
+    matched_from_free_text: true,
+    summary: {
+      n: 15,
+      distribution: [
+        { answer_label: "Strongly support",           prob: 0.47 },
+        { answer_label: "Somewhat support",           prob: 0.27 },
+        { answer_label: "Somewhat oppose",            prob: 0.13 },
+        { answer_label: "Strongly oppose",            prob: 0.07 },
+        { answer_label: "Neither support nor oppose", prob: 0.07 },
+      ],
+    },
+    agents: [
+      { agent_id: 1,  demographics: { agent_id: 1,  age: "25–34", income: "$50k–75k",   race: "White",    occupation: "Software Engineer"   }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Strongly support",           rationale: "Wage floors protect American workers from employers who exploit H1B loopholes. Tech companies have used visa workers to suppress wages for everyone in the field — tying the visa to market wages is a necessary correction." },
+      { agent_id: 2,  demographics: { agent_id: 2,  age: "35–44", income: "$75k–100k",  race: "Asian",    occupation: "Tech Worker"          }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Somewhat oppose",             rationale: "As someone who came here on an H1B, rigid wage floors could have blocked my entry. My employer paid competitively, but smaller companies or startups often can't meet a fixed minimum. It may cut off legitimate pathways." },
+      { agent_id: 3,  demographics: { agent_id: 3,  age: "45–54", income: "$100k–150k", race: "White",    occupation: "Engineering Manager"  }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Strongly support",           rationale: "The current system allows employers to classify roles in lower-wage brackets. A wage-based policy would close that loophole while keeping immigration merit-based. It's overdue." },
+      { agent_id: 4,  demographics: { agent_id: 4,  age: "25–34", income: "$30k–50k",   race: "Hispanic", occupation: "Service Worker"       }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Strongly support",           rationale: "Service workers compete in the same labor market. When H1B visas are used to undercut wages across the board, it hurts everyone at the bottom. A wage floor protects all workers, immigrant or not." },
+      { agent_id: 5,  demographics: { agent_id: 5,  age: "55–64", income: "$150k+",     race: "White",    occupation: "Tech Executive"       }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Somewhat support",           rationale: "I understand the need for global talent, but the wage exploitation angle is real and documented. A wage floor indexed to local market rates would be a reasonable compromise that keeps the program viable." },
+      { agent_id: 6,  demographics: { agent_id: 6,  age: "35–44", income: "$50k–75k",   race: "Black",    occupation: "Healthcare Worker"    }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Strongly support",           rationale: "Wage-based policy creates equal footing. The H1B program as designed benefits corporations far more than workers. Tying it to wages shifts that balance." },
+      { agent_id: 7,  demographics: { agent_id: 7,  age: "25–34", income: "$75k–100k",  race: "Asian",    occupation: "Data Engineer"        }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Strongly oppose",             rationale: "Strict wage minimums disadvantage candidates whose skills don't yet translate to high comp. It would create a two-tier system that favors already-privileged immigrants while closing doors for emerging talent." },
+      { agent_id: 8,  demographics: { agent_id: 8,  age: "45–54", income: "$50k–75k",   race: "White",    occupation: "Skilled Tradesperson" }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Somewhat support",           rationale: "In my trade, I've seen foreign workers brought in at below-market rates. A wage requirement would level the playing field. Skilled American workers deserve fair competition." },
+      { agent_id: 9,  demographics: { agent_id: 9,  age: "35–44", income: "$30k–50k",   race: "Hispanic", occupation: "Construction Worker"  }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Strongly support",           rationale: "Wage requirements force companies to either pay fairly or hire locally. Either outcome helps workers like me who compete with underpaid visa holders. It's a simple fix to a structural problem." },
+      { agent_id: 10, demographics: { agent_id: 10, age: "65+",   income: "$100k–150k", race: "White",    occupation: "Retired Engineer"     }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Somewhat support",           rationale: "Over my career I've watched H1B get used to hold down wages in certain sectors. A wage floor is a modest reform — it doesn't close the door on skilled immigration, it just makes it fairer." },
+      { agent_id: 11, demographics: { agent_id: 11, age: "25–34", income: "$75k–100k",  race: "Asian",    occupation: "ML Researcher"        }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Somewhat oppose",             rationale: "Tech skills are global but wages aren't standardized. A rigid floor might inadvertently favor candidates from high-cost countries while closing doors for equally qualified talent from lower-cost regions." },
+      { agent_id: 12, demographics: { agent_id: 12, age: "45–54", income: "$150k+",     race: "White",    occupation: "Business Owner"       }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Neither support nor oppose", rationale: "Wage floors could slow hiring and make companies less globally competitive, but abuse of the current system is well-documented. The right outcome depends entirely on where the floor is set and how it's enforced." },
+      { agent_id: 13, demographics: { agent_id: 13, age: "35–44", income: "$50k–75k",   race: "Black",    occupation: "Educator"             }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Strongly support",           rationale: "Equitable wages are a matter of dignity. If a position merits an H1B hire, it merits a fair wage. This reform protects everyone in the workforce, regardless of where they were born." },
+      { agent_id: 14, demographics: { agent_id: 14, age: "25–34", income: "$30k–50k",   race: "White",    occupation: "Recent Graduate"      }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Strongly support",           rationale: "Just entering the workforce, I'm already competing with visa workers paid below market. A wage-based policy would make that competition fairer for new graduates like me who don't have years of leverage." },
+      { agent_id: 15, demographics: { agent_id: 15, age: "55–64", income: "$75k–100k",  race: "Asian",    occupation: "IT Consultant"        }, selected_dims: ["age_group","race_eth","income_group"], used_filter: {}, backoff_steps: [], prior: H1B_PRIOR, stance: "Somewhat support",           rationale: "Having navigated the H1B system myself, I know it can be used fairly or exploitatively. Wage requirements add accountability without eliminating the program's genuine benefits for both workers and companies." },
+    ] as AgentRecord[],
+  },
+};
+
 // ── colour palette ─────────────────────────────────────────────────────────────
 
 const ANSWER_COLORS = ["#00d4ff", "#a855f7", "#f59e0b", "#f43f5e", "#10b981", "#64748b"];
@@ -241,6 +340,12 @@ export default function SimulationDetailPage({
   const [showAllAgents, setShowAllAgents] = useState(false);
 
   useEffect(() => {
+    const demo = DEMO_SIMULATIONS[sim_id];
+    if (demo) {
+      setData(demo);
+      setLoading(false);
+      return;
+    }
     api
       .simulationDetail(sim_id)
       .then(setData)

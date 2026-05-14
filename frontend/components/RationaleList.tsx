@@ -40,9 +40,9 @@ export function RationaleList({
                 #{r.agent_id}
               </span>
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-semibold">{r.stance}</div>
+                <div className="text-base font-semibold">{r.stance}</div>
                 {a && (
-                  <div className="mt-0.5 truncate text-xs text-[color:var(--color-text-faint)]">
+                  <div className="mt-0.5 truncate text-sm text-[color:var(--color-text-dim)]">
                     {a.age} · {a.race} · {a.income}
                   </div>
                 )}
@@ -50,11 +50,11 @@ export function RationaleList({
               <span className="text-[color:var(--color-text-faint)]">{isOpen ? "−" : "+"}</span>
             </button>
             {isOpen && (
-              <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-nested)] p-4 text-sm text-[color:var(--color-text-dim)]">
+              <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-nested)] p-4 text-sm text-[color:var(--color-text)]">
                 <div className="mb-2 italic">&ldquo;{r.rationale}&rdquo;</div>
                 {r.prior.length > 0 && (
                   <div className="mt-3">
-                    <div className="text-xs uppercase tracking-wider text-[color:var(--color-text-faint)]">
+                    <div className="text-xs uppercase tracking-wider text-[color:var(--color-text-dim)]">
                       ATP prior for this agent
                     </div>
                     <ul className="mt-1 space-y-0.5 font-mono text-xs">

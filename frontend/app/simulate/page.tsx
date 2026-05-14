@@ -84,6 +84,60 @@ const H1B_RESPONSES = [
   { agent_id: 15, stance: "Somewhat support",           prior: H1B_PRIOR, rationale: "Having navigated the H1B system myself, I know it can be used fairly or exploitatively. Wage requirements add accountability without eliminating the program's genuine benefits for both workers and companies." },
 ];
 
+// ── Min-wage hard-coded demo ───────────────────────────────────────────────────
+
+function isMinWageQuestion(qId: string, text: string) {
+  if (qId && (qId.toUpperCase().includes("MINWAGE") || qId.toUpperCase().includes("MIN_WAGE"))) return true;
+  const t = text.toLowerCase();
+  return (t.includes("minimum wage") || t.includes("min wage") || t.includes("$15")) && t.length > 4;
+}
+
+const MINWAGE_SIM_ID = "demo__minwage__region_west";
+
+const MINWAGE_AGENTS = [
+  { agent_id: 1,  age: "25–34", income: "$30k–50k",   race: "Hispanic", occupation: "Restaurant Worker"   },
+  { agent_id: 2,  age: "35–44", income: "$30k–50k",   race: "Black",    occupation: "Healthcare Aide"     },
+  { agent_id: 3,  age: "45–54", income: "$100k–150k", race: "White",    occupation: "Small Business Owner" },
+  { agent_id: 4,  age: "25–34", income: "$30k–50k",   race: "White",    occupation: "Retail Worker"       },
+  { agent_id: 5,  age: "55–64", income: "$150k+",     race: "White",    occupation: "Corporate Executive"  },
+  { agent_id: 6,  age: "35–44", income: "$30k–50k",   race: "Black",    occupation: "Food Service Worker" },
+  { agent_id: 7,  age: "25–34", income: "$50k–75k",   race: "Asian",    occupation: "Grad Student"        },
+  { agent_id: 8,  age: "45–54", income: "$100k–150k", race: "White",    occupation: "Restaurant Owner"    },
+  { agent_id: 9,  age: "65+",   income: "$75k–100k",  race: "White",    occupation: "Retired Teacher"     },
+  { agent_id: 10, age: "35–44", income: "$50k–75k",   race: "Hispanic", occupation: "Construction Worker" },
+  { agent_id: 11, age: "25–34", income: "$75k–100k",  race: "Asian",    occupation: "Software Engineer"   },
+  { agent_id: 12, age: "45–54", income: "$50k–75k",   race: "White",    occupation: "Nurse"               },
+  { agent_id: 13, age: "35–44", income: "$30k–50k",   race: "Black",    occupation: "Social Worker"       },
+  { agent_id: 14, age: "55–64", income: "$100k–150k", race: "White",    occupation: "Economist"           },
+  { agent_id: 15, age: "25–34", income: "$30k–50k",   race: "White",    occupation: "Barista"             },
+];
+
+const MINWAGE_PRIOR = [
+  { answer_label: "Strongly favor",   prob: 0.44 },
+  { answer_label: "Somewhat favor",   prob: 0.28 },
+  { answer_label: "Neither",          prob: 0.08 },
+  { answer_label: "Somewhat oppose",  prob: 0.12 },
+  { answer_label: "Strongly oppose",  prob: 0.08 },
+];
+
+const MINWAGE_RESPONSES = [
+  { agent_id: 1,  stance: "Strongly favor",  prior: MINWAGE_PRIOR, rationale: "I work two jobs and still can't make rent. A $15 minimum isn't generous — it's barely survivable. Raising the floor lifts everyone who can't negotiate for better pay." },
+  { agent_id: 2,  stance: "Strongly favor",  prior: MINWAGE_PRIOR, rationale: "I care for elderly patients 40 hours a week and still qualify for food assistance. If essential workers deserve respect, the wage floor should reflect that." },
+  { agent_id: 3,  stance: "Strongly oppose", prior: MINWAGE_PRIOR, rationale: "I run a small restaurant on thin margins. A sudden jump to $15 forces me to cut hours or close. Mandates that ignore regional cost differences punish small operators most." },
+  { agent_id: 4,  stance: "Strongly favor",  prior: MINWAGE_PRIOR, rationale: "I've watched corporate profits grow while my wages stagnate. A federal floor makes companies compete for labor instead of racing to the bottom. Basic economics." },
+  { agent_id: 5,  stance: "Somewhat oppose", prior: MINWAGE_PRIOR, rationale: "Wage floors disrupt market signals and can reduce employment for the workers they're meant to help. Regional variation or a phased approach would be far less disruptive." },
+  { agent_id: 6,  stance: "Strongly favor",  prior: MINWAGE_PRIOR, rationale: "The data shows moderate minimum wages don't kill jobs — they reduce turnover and boost local spending. A $15 floor closes the gap between what workers produce and what they're paid." },
+  { agent_id: 7,  stance: "Strongly favor",  prior: MINWAGE_PRIOR, rationale: "The economic literature on this is pretty clear — workers below $15 spend every additional dollar locally. That multiplier effect is real. I don't see a compelling empirical case for keeping the floor where it is." },
+  { agent_id: 8,  stance: "Strongly oppose", prior: MINWAGE_PRIOR, rationale: "My labor costs are already 35% of revenue. Going to $15 pushes that past the margin. I've installed tablet ordering to survive. A mandate at this level finishes the job — then we argue about who was helped." },
+  { agent_id: 9,  stance: "Somewhat favor",  prior: MINWAGE_PRIOR, rationale: "In my career I watched a generation fall behind because wages didn't keep pace. I support raising it, but I'd feel better with a regional or indexed approach rather than a single national number." },
+  { agent_id: 10, stance: "Somewhat favor",  prior: MINWAGE_PRIOR, rationale: "Most of us in trades already earn above $15, but a higher floor lifts conditions across the labor market. Better low-wage jobs mean less competition and more dignity for everyone." },
+  { agent_id: 11, stance: "Somewhat oppose", prior: MINWAGE_PRIOR, rationale: "From a market standpoint, a national floor doesn't account for local labor conditions. $15 may be fair in San Francisco but above prevailing wages in rural areas — risking real job losses there." },
+  { agent_id: 12, stance: "Somewhat favor",  prior: MINWAGE_PRIOR, rationale: "Hospital support staff doing essential work earn near minimum wage. Raising the floor reduces staff turnover and improves patient care — the economic and human case align." },
+  { agent_id: 13, stance: "Somewhat favor",  prior: MINWAGE_PRIOR, rationale: "I work with families in poverty daily. Most are employed — sometimes three jobs. The minimum wage is a direct lever into household budgets. I support it, though I'd rather see it paired with rent reform." },
+  { agent_id: 14, stance: "Somewhat oppose", prior: MINWAGE_PRIOR, rationale: "The literature since Card and Krueger is more mixed than advocates suggest. Recent studies on Seattle and Chicago show meaningful disemployment for teen and low-skill workers at higher minimums — the evidence isn't settled." },
+  { agent_id: 15, stance: "Neither",         prior: MINWAGE_PRIOR, rationale: "You'd think I'd be for it — and I believe wages are too low. But I've watched my shop cut hours every time local costs spike. I want something to change, but I'm not sure this is the right lever." },
+];
+
 const ANSWER_SCALES = [
   {
     id: "support_oppose",
@@ -273,6 +327,72 @@ export default function SimulatePage() {
         });
       }
 
+      // Persist so simulations page can show the card
+      try {
+        const stored = JSON.parse(localStorage.getItem("civicsim_run_demos") ?? "[]");
+        if (!stored.includes(H1B_SIM_ID)) localStorage.setItem("civicsim_run_demos", JSON.stringify([H1B_SIM_ID, ...stored]));
+      } catch {}
+      setStatus("done");
+    } catch (err) {
+      if (ctrl.signal.aborted) return;
+      setStatus("error");
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  async function runDemoMinWage() {
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    const sig = ctrl.signal;
+    reset();
+    setStatus("running");
+
+    try {
+      await abortableDelay(400, sig);
+      flushSync(() => {
+        setSimId(MINWAGE_SIM_ID);
+        setMeta({
+          question_label: "Should the federal minimum wage be raised to $15/hour?",
+          has_prior: true,
+          prior_source_label: "Pew ATP",
+          domain_label: "Economy",
+        });
+      });
+
+      for (const agent of MINWAGE_AGENTS) {
+        await abortableDelay(120, sig);
+        flushSync(() => setAgents((prev) => [...prev, agent]));
+      }
+
+      for (const agent of MINWAGE_AGENTS) {
+        await abortableDelay(60, sig);
+        flushSync(() =>
+          setAgentPriors((prev) => { const m = new Map(prev); m.set(agent.agent_id, MINWAGE_PRIOR); return m; })
+        );
+      }
+
+      const soFar: typeof MINWAGE_RESPONSES = [];
+      for (const resp of MINWAGE_RESPONSES) {
+        await abortableDelay(700 + Math.random() * 500, sig);
+        soFar.push(resp);
+        const counts: Record<string, number> = {};
+        for (const r of soFar) counts[r.stance] = (counts[r.stance] ?? 0) + 1;
+        const dist = MINWAGE_PRIOR.map((d) => ({
+          answer_label: d.answer_label,
+          prob: (counts[d.answer_label] ?? 0) / soFar.length,
+        }));
+        flushSync(() => {
+          setResponses([...soFar]);
+          setAggregate(dist);
+        });
+      }
+
+      // Persist so simulations page can show the card
+      try {
+        const stored = JSON.parse(localStorage.getItem("civicsim_run_demos") ?? "[]");
+        if (!stored.includes(MINWAGE_SIM_ID)) localStorage.setItem("civicsim_run_demos", JSON.stringify([MINWAGE_SIM_ID, ...stored]));
+      } catch {}
       setStatus("done");
     } catch (err) {
       if (ctrl.signal.aborted) return;
@@ -284,6 +404,10 @@ export default function SimulatePage() {
   async function run() {
     if (!questionId && isH1BQuestion(freeText)) {
       await runDemoH1B();
+      return;
+    }
+    if (isMinWageQuestion(questionId, freeText)) {
+      await runDemoMinWage();
       return;
     }
 
@@ -614,15 +738,15 @@ export default function SimulatePage() {
                 {/* Big live counter */}
                 <div className="text-right">
                   <span className="font-mono text-2xl font-bold text-[color:var(--color-cyan)]">{responses.length}</span>
-                  <span className="font-mono text-lg text-[color:var(--color-text-faint)]">/{n}</span>
-                  <div className="text-[10px] text-[color:var(--color-text-faint)] uppercase tracking-wider">responded</div>
+                  <span className="font-mono text-lg text-[color:var(--color-text-dim)]">/{n}</span>
+                  <div className="text-xs text-[color:var(--color-text-dim)] uppercase tracking-wider">responded</div>
                 </div>
               </div>
 
               {/* Progress bars */}
               <div className="px-5 py-3 space-y-2.5 border-b border-[color:var(--color-border)]">
                 <div>
-                  <div className="flex justify-between text-[11px] text-[color:var(--color-text-faint)] mb-1.5">
+                  <div className="flex justify-between text-xs text-[color:var(--color-text-dim)] mb-1.5">
                     <span>Agents sampled</span>
                     <span className="font-mono">{agents.length} / {n}</span>
                   </div>
@@ -634,7 +758,7 @@ export default function SimulatePage() {
                   </div>
                 </div>
                 <div>
-                  <div className="flex justify-between text-[11px] text-[color:var(--color-text-faint)] mb-1.5">
+                  <div className="flex justify-between text-xs text-[color:var(--color-text-dim)] mb-1.5">
                     <span>Responses collected</span>
                     <span className="font-mono">{responses.length} / {n}</span>
                   </div>
@@ -663,7 +787,7 @@ export default function SimulatePage() {
           {/* ── Per-agent rationales ── */}
           {responses.length > 0 && (
             <div>
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-dim)]">
                 Per-agent rationales
               </h2>
               <RationaleList agents={agents} responses={responses} />
@@ -782,7 +906,7 @@ function LiveDistribution({
 // ── Live agent feed ──────────────────────────────────────────────────────────
 
 const STATUS_LABEL: Record<string, { text: string; cls: string }> = {
-  sampling:  { text: "sampling…",     cls: "text-[color:var(--color-text-faint)] animate-pulse" },
+  sampling:  { text: "sampling…",     cls: "text-[color:var(--color-text-dim)] animate-pulse" },
   grounded:  { text: "prior attached", cls: "text-amber-500" },
   responded: { text: "",               cls: "font-medium text-[color:var(--color-cyan)]" },
 };
@@ -813,7 +937,7 @@ function LiveAgentFeed({
             style={{ animationDelay: `${i * 35}ms` }}
           >
             {/* Number */}
-            <span className="w-5 shrink-0 text-center font-mono text-[11px] font-bold text-[color:var(--color-cyan)]">
+            <span className="w-5 shrink-0 text-center font-mono text-xs font-bold text-[color:var(--color-cyan)]">
               {agent.agent_id}
             </span>
 
@@ -833,7 +957,7 @@ function LiveAgentFeed({
               {[agent.age, agent.income, agent.race].map((val) => (
                 <span
                   key={val}
-                  className="rounded-md bg-[color:var(--color-fill-track)] px-1.5 py-0.5 text-[10px] text-[color:var(--color-text-dim)]"
+                  className="rounded-md bg-[color:var(--color-fill-track)] px-1.5 py-0.5 text-xs text-[color:var(--color-text)]"
                 >
                   {val}
                 </span>
@@ -841,7 +965,7 @@ function LiveAgentFeed({
             </div>
 
             {/* Status / stance */}
-            <span className={`shrink-0 text-right text-[11px] max-w-[130px] truncate ${cls}`}>
+            <span className={`shrink-0 text-right text-sm max-w-[140px] truncate ${cls}`}>
               {statusKey === "responded" ? response!.stance : text}
             </span>
           </div>
