@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 import {
   Agent,
@@ -14,15 +15,74 @@ import {
   api,
   simulateStream,
 } from "@/lib/api";
-import { AgentTable } from "@/components/AgentTable";
 import { DimensionSelector } from "@/components/DimensionSelector";
 import { DomainPicker } from "@/components/DomainPicker";
 import { LocationPicker } from "@/components/LocationPicker";
-import { OpinionDistribution } from "@/components/OpinionDistribution";
 import { QuestionPicker } from "@/components/QuestionPicker";
 import { RationaleList } from "@/components/RationaleList";
 
 type Status = "idle" | "running" | "done" | "error";
+
+// ── H1B demo ──────────────────────────────────────────────────────────────────
+
+function abortableDelay(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal.aborted) { reject(new DOMException("Aborted", "AbortError")); return; }
+    const id = setTimeout(resolve, ms);
+    signal.addEventListener("abort", () => { clearTimeout(id); reject(new DOMException("Aborted", "AbortError")); });
+  });
+}
+
+function isH1BQuestion(text: string) {
+  const t = text.toLowerCase();
+  return (t.includes("h1b") || t.includes("h-1b") || t.includes("h1-b")) && t.length > 4;
+}
+
+const H1B_SIM_ID = "demo__h1b_wage_policy__region_west";
+
+const H1B_AGENTS = [
+  { agent_id: 1,  age: "25–34", income: "$50k–75k",   race: "White",    occupation: "Software Engineer"  },
+  { agent_id: 2,  age: "35–44", income: "$75k–100k",  race: "Asian",    occupation: "Tech Worker"        },
+  { agent_id: 3,  age: "45–54", income: "$100k–150k", race: "White",    occupation: "Engineering Manager" },
+  { agent_id: 4,  age: "25–34", income: "$30k–50k",   race: "Hispanic", occupation: "Service Worker"     },
+  { agent_id: 5,  age: "55–64", income: "$150k+",     race: "White",    occupation: "Tech Executive"      },
+  { agent_id: 6,  age: "35–44", income: "$50k–75k",   race: "Black",    occupation: "Healthcare Worker"  },
+  { agent_id: 7,  age: "25–34", income: "$75k–100k",  race: "Asian",    occupation: "Data Engineer"      },
+  { agent_id: 8,  age: "45–54", income: "$50k–75k",   race: "White",    occupation: "Skilled Tradesperson"},
+  { agent_id: 9,  age: "35–44", income: "$30k–50k",   race: "Hispanic", occupation: "Construction Worker" },
+  { agent_id: 10, age: "65+",   income: "$100k–150k", race: "White",    occupation: "Retired Engineer"   },
+  { agent_id: 11, age: "25–34", income: "$75k–100k",  race: "Asian",    occupation: "ML Researcher"      },
+  { agent_id: 12, age: "45–54", income: "$150k+",     race: "White",    occupation: "Business Owner"     },
+  { agent_id: 13, age: "35–44", income: "$50k–75k",   race: "Black",    occupation: "Educator"           },
+  { agent_id: 14, age: "25–34", income: "$30k–50k",   race: "White",    occupation: "Recent Graduate"    },
+  { agent_id: 15, age: "55–64", income: "$75k–100k",  race: "Asian",    occupation: "IT Consultant"      },
+];
+
+const H1B_PRIOR = [
+  { answer_label: "Strongly support",             prob: 0.46 },
+  { answer_label: "Somewhat support",             prob: 0.27 },
+  { answer_label: "Neither support nor oppose",   prob: 0.07 },
+  { answer_label: "Somewhat oppose",              prob: 0.13 },
+  { answer_label: "Strongly oppose",              prob: 0.07 },
+];
+
+const H1B_RESPONSES = [
+  { agent_id: 1,  stance: "Strongly support",           prior: H1B_PRIOR, rationale: "Wage floors protect American workers from employers who exploit H1B loopholes. Tech companies have used visa workers to suppress wages for everyone in the field — tying the visa to market wages is a necessary correction." },
+  { agent_id: 2,  stance: "Somewhat oppose",             prior: H1B_PRIOR, rationale: "As someone who came here on an H1B, rigid wage floors could have blocked my entry. My employer paid competitively, but smaller companies or startups often can't meet a fixed minimum. It may cut off legitimate pathways." },
+  { agent_id: 3,  stance: "Strongly support",           prior: H1B_PRIOR, rationale: "The current system allows employers to classify roles in lower-wage brackets. A wage-based policy would close that loophole while keeping immigration merit-based. It's overdue." },
+  { agent_id: 4,  stance: "Strongly support",           prior: H1B_PRIOR, rationale: "Service workers compete in the same labor market. When H1B visas are used to undercut wages across the board, it hurts everyone at the bottom. A wage floor protects all workers, immigrant or not." },
+  { agent_id: 5,  stance: "Somewhat support",           prior: H1B_PRIOR, rationale: "I understand the need for global talent, but the wage exploitation angle is real and documented. A wage floor indexed to local market rates would be a reasonable compromise that keeps the program viable." },
+  { agent_id: 6,  stance: "Strongly support",           prior: H1B_PRIOR, rationale: "Wage-based policy creates equal footing. The H1B program as designed benefits corporations far more than workers. Tying it to wages shifts that balance." },
+  { agent_id: 7,  stance: "Strongly oppose",             prior: H1B_PRIOR, rationale: "Strict wage minimums disadvantage candidates whose skills don't yet translate to high comp. It would create a two-tier system that favors already-privileged immigrants while closing doors for emerging talent." },
+  { agent_id: 8,  stance: "Somewhat support",           prior: H1B_PRIOR, rationale: "In my trade, I've seen foreign workers brought in at below-market rates. A wage requirement would level the playing field. Skilled American workers deserve fair competition." },
+  { agent_id: 9,  stance: "Strongly support",           prior: H1B_PRIOR, rationale: "Wage requirements force companies to either pay fairly or hire locally. Either outcome helps workers like me who compete with underpaid visa holders. It's a simple fix to a structural problem." },
+  { agent_id: 10, stance: "Somewhat support",           prior: H1B_PRIOR, rationale: "Over my career I've watched H1B get used to hold down wages in certain sectors. A wage floor is a modest reform — it doesn't close the door on skilled immigration, it just makes it fairer." },
+  { agent_id: 11, stance: "Somewhat oppose",             prior: H1B_PRIOR, rationale: "Tech skills are global but wages aren't standardized. A rigid floor might inadvertently favor candidates from high-cost countries while closing doors for equally qualified talent from lower-cost regions." },
+  { agent_id: 12, stance: "Neither support nor oppose", prior: H1B_PRIOR, rationale: "Wage floors could slow hiring and make companies less globally competitive, but abuse of the current system is well-documented. The right outcome depends entirely on where the floor is set and how it's enforced." },
+  { agent_id: 13, stance: "Strongly support",           prior: H1B_PRIOR, rationale: "Equitable wages are a matter of dignity. If a position merits an H1B hire, it merits a fair wage. This reform protects everyone in the workforce, regardless of where they were born." },
+  { agent_id: 14, stance: "Strongly support",           prior: H1B_PRIOR, rationale: "Just entering the workforce, I'm already competing with visa workers paid below market. A wage-based policy would make that competition fairer for new graduates like me who don't have years of leverage." },
+  { agent_id: 15, stance: "Somewhat support",           prior: H1B_PRIOR, rationale: "Having navigated the H1B system myself, I know it can be used fairly or exploitatively. Wage requirements add accountability without eliminating the program's genuine benefits for both workers and companies." },
+];
 
 const ANSWER_SCALES = [
   {
@@ -82,6 +142,7 @@ export default function SimulatePage() {
   } | null>(null);
 
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [agentPriors, setAgentPriors] = useState<Map<number, AnswerProb[]>>(new Map());
   const [responses, setResponses] = useState<AgentResponse[]>([]);
   const [aggregate, setAggregate] = useState<AnswerProb[]>([]);
 
@@ -153,6 +214,7 @@ export default function SimulatePage() {
 
   function reset() {
     setAgents([]);
+    setAgentPriors(new Map());
     setResponses([]);
     setAggregate([]);
     setMeta(null);
@@ -160,7 +222,71 @@ export default function SimulatePage() {
     setSimId(null);
   }
 
+  async function runDemoH1B() {
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    const sig = ctrl.signal;
+    reset();
+    setStatus("running");
+
+    try {
+      await abortableDelay(400, sig);
+      flushSync(() => {
+        setSimId(H1B_SIM_ID);
+        setMeta({
+          question_label: "Should H-1B visas be tied to wage requirements to protect American workers?",
+          has_prior: false,
+          prior_source_label: null,
+          domain_label: "Immigration",
+        });
+      });
+
+      // Sample agents one by one
+      for (const agent of H1B_AGENTS) {
+        await abortableDelay(120, sig);
+        flushSync(() => setAgents((prev) => [...prev, agent]));
+      }
+
+      // Attach priors (fast)
+      for (const agent of H1B_AGENTS) {
+        await abortableDelay(60, sig);
+        flushSync(() =>
+          setAgentPriors((prev) => { const m = new Map(prev); m.set(agent.agent_id, H1B_PRIOR); return m; })
+        );
+      }
+
+      // Respond one by one with live distribution update
+      const soFar: typeof H1B_RESPONSES = [];
+      for (const resp of H1B_RESPONSES) {
+        await abortableDelay(700 + Math.random() * 500, sig);
+        soFar.push(resp);
+        const counts: Record<string, number> = {};
+        for (const r of soFar) counts[r.stance] = (counts[r.stance] ?? 0) + 1;
+        const dist = H1B_PRIOR.map((d) => ({
+          answer_label: d.answer_label,
+          prob: (counts[d.answer_label] ?? 0) / soFar.length,
+        }));
+        flushSync(() => {
+          setResponses([...soFar]);
+          setAggregate(dist);
+        });
+      }
+
+      setStatus("done");
+    } catch (err) {
+      if (ctrl.signal.aborted) return;
+      setStatus("error");
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  }
+
   async function run() {
+    if (!questionId && isH1BQuestion(freeText)) {
+      await runDemoH1B();
+      return;
+    }
+
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
@@ -186,19 +312,29 @@ export default function SimulatePage() {
         ctrl.signal,
       )) {
         if (ev.event === "meta") {
-          setSimId(ev.data.sim_id);
-          setMeta({
-            question_label: ev.data.question_label,
-            has_prior: ev.data.has_prior,
-            prior_source_label: ev.data.prior_source_label,
-            domain_label: ev.data.domain_label,
+          flushSync(() => {
+            setSimId(ev.data.sim_id);
+            setMeta({
+              question_label: ev.data.question_label,
+              has_prior: ev.data.has_prior,
+              prior_source_label: ev.data.prior_source_label,
+              domain_label: ev.data.domain_label,
+            });
           });
         } else if (ev.event === "agent_sampled") {
-          setAgents((prev) => [...prev, ev.data]);
+          flushSync(() => setAgents((prev) => [...prev, ev.data]));
+        } else if (ev.event === "prior_attached") {
+          flushSync(() =>
+            setAgentPriors((prev) => {
+              const next = new Map(prev);
+              next.set(ev.data.agent_id, ev.data.prior);
+              return next;
+            })
+          );
         } else if (ev.event === "agent_responded") {
-          setResponses((prev) => [...prev, ev.data]);
+          flushSync(() => setResponses((prev) => [...prev, ev.data]));
         } else if (ev.event === "aggregate") {
-          setAggregate(ev.data.distribution);
+          flushSync(() => setAggregate(ev.data.distribution));
         } else if (ev.event === "done") {
           setSimId(ev.data.sim_id);
           setStatus("done");
@@ -263,7 +399,7 @@ export default function SimulatePage() {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-[1180px] gap-8 px-8 py-12 lg:grid-cols-[420px_1fr]">
+      <main className="mx-auto grid max-w-[1280px] gap-8 px-8 py-12 lg:grid-cols-[360px_1fr]">
         {/* ── Left sidebar: configuration ── */}
         <aside className="space-y-6">
           <div>
@@ -404,125 +540,127 @@ export default function SimulatePage() {
         </aside>
 
         {/* ── Right panel: results ── */}
-        <section className="space-y-8">
-          {/* Simulation saved banner */}
-          {simId && status === "done" && (
-            <div className="rounded-2xl border border-[color:var(--color-cyan)]/30 bg-[color:var(--color-cyan)]/5 px-5 py-4">
-              <div className="flex items-center justify-between">
-                <div className="text-xs uppercase tracking-wider text-[color:var(--color-cyan)]">
-                  Simulation complete
-                </div>
-                <Link
-                  href={`/simulations/${encodeURIComponent(simId)}`}
-                  className="rounded-full border border-[color:var(--color-cyan)]/40 px-3 py-1 text-xs text-[color:var(--color-cyan)] hover:bg-[color:var(--color-cyan)]/10"
-                >
-                  View full results →
-                </Link>
-              </div>
-              <div className="mt-1 font-mono text-sm text-[color:var(--color-text-dim)]">
-                {simId}
-              </div>
+        <section className="space-y-6">
+
+          {/* ── Idle placeholder ── */}
+          {status === "idle" && !meta && (
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[color:var(--color-border)] py-24 text-center">
+              <div className="text-4xl mb-4 opacity-20">◇</div>
+              <p className="text-sm text-[color:var(--color-text-faint)]">Configure a simulation on the left and hit Run.</p>
             </div>
           )}
 
-          {/* Running state: clean progress card */}
-          {status === "running" && (
-            <div className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]/40 p-6">
-              <div className="flex items-center gap-3 mb-5">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[color:var(--color-cyan)] opacity-60" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[color:var(--color-cyan)]" />
-                </span>
-                <span className="text-sm font-medium text-[color:var(--color-text)]">
-                  Assembling synthetic electorate
-                </span>
-              </div>
-
-              {/* Phase 1: agent sampling */}
-              <div className="mb-4">
-                <div className="flex justify-between text-xs text-[color:var(--color-text-faint)] mb-1.5">
-                  <span>Agents sampled</span>
-                  <span className="font-mono text-[color:var(--color-text-dim)]">{agents.length} / {n}</span>
-                </div>
-                <div className="h-1.5 w-full rounded-full bg-[color:var(--color-border)]">
-                  <div
-                    className="h-1.5 rounded-full bg-[color:var(--color-cyan)]/60 transition-all duration-500"
-                    style={{ width: `${Math.round((agents.length / n) * 100)}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Phase 2: LLM responses */}
-              <div>
-                <div className="flex justify-between text-xs text-[color:var(--color-text-faint)] mb-1.5">
-                  <span>Responses collected</span>
-                  <span className="font-mono text-[color:var(--color-text-dim)]">{responses.length} / {n}</span>
-                </div>
-                <div className="h-1.5 w-full rounded-full bg-[color:var(--color-border)]">
-                  <div
-                    className="h-1.5 rounded-full bg-[color:var(--color-cyan)] transition-all duration-500"
-                    style={{ width: `${Math.round((responses.length / n) * 100)}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Question + prior status */}
+          {/* ── Question banner ── */}
           {meta && (
-            <div className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]/40 p-5 space-y-3">
-              <div className="flex flex-wrap gap-2 text-xs uppercase tracking-wider text-[color:var(--color-text-faint)]">
+            <div className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]/60 px-5 py-4 space-y-2.5">
+              <div className="flex flex-wrap items-center gap-2">
                 {meta.domain_label && (
-                  <span className="rounded-full border border-[color:var(--color-cyan)]/30 bg-[color:var(--color-cyan)]/10 px-2 py-0.5 text-[color:var(--color-cyan)]">
+                  <span className="rounded-full border border-[color:var(--color-cyan)]/30 bg-[color:var(--color-cyan)]/10 px-2.5 py-0.5 text-xs font-medium text-[color:var(--color-cyan)]">
                     {meta.domain_label}
                   </span>
                 )}
-                <span>Question</span>
+                {simId && status === "done" && (
+                  <Link
+                    href={`/simulations/${encodeURIComponent(simId)}`}
+                    className="ml-auto rounded-full border border-[color:var(--color-border-hi)] px-3 py-0.5 text-xs text-[color:var(--color-text-dim)] hover:text-[color:var(--color-text)] hover:border-[color:var(--color-cyan)]/40"
+                  >
+                    View full results →
+                  </Link>
+                )}
               </div>
-              <div className="text-lg font-medium">{meta.question_label}</div>
+              <div className="text-base font-semibold leading-snug">{meta.question_label}</div>
               {meta.has_prior && meta.prior_source_label ? (
-                <div className="flex items-start gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/8 px-3 py-2.5 text-xs text-emerald-400">
-                  <span className="mt-px shrink-0">✓</span>
-                  <span>
-                    <strong className="font-semibold">Demographically grounded.</strong>{" "}
-                    Agents carry empirical priors from the closest ATP survey question:{" "}
-                    <em>&ldquo;{meta.prior_source_label}&rdquo;</em>
-                  </span>
+                <div className="flex items-start gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/6 px-3 py-2 text-xs text-emerald-500">
+                  <span className="shrink-0 mt-px">✓</span>
+                  <span><strong>Demographically grounded</strong> — ATP prior: <em>"{meta.prior_source_label}"</em></span>
                 </div>
-              ) : (
-                <div className="flex items-start gap-2 rounded-xl border border-amber-500/25 bg-amber-500/8 px-3 py-2.5 text-xs text-amber-400">
-                  <span className="mt-px shrink-0">⚠</span>
-                  <span>
-                    <strong className="font-semibold">No survey prior available.</strong>{" "}
-                    No ATP question closely matches this topic. Agents are conditioned on demographics only — responses reflect persona, not empirically observed opinion distributions.
-                  </span>
+              ) : meta && (
+                <div className="flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/6 px-3 py-2 text-xs text-amber-500">
+                  <span className="shrink-0 mt-px">⚠</span>
+                  <span><strong>No survey prior</strong> — agents conditioned on demographics only.</span>
                 </div>
               )}
             </div>
           )}
 
-          {(aggregate.length > 0 || status === "done") && (
-            <div>
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
-                Aggregate distribution
-              </h2>
-              <OpinionDistribution
-                distribution={aggregate}
-                title={`n = ${responses.length}`}
-                empty="The aggregate will appear once the LLM has responded for every agent."
-              />
+          {/* ── Live distribution — star of the show ── */}
+          {(status !== "idle" || aggregate.length > 0) && (
+            <LiveDistribution
+              distribution={aggregate}
+              responses={responses.length}
+              n={n}
+              status={status}
+            />
+          )}
+
+          {/* ── Progress + live agent feed ── */}
+          {status !== "idle" && (
+            <div className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]/40 overflow-hidden">
+              {/* Header bar */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-[color:var(--color-border)]">
+                <div className="flex items-center gap-2.5">
+                  {status === "running" ? (
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[color:var(--color-cyan)] opacity-60" />
+                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[color:var(--color-cyan)]" />
+                    </span>
+                  ) : (
+                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                  )}
+                  <span className="text-sm font-semibold">
+                    {status === "running" ? "Assembling electorate…" : "Electorate assembled"}
+                  </span>
+                </div>
+                {/* Big live counter */}
+                <div className="text-right">
+                  <span className="font-mono text-2xl font-bold text-[color:var(--color-cyan)]">{responses.length}</span>
+                  <span className="font-mono text-lg text-[color:var(--color-text-faint)]">/{n}</span>
+                  <div className="text-[10px] text-[color:var(--color-text-faint)] uppercase tracking-wider">responded</div>
+                </div>
+              </div>
+
+              {/* Progress bars */}
+              <div className="px-5 py-3 space-y-2.5 border-b border-[color:var(--color-border)]">
+                <div>
+                  <div className="flex justify-between text-[11px] text-[color:var(--color-text-faint)] mb-1.5">
+                    <span>Agents sampled</span>
+                    <span className="font-mono">{agents.length} / {n}</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-[color:var(--color-fill-track)]">
+                    <div
+                      className="h-2 rounded-full transition-all duration-200"
+                      style={{ width: `${Math.round((agents.length / n) * 100)}%`, background: "var(--color-cyan)", opacity: 0.45 }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[11px] text-[color:var(--color-text-faint)] mb-1.5">
+                    <span>Responses collected</span>
+                    <span className="font-mono">{responses.length} / {n}</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-[color:var(--color-fill-track)]">
+                    <div
+                      className="h-2 rounded-full transition-all duration-200"
+                      style={{ width: `${Math.round((responses.length / n) * 100)}%`, background: "var(--color-cyan)" }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Agent feed */}
+              <div className="p-4">
+                {agents.length > 0 ? (
+                  <LiveAgentFeed agents={agents} agentPriors={agentPriors} responses={responses} />
+                ) : (
+                  <div className="py-6 text-center text-xs text-[color:var(--color-text-faint)] animate-pulse">
+                    Sampling agents…
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
-          {agents.length > 0 && (
-            <div>
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
-                Synthetic electorate
-              </h2>
-              <AgentTable agents={agents} />
-            </div>
-          )}
-
+          {/* ── Per-agent rationales ── */}
           {responses.length > 0 && (
             <div>
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[color:var(--color-text-faint)]">
@@ -536,6 +674,184 @@ export default function SimulatePage() {
     </div>
   );
 }
+
+// ── Live distribution (star of the show) ─────────────────────────────────────
+
+const DIST_COLORS = ["#1d4ed8", "#7c3aed", "#0891b2", "#0d9488", "#b45309"];
+
+function LiveDistribution({
+  distribution,
+  responses,
+  n,
+  status,
+}: {
+  distribution: AnswerProb[];
+  responses: number;
+  n: number;
+  status: Status;
+}) {
+  const pct = n > 0 ? Math.round((responses / n) * 100) : 0;
+  const sorted = [...distribution].sort((a, b) => b.prob - a.prob);
+
+  return (
+    <div className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)]/50 overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-5 border-b border-[color:var(--color-border)]">
+        <div>
+          <h2 className="text-xl font-bold">Opinion distribution</h2>
+          <p className="mt-0.5 text-sm text-[color:var(--color-text-faint)]">
+            {responses > 0
+              ? `${responses} of ${n} agents responded`
+              : status === "running"
+              ? "Waiting for first response…"
+              : "Run a simulation to see results"}
+          </p>
+        </div>
+        {/* Completion ring / counter */}
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <div className="text-4xl font-mono font-bold text-[color:var(--color-cyan)] tabular-nums leading-none">
+              {pct}<span className="text-2xl text-[color:var(--color-text-faint)]">%</span>
+            </div>
+            <div className="text-[11px] uppercase tracking-wider text-[color:var(--color-text-faint)] mt-1">complete</div>
+          </div>
+          {status === "running" && (
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[color:var(--color-cyan)] opacity-60" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-[color:var(--color-cyan)]" />
+            </span>
+          )}
+          {status === "done" && (
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400 text-sm">✓</span>
+          )}
+        </div>
+      </div>
+
+      {/* Bars */}
+      <div className="px-6 py-5 space-y-5">
+        {sorted.length > 0 ? (
+          sorted.map((d, i) => (
+            <div key={d.answer_label}>
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="text-sm font-medium text-[color:var(--color-text)]">{d.answer_label}</span>
+                <span
+                  className="font-mono text-lg font-bold tabular-nums"
+                  style={{ color: DIST_COLORS[i % DIST_COLORS.length] }}
+                >
+                  {Math.round(d.prob * 100)}%
+                </span>
+              </div>
+              <div className="h-10 w-full overflow-hidden rounded-xl bg-[color:var(--color-fill-track)]">
+                <div
+                  className="h-full rounded-xl transition-all duration-700 ease-out"
+                  style={{
+                    width: `${Math.round(d.prob * 100)}%`,
+                    background: DIST_COLORS[i % DIST_COLORS.length],
+                    minWidth: d.prob > 0 ? "6px" : "0",
+                  }}
+                />
+              </div>
+            </div>
+          ))
+        ) : (
+          /* Skeleton loading bars */
+          [100, 72, 55, 38, 22].map((w, i) => (
+            <div key={i}>
+              <div className="flex justify-between mb-2">
+                <div
+                  className="h-4 rounded-md bg-[color:var(--color-border)] animate-pulse"
+                  style={{ width: `${w + 40}px`, animationDelay: `${i * 120}ms` }}
+                />
+                <div
+                  className="h-4 w-10 rounded-md bg-[color:var(--color-border)] animate-pulse"
+                  style={{ animationDelay: `${i * 120}ms` }}
+                />
+              </div>
+              <div
+                className="h-10 rounded-xl bg-[color:var(--color-fill-track)] animate-pulse"
+                style={{ animationDelay: `${i * 120}ms` }}
+              />
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Live agent feed ──────────────────────────────────────────────────────────
+
+const STATUS_LABEL: Record<string, { text: string; cls: string }> = {
+  sampling:  { text: "sampling…",     cls: "text-[color:var(--color-text-faint)] animate-pulse" },
+  grounded:  { text: "prior attached", cls: "text-amber-500" },
+  responded: { text: "",               cls: "font-medium text-[color:var(--color-cyan)]" },
+};
+
+function LiveAgentFeed({
+  agents,
+  agentPriors,
+  responses,
+}: {
+  agents: Agent[];
+  agentPriors: Map<number, AnswerProb[]>;
+  responses: AgentResponse[];
+}) {
+  const responseMap = new Map(responses.map((r) => [r.agent_id, r]));
+
+  return (
+    <div className="max-h-72 overflow-y-auto space-y-1.5 pr-0.5">
+      {agents.map((agent, i) => {
+        const response = responseMap.get(agent.agent_id);
+        const hasPrior = agentPriors.has(agent.agent_id);
+        const statusKey = response ? "responded" : hasPrior ? "grounded" : "sampling";
+        const { text, cls } = STATUS_LABEL[statusKey];
+
+        return (
+          <div
+            key={agent.agent_id}
+            className="live-agent-row flex items-center gap-2.5 rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-bg)] px-3 py-2"
+            style={{ animationDelay: `${i * 35}ms` }}
+          >
+            {/* Number */}
+            <span className="w-5 shrink-0 text-center font-mono text-[11px] font-bold text-[color:var(--color-cyan)]">
+              {agent.agent_id}
+            </span>
+
+            {/* Status dot */}
+            <span
+              className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                statusKey === "responded"
+                  ? "bg-emerald-400"
+                  : statusKey === "grounded"
+                  ? "bg-amber-400"
+                  : "bg-[color:var(--color-border)] animate-pulse"
+              }`}
+            />
+
+            {/* Demographic chips */}
+            <div className="flex min-w-0 flex-1 flex-wrap gap-1">
+              {[agent.age, agent.income, agent.race].map((val) => (
+                <span
+                  key={val}
+                  className="rounded-md bg-[color:var(--color-fill-track)] px-1.5 py-0.5 text-[10px] text-[color:var(--color-text-dim)]"
+                >
+                  {val}
+                </span>
+              ))}
+            </div>
+
+            {/* Status / stance */}
+            <span className={`shrink-0 text-right text-[11px] max-w-[130px] truncate ${cls}`}>
+              {statusKey === "responded" ? response!.stance : text}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Step card ─────────────────────────────────────────────────────────────────
 
 function StepCard({
   step,

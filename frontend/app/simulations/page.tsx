@@ -24,6 +24,29 @@ type SimRun = {
 
 const EXAMPLE_SIMS: SimRun[] = [
   {
+    sim_id: "demo__h1b_wage_policy__region_west",
+    serial: 4,
+    location: "region_west",
+    domain: "immigration",
+    domain_label: "Immigration",
+    question_label: "Should H-1B visas be tied to wage requirements to protect American workers?",
+    n: 15,
+    n_agents: 15,
+    selected_dims: ["age_group", "race_eth", "income_group"],
+    timestamp: "2026-05-14T10:00:00Z",
+    complete: true,
+    summary: {
+      n: 15,
+      distribution: [
+        { answer_label: "Strongly support",           prob: 0.47 },
+        { answer_label: "Somewhat support",           prob: 0.27 },
+        { answer_label: "Somewhat oppose",            prob: 0.13 },
+        { answer_label: "Strongly oppose",            prob: 0.07 },
+        { answer_label: "Neither support nor oppose", prob: 0.07 },
+      ],
+    },
+  },
+  {
     sim_id: "3__region_west__economy",
     serial: 3,
     location: "region_west",
