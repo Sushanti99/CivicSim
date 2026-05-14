@@ -115,11 +115,11 @@ function Hero() {
 }
 
 const PARTNERS = [
-  { name: "Stanford University",              src: "/assets/logos/stanford.png",    w: 140, h: 60  },
-  { name: "California Policy Lab",            src: "/assets/logos/policy-lab.jpg",  w: 130, h: 64  },
-  { name: "UC Berkeley BAIR Lab",             src: "/assets/logos/bair.png",        w: 130, h: 70  },
-  { name: "Goldman School of Public Policy",  src: "/assets/logos/gspp.svg",        w: 110, h: 70  },
-  { name: "UC Berkeley School of Information",src: "/assets/logos/ischool.svg",     w: 130, h: 60  },
+  { name: "Stanford University",               src: "/assets/logos/stanford2.png",       w: 160, h: 107 },
+  { name: "California Policy Lab",             src: "/assets/logos/policy-lab.jpg",      w: 140, h: 69  },
+  { name: "UC Berkeley BAIR Lab",              src: "/assets/logos/bair.png",            w: 150, h: 80  },
+  { name: "Goldman School of Public Policy",   src: "/assets/logos/ucb-seal.svg",        w: 64,  h: 64, label: "Goldman School\nof Public Policy" },
+  { name: "UC Berkeley School of Information", src: "/assets/logos/ischool-color.png",   w: 200, h: 14  },
 ];
 
 function Partners() {
@@ -129,13 +129,20 @@ function Partners() {
       <div className="partners-logos">
         {PARTNERS.map((p) => (
           <div key={p.name} className="partner-logo">
-            <Image
-              src={p.src}
-              alt={p.name}
-              width={p.w}
-              height={p.h}
-              style={{ objectFit: "contain", maxWidth: "100%", height: "auto" }}
-            />
+            {"label" in p ? (
+              <div className="partner-composite">
+                <Image src={p.src} alt={p.name} width={p.w} height={p.h} style={{ objectFit: "contain" }} />
+                <span className="partner-composite-label">{p.label}</span>
+              </div>
+            ) : (
+              <Image
+                src={p.src}
+                alt={p.name}
+                width={p.w}
+                height={p.h}
+                style={{ objectFit: "contain", maxWidth: "100%", height: "auto" }}
+              />
+            )}
           </div>
         ))}
       </div>

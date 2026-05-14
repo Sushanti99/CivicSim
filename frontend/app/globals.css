@@ -170,24 +170,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.6;
+  opacity: 0.85;
   transition: opacity 0.2s;
-  filter: grayscale(1);
 }
 
 .partner-logo:hover {
   opacity: 1;
-  filter: grayscale(0);
 }
 
 .dark .partner-logo {
-  filter: grayscale(1) invert(1) brightness(1.8);
-  opacity: 0.55;
+  filter: brightness(1.6);
+  opacity: 0.8;
 }
 
-.dark .partner-logo:hover {
-  filter: grayscale(0) invert(1) brightness(1.8);
-  opacity: 0.9;
+.partner-composite {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.partner-composite-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #003262;
+  white-space: pre-line;
+  text-align: left;
+}
+
+.dark .partner-composite-label {
+  color: #7fb3e8;
 }
 
 nav {
