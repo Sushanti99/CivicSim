@@ -696,7 +696,7 @@ export default function SimulatePage() {
               {meta.has_prior && meta.prior_source_label ? (
                 <div className="flex items-start gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/6 px-3 py-2 text-xs text-emerald-500">
                   <span className="shrink-0 mt-px">✓</span>
-                  <span><strong>Demographically grounded</strong> — ATP prior: <em>"{meta.prior_source_label}"</em></span>
+                  <span><strong>Demographically grounded</strong> — ATP prior: <em>&ldquo;{meta.prior_source_label}&rdquo;</em></span>
                 </div>
               ) : meta && (
                 <div className="flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/6 px-3 py-2 text-xs text-amber-500">
